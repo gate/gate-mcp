@@ -355,13 +355,13 @@ A: All data is queried in real-time from Gate's API, returning the latest market
 - This service only queries publicly available market data
 - No personal information is collected
 - All API calls are transmitted via HTTPS encryption
-- For more details, see [Gate Privacy Policy](https://www.gate.io/privacy-policy)
+- For more details, see [Gate Privacy Policy](https://www.gate.com/legal/privacy-policy)
 
 ---
 
 ## Support & Feedback
 
-- **API Documentation**: [Gate API Docs](https://www.gate.io/docs/developers/apiv4)
+- **API Documentation**: [Gate API Docs](https://www.gate.com/docs/developers/apiv4)
 - **Issue Reporting**: Please contact Gate support
 - **Business Inquiries**: Contact Gate official channels
 
@@ -463,12 +463,12 @@ A: 所有数据均实时查询 Gate API，返回最新的市场信息。
 - 本服务仅查询公开的市场数据
 - 不收集任何个人信息
 - 所有 API 调用均通过 HTTPS 加密传输
-- 详情请参阅 [Gate 隐私政策](https://www.gate.io/privacy-policy)
+- 详情请参阅 [Gate 隐私政策](https://www.gate.com/legal/privacy-policy)
 
 ---
 
 ## 支持与反馈
 
-- **API 文档**：[Gate API 文档](https://www.gate.io/docs/developers/apiv4)
+- **API 文档**：[Gate API 文档](https://www.gate.com/docs/developers/apiv4)
 - **问题反馈**：请联系 Gate 客服
 - **商务合作**：请联系 Gate 官方渠道
