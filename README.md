@@ -1,6 +1,6 @@
 # Gate MCP Server
 
-[English](#gateio-mcp-server) | [中文](#gateio-mcp-服务器)
+[English](#gateio-mcp-server) | [中文](#gate-mcp-服务器)
 
 ---
 
