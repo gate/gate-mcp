@@ -1,10 +1,10 @@
-# Gate.io MCP Server
+# Gate MCP Server
 
 [English](#gateio-mcp-server) | [中文](#gateio-mcp-服务器)
 
 ---
 
-A Gate.io MCP (Model Context Protocol) server that enables AI agents to interact with the Gate.io cryptocurrency exchange for real-time market data.
+A Gate MCP (Model Context Protocol) server that enables AI agents to interact with the Gate cryptocurrency exchange for real-time market data.
 
 ## Features
 
@@ -22,12 +22,12 @@ A Gate.io MCP (Model Context Protocol) server that enables AI agents to interact
 ### Installation
 
 1. In Claude settings, find "Connectors"
-2. Search and enable "Gate.io MCP Server"
+2. Search and enable "Gate MCP Server"
 3. Start chatting with Claude about crypto market data
 
 ### Basic Usage
 
-Once enabled, you can interact with Gate.io market data through natural language:
+Once enabled, you can interact with Gate market data through natural language:
 
 **Query BTC Price**
 > User: What's the current price of BTC/USDT?
@@ -84,7 +84,7 @@ Once enabled, you can interact with Gate.io market data through natural language
 <details>
 <summary><b>list_currencies</b> - Get all currencies</summary>
 
-Get all supported currencies on Gate.io with their details.
+Get all supported currencies on Gate with their details.
 
 **Parameters:** None
 
@@ -336,9 +336,9 @@ Get liquidation order history.
 
 ## FAQ
 
-### Q: Do I need a Gate.io account?
+### Q: Do I need a Gate account?
 
-A: No. The current version only provides public market data, which does not require a Gate.io account or API key.
+A: No. The current version only provides public market data, which does not require a Gate account or API key.
 
 ### Q: Does it support trading?
 
@@ -346,7 +346,7 @@ A: The current version only provides public market data queries. Trading and acc
 
 ### Q: How often is the data updated?
 
-A: All data is queried in real-time from Gate.io's API, returning the latest market information.
+A: All data is queried in real-time from Gate's API, returning the latest market information.
 
 ---
 
@@ -355,21 +355,21 @@ A: All data is queried in real-time from Gate.io's API, returning the latest mar
 - This service only queries publicly available market data
 - No personal information is collected
 - All API calls are transmitted via HTTPS encryption
-- For more details, see [Gate.io Privacy Policy](https://www.gate.io/privacy-policy)
+- For more details, see [Gate Privacy Policy](https://www.gate.io/privacy-policy)
 
 ---
 
 ## Support & Feedback
 
-- **API Documentation**: [Gate.io API Docs](https://www.gate.io/docs/developers/apiv4)
-- **Issue Reporting**: Please contact Gate.io support
-- **Business Inquiries**: Contact Gate.io official channels
+- **API Documentation**: [Gate API Docs](https://www.gate.io/docs/developers/apiv4)
+- **Issue Reporting**: Please contact Gate support
+- **Business Inquiries**: Contact Gate official channels
 
 ---
 
-# Gate.io MCP 服务器
+# Gate MCP 服务器
 
-一个 Gate.io MCP（模型上下文协议）服务器，使 AI 代理能够与 Gate.io 加密货币交易所交互，获取实时市场数据。
+一个 Gate MCP（模型上下文协议）服务器，使 AI 代理能够与 Gate 加密货币交易所交互，获取实时市场数据。
 
 ## 功能特性
 
@@ -387,12 +387,12 @@ A: All data is queried in real-time from Gate.io's API, returning the latest mar
 ### 安装步骤
 
 1. 在 Claude 设置中找到 "Connectors"
-2. 搜索并启用 "Gate.io MCP Server"
+2. 搜索并启用 "Gate MCP Server"
 3. 开始与 Claude 聊天，查询加密货币市场数据
 
 ### 基础用法
 
-启用后，您可以通过自然语言与 Gate.io 市场数据交互：
+启用后，您可以通过自然语言与 Gate 市场数据交互：
 
 **查询 BTC 价格**
 > 用户：BTC/USDT 现在什么价格？
@@ -444,9 +444,9 @@ A: All data is queried in real-time from Gate.io's API, returning the latest mar
 
 ## 常见问题
 
-### Q: 需要 Gate.io 账号吗？
+### Q: 需要 Gate 账号吗？
 
-A: 不需要。当前版本仅提供公共市场数据，无需 Gate.io 账号或 API 密钥。
+A: 不需要。当前版本仅提供公共市场数据，无需 Gate 账号或 API 密钥。
 
 ### Q: 支持交易功能吗？
 
@@ -454,7 +454,7 @@ A: 当前版本仅提供公共市场数据查询。交易和账户相关功能�
 
 ### Q: 数据更新频率是多少？
 
-A: 所有数据均实时查询 Gate.io API，返回最新的市场信息。
+A: 所有数据均实时查询 Gate API，返回最新的市场信息。
 
 ---
 
@@ -463,12 +463,12 @@ A: 所有数据均实时查询 Gate.io API，返回最新的市场信息。
 - 本服务仅查询公开的市场数据
 - 不收集任何个人信息
 - 所有 API 调用均通过 HTTPS 加密传输
-- 详情请参阅 [Gate.io 隐私政策](https://www.gate.io/privacy-policy)
+- 详情请参阅 [Gate 隐私政策](https://www.gate.io/privacy-policy)
 
 ---
 
 ## 支持与反馈
 
-- **API 文档**：[Gate.io API 文档](https://www.gate.io/docs/developers/apiv4)
-- **问题反馈**：请联系 Gate.io 客服
-- **商务合作**：请联系 Gate.io 官方渠道
+- **API 文档**：[Gate API 文档](https://www.gate.io/docs/developers/apiv4)
+- **问题反馈**：请联系 Gate 客服
+- **商务合作**：请联系 Gate 官方渠道
