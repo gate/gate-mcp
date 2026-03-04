@@ -28,7 +28,7 @@
 {
   "mcpServers": {
     "Gate": {
-      "url": "https://api.gatemcp.ai/gate-mcp/mcp",
+      "url": "https://api.gatemcp.ai/mcp",
       "transport": "streamable-http",
       "headers": {
          "Content-Type": "application/json",
@@ -64,7 +64,7 @@ brew install claude-code
 **第 2 步：** 添加 Gate MCP
 
 ```bash
-claude mcp add --transport http Gate https://api.gatemcp.ai/gate-mcp/mcp
+claude mcp add --transport http Gate https://api.gatemcp.ai/mcp
 ```
 
 ![Claude CLI 添加 MCP](images/claude-cli-add-mcp.png)
@@ -143,7 +143,7 @@ Claude Desktop 仅支持本地 stdio 方式运行，需要使用本地 MCP 代�
 **第 1 步：** 添加 Gate MCP
 
 ```bash
-codex mcp add gate --url https://api.gatemcp.ai/gate-mcp/mcp
+codex mcp add gate --url https://api.gatemcp.ai/mcp
 ```
 
 ![Codex CLI 添加 MCP](images/codex-cli-add-mcp.png)
@@ -177,7 +177,7 @@ npx mcporter --version
 **第 3 步：** 配置 Gate MCP
 
 ```bash
-mcporter config add gate https://api.gatemcp.ai/gate-mcp/mcp --scope home
+mcporter config add gate https://api.gatemcp.ai/mcp --scope home
 ```
 
 **第 4 步：** 验证配置是否生效

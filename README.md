@@ -28,7 +28,7 @@ An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that e
 {
   "mcpServers": {
     "Gate": {
-      "url": "https://api.gatemcp.ai/gate-mcp/mcp",
+      "url": "https://api.gatemcp.ai/mcp",
       "transport": "streamable-http",
       "headers": {
          "Content-Type": "application/json",
@@ -64,7 +64,7 @@ brew install claude-code
 **Step 2:** Add Gate MCP
 
 ```bash
-claude mcp add --transport http Gate https://api.gatemcp.ai/gate-mcp/mcp
+claude mcp add --transport http Gate https://api.gatemcp.ai/mcp
 ```
 
 ![Claude CLI Add MCP](images/claude-cli-add-mcp.png)
@@ -143,7 +143,7 @@ Set `args` to the path of the proxy file from Step 1:
 **Step 1:** Add Gate MCP
 
 ```bash
-codex mcp add gate --url https://api.gatemcp.ai/gate-mcp/mcp
+codex mcp add gate --url https://api.gatemcp.ai/mcp
 ```
 
 ![Codex CLI Add MCP](images/codex-cli-add-mcp.png)
@@ -177,7 +177,7 @@ npx mcporter --version
 **Step 3:** Add Gate MCP config
 
 ```bash
-mcporter config add gate https://api.gatemcp.ai/gate-mcp/mcp --scope home
+mcporter config add gate https://api.gatemcp.ai/mcp --scope home
 ```
 
 **Step 4:** Verify
