@@ -1,4 +1,4 @@
-# Gate AI MCP 服务器
+# Gate MCP 服务器
 
 [English](README.md) | [中文](README_zh.md)
 
