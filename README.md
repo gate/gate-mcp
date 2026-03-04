@@ -90,7 +90,7 @@ claude mcp list
 
 Claude Desktop only supports local stdio transport. You need a local MCP proxy.
 
-**Step 1:** Download the Python proxy file to your machine
+**Step 1:** Download the Python proxy file [gate-mcp-proxy.py](gate-mcp-proxy.py) to your machine
 
 **Step 2:** Edit Claude config file
 
@@ -106,7 +106,7 @@ Set `args` to the path of the proxy file from Step 1:
   "mcpServers": {
     "Gate": {
       "command": "python3",
-      "args": ["/path/to/gate-cex-mcp-proxy.py"]
+      "args": ["/path/to/gate-mcp-proxy.py"]
     }
   }
 }
