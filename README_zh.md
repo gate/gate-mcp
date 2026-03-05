@@ -139,4 +139,4 @@ npm test
 
 ## 许可证
 
-[MIT](LICENSE) © Gate.io
+[MIT](LICENSE) © gate.com
