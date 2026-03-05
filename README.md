@@ -1,28 +1,32 @@
 # Gate MCP Server
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![MCP](https://img.shields.io/badge/MCP-Protocol-blue)](https://modelcontextprotocol.io)
+
 [English](README.md) | [中文](README_zh.md)
 
 An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that exposes Gate.io trading API as tools for AI agents.
 
 ## Features
 
-- **Spot Market** — ticker, order book, K-line, trades, currency & pair info
-- **Futures Market** — contract info, ticker, order book, K-line, trades
-- **Funding Rate** — historical funding rate query
-- **Premium Index** — futures premium index K-line
-- **Liquidation Orders** — futures liquidation history
+- **Spot Market** — Ticker, order book, K-line, trades, currency & pair info
+- **Futures Market** — Contract info, ticker, order book, K-line, trades
+- **Funding Rate** — Historical funding rate query
+- **Premium Index** — Futures premium index K-line
+- **Liquidation Orders** — Futures liquidation history
 
-👉 [View full tool details and documentation](gate-mcp-server.md)
+## Prerequisites
+
+- **Node.js** >= 18 (for MCP clients)
+- **Python** >= 3.9 (optional, for local proxy)
 
 ## Quick Start
 
-### Configure in Cursor
+Choose your preferred client:
 
-**Step 1:** Cursor Settings → Tools & MCP → Add Custom MCP
+### Cursor
 
-![Cursor Add MCP](images/cursor-add-mcp.png)
-
-**Step 2:** Edit `mcp.json`:
+Edit `~/.cursor/mcp.json`:
 
 ```json
 {
@@ -31,7 +35,7 @@ An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that e
       "url": "https://api.gatemcp.ai/mcp",
       "transport": "streamable-http",
       "headers": {
-         "Content-Type": "application/json",
+        "Content-Type": "application/json",
         "Accept": "application/json, text/event-stream"
       }
     }
@@ -39,67 +43,27 @@ An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that e
 }
 ```
 
-![Cursor MCP JSON](images/cursor-mcp-json.png)
+See [Cursor Setup Guide](docs/setup-cursor.md) for detailed instructions.
 
-**Step 3:** Use in Cursor AI chat, e.g. "查询 BTC/USDT 的价格"
-
-![Cursor Usage](images/cursor-usage.png)
-
-### Configure in Claude.ai
-
-**Step 1:** Settings → Connectors → Add custom connector
-
-![Claude.ai Connector](images/claude-ai-connector.png)
-
-### Configure in Claude CLI
-
-**Step 1:** Install Claude Code
-
-Ref: https://code.claude.com/docs/zh-CN/overview#homebrew
+### Claude CLI
 
 ```bash
+# Install Claude Code
 brew install claude-code
-```
 
-**Step 2:** Add Gate MCP
-
-```bash
+# Add Gate MCP
 claude mcp add --transport http Gate https://api.gatemcp.ai/mcp
-```
 
-![Claude CLI Add MCP](images/claude-cli-add-mcp.png)
-
-**Step 3:** Verify
-
-```bash
+# Verify
 claude mcp list
 ```
 
-![Claude CLI List](images/claude-cli-list.png)
+### Claude Desktop
 
-**Step 4:** Use in Claude CLI, e.g.
+Claude Desktop requires a local stdio proxy.
 
-- 查询 BTC/USDT 的价格
-- 帮我查下 Gate 有什么套利空间？
-- 帮我分析一下 SOL
-- Gate 有没有新币值得关注？
-
-![Claude CLI Usage](images/claude-cli-usage.png)
-
-### Configure in Claude Desktop
-
-Claude Desktop only supports local stdio transport. You need a local MCP proxy.
-
-**Step 1:** Download the Python proxy file [gate-mcp-proxy.py](gate-mcp-proxy.py) to your machine
-
-**Step 2:** Edit Claude config file
-
-![Claude Desktop Config](images/claude-desktop-config.png)
-
-- **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
-- **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
-
-Set `args` to the path of the proxy file from Step 1:
+1. Download the [Python proxy](gate-mcp-proxy.py)
+2. Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
 
 ```json
 {
@@ -112,88 +76,20 @@ Set `args` to the path of the proxy file from Step 1:
 }
 ```
 
-**Step 3:** Restart Claude Desktop and verify, e.g. "列出 gate mcp 的可用工具"
+See [Claude Desktop Setup Guide](docs/setup-claude-desktop.md) for details.
 
-![Claude Desktop Verify](images/claude-desktop-verify.png)
+### Other Clients
 
-**Step 4:** Use in Claude Desktop, e.g. "查询 BTC/USDT 的价格"
-
-![Claude Desktop Usage](images/claude-desktop-usage.png)
-
-### Configure in Codex App
-
-**Step 1:** Open Codex Settings
-
-![Codex App Settings](images/codex-app-settings.png)
-
-**Step 2:** MCP Servers → Add Server
-
-![Codex App Add Server](images/codex-app-add-server.png)
-
-**Step 3:** Configure custom MCP and save
-
-![Codex App Config](images/codex-app-config.png)
-
-**Step 4:** Use in Codex App, e.g. "查询 BTC/USDT 的价格"
-
-![Codex App Usage](images/codex-app-usage.png)
-
-### Configure in Codex CLI
-
-**Step 1:** Add Gate MCP
-
-```bash
-codex mcp add gate --url https://api.gatemcp.ai/mcp
-```
-
-![Codex CLI Add MCP](images/codex-cli-add-mcp.png)
-
-**Step 2:** Verify
-
-```bash
-codex mcp list
-```
-
-![Codex CLI List](images/codex-cli-list.png)
-
-**Step 3:** Use in Codex CLI, e.g. "查询 BTC/USDT 的价格"
-
-![Codex CLI Usage](images/codex-cli-usage.png)
-
-### Configure in OpenClaw
-
-**Step 1:** In OpenClaw → Skills, search for `mcporter` and enable it
-
-![OpenClaw Enable mcporter](images/openclaw-enable-mcporter.png)
-
-**Step 2:** Install mcporter locally
-
-```bash
-npm i -g mcporter
-# or
-npx mcporter --version
-```
-
-**Step 3:** Add Gate MCP config
-
-```bash
-mcporter config add gate https://api.gatemcp.ai/mcp --scope home
-```
-
-**Step 4:** Verify
-
-```bash
-mcporter config get gate
-mcporter list gate --schema
-```
-
-> If the tool list is returned, the connection is successful.
-
-**Step 5:** Start a new session in OpenClaw and use MCP, e.g. "查询 BTC/USDT 的价格"
-
-![OpenClaw Usage](images/openclaw-usage.png)
+| Client | Setup Guide |
+|--------|-------------|
+| Claude.ai | [Setup](docs/setup-claude-ai.md) |
+| Codex App | [Setup](docs/setup-codex-app.md) |
+| Codex CLI | [Setup](docs/setup-codex-cli.md) |
+| OpenClaw | [Setup](docs/setup-openclaw.md) |
 
 ## Tools
+
+### Spot Market
 
 | Tool | Description |
 |------|-------------|
@@ -205,6 +101,11 @@ mcporter list gate --schema
 | `get_spot_order_book` | Get spot market depth |
 | `get_spot_candlesticks` | Get spot K-line data |
 | `get_spot_trades` | Get spot trade records |
+
+### Futures Market
+
+| Tool | Description |
+|------|-------------|
 | `list_futures_contracts` | List all futures contracts |
 | `get_futures_contract` | Get single futures contract info |
 | `get_futures_tickers` | Get futures ticker info |
@@ -215,6 +116,27 @@ mcporter list gate --schema
 | `get_futures_premium_index` | Get futures premium index K-line |
 | `list_futures_liq_orders` | Get futures liquidation history |
 
+## Development
+
+```bash
+# Clone the repository
+git clone https://github.com/gateio/gate-ai-mcp.git
+cd gate-ai-mcp
+
+# Install dependencies
+npm install
+
+# Run in development mode
+npm run dev
+
+# Run tests
+npm test
+```
+
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details.
+
 ## License
 
-MIT
+[MIT](LICENSE) © Gate.io
