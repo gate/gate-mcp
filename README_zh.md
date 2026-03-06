@@ -120,8 +120,8 @@ Claude Desktop 需要使用本地 stdio 代理。
 
 ```bash
 # 克隆仓库
-git clone https://github.com/gateio/gate-ai-mcp.git
-cd gate-ai-mcp
+git clone https://github.com/gate/gate-mcp.git
+cd gate-mcp
 
 # 安装依赖
 npm install

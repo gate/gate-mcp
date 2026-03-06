@@ -7,7 +7,7 @@ Claude Desktop 需要使用本地 stdio 代理来连接 Gate MCP 服务器。
 从仓库下载代理文件：
 
 ```bash
-curl -O https://raw.githubusercontent.com/gateio/gate-ai-mcp/main/gate-mcp-proxy.py
+curl -O https://raw.githubusercontent.com/gate/gate-mcp/main/gate-mcp-proxy.py
 ```
 
 或将以下内容保存为 `gate-mcp-proxy.py`：

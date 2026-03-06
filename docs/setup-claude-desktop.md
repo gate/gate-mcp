@@ -7,7 +7,7 @@ Claude Desktop requires a local stdio proxy to connect to the Gate MCP server.
 Download the proxy file from the repository:
 
 ```bash
-curl -O https://raw.githubusercontent.com/gateio/gate-ai-mcp/main/gate-mcp-proxy.py
+curl -O https://raw.githubusercontent.com/gate/gate-mcp/main/gate-mcp-proxy.py
 ```
 
 Or save the following as `gate-mcp-proxy.py`:

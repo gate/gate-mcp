@@ -120,8 +120,8 @@ See [Claude Desktop Setup Guide](docs/setup-claude-desktop.md) for details.
 
 ```bash
 # Clone the repository
-git clone https://github.com/gateio/gate-ai-mcp.git
-cd gate-ai-mcp
+git clone https://github.com/gate/gate-mcp.git
+cd gate-mcp
 
 # Install dependencies
 npm install
