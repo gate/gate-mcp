@@ -99,7 +99,7 @@ Decentralized exchange related tools.
 
 ### `gate-exchange`
 
-Spot and futures market tools. [View details](docs/tools/gate-exchange/gate-exchange-mcp.md)
+Spot and futures market tools. [View details](docs/gate-exchange/gate-exchange-mcp.md)
 
 - `get_spot_tickers` — Get spot ticker data for one trading pair or all pairs.
 - `get_spot_order_book` — Get spot market depth for a specified trading pair.
