@@ -99,7 +99,7 @@ Claude Desktop 需要使用本地 stdio 代理。
 
 ### `gate-exchange`
 
-现货与合约市场工具。[查看详情](docs/gate-exchange/gate-exchange-mcp_zh.md)
+现货与合约市场工具。[查看详情](gate-exchange/gate-exchange-mcp_zh.md)
 
 - `get_spot_tickers` — 获取单个交易对或全量交易对的现货行情数据。
 - `get_spot_order_book` — 获取指定交易对的现货盘口深度数据。
