@@ -89,32 +89,41 @@ See [Claude Desktop Setup Guide](docs/setup-claude-desktop.md) for details.
 
 ## Tools
 
-### Spot Market
+Tools are organized into the following modules:
 
-| Tool | Description |
-|------|-------------|
-| `list_currencies` | List all supported currencies |
-| `get_currency` | Get single currency details |
-| `list_currency_pairs` | List all supported trading pairs |
-| `get_currency_pair` | Get single trading pair details |
-| `get_spot_tickers` | Get spot ticker info |
-| `get_spot_order_book` | Get spot market depth |
-| `get_spot_candlesticks` | Get spot K-line data |
-| `get_spot_trades` | Get spot trade records |
+### `gate-dex`
 
-### Futures Market
+Decentralized exchange related tools. [View details](docs/tools/gate-dex/gate-dex-mcp.md)
 
-| Tool | Description |
-|------|-------------|
-| `list_futures_contracts` | List all futures contracts |
-| `get_futures_contract` | Get single futures contract info |
-| `get_futures_tickers` | Get futures ticker info |
-| `get_futures_order_book` | Get futures market depth |
-| `get_futures_candlesticks` | Get futures K-line data |
-| `get_futures_trades` | Get futures trade records |
-| `get_futures_funding_rate` | Get historical funding rates |
-| `get_futures_premium_index` | Get futures premium index K-line |
-| `list_futures_liq_orders` | Get futures liquidation history |
+- No tools are published in this module yet.
+
+### `gate-exchange`
+
+Spot and futures market tools. [View details](docs/tools/gate-exchange/gate-exchange-mcp.md)
+
+- `get_spot_tickers` — Get spot ticker data for one trading pair or all pairs.
+- `get_spot_order_book` — Get spot market depth for a specified trading pair.
+- `create_spot_order` — Create a new spot buy/sell order.
+- `get_futures_tickers` — Get futures ticker data for one contract or all contracts.
+- `create_futures_order` — Create a new futures order for a specified contract.
+
+### `gate-info`
+
+General information and metadata tools. [View details](docs/tools/gate-info/gate-info-mcp.md)
+
+- No tools are published in this module yet.
+
+### `gate-news`
+
+News and announcements tools. [View details](docs/tools/gate-news/gate-news-mcp.md)
+
+- No tools are published in this module yet.
+
+### `gate-wallet`
+
+Wallet and asset tools. [View details](docs/tools/gate-wallet/gate-wallet-mcp.md)
+
+- No tools are published in this module yet.
 
 ## Development
 

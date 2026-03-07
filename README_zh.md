@@ -89,32 +89,41 @@ Claude Desktop 需要使用本地 stdio 代理。
 
 ## 工具列表
 
-### 现货市场
+工具按照以下模块划分：
 
-| 工具 | 说明 |
-|------|------|
-| `list_currencies` | 查询所有币种信息 |
-| `get_currency` | 获取单个币种详情 |
-| `list_currency_pairs` | 查询所有交易对 |
-| `get_currency_pair` | 获取单个交易对详情 |
-| `get_spot_tickers` | 获取现货行情 |
-| `get_spot_order_book` | 获取现货市场深度 |
-| `get_spot_candlesticks` | 获取现货 K 线数据 |
-| `get_spot_trades` | 获取现货成交记录 |
+### `gate-dex`
 
-### 合约市场
+去中心化交易相关工具。[查看详情](docs/tools/gate-dex/gate-dex-mcp_zh.md)
 
-| 工具 | 说明 |
-|------|------|
-| `list_futures_contracts` | 查询所有合约信息 |
-| `get_futures_contract` | 获取单个合约详情 |
-| `get_futures_tickers` | 获取合约行情 |
-| `get_futures_order_book` | 获取合约市场深度 |
-| `get_futures_candlesticks` | 获取合约 K 线数据 |
-| `get_futures_trades` | 获取合约成交记录 |
-| `get_futures_funding_rate` | 获取历史资金费率 |
-| `get_futures_premium_index` | 获取合约溢价指数 K 线 |
-| `list_futures_liq_orders` | 获取合约强平历史 |
+- 当前模块暂无已发布工具。
+
+### `gate-exchange`
+
+现货与合约市场工具。[查看详情](docs/tools/gate-exchange/gate-exchange-mcp_zh.md)
+
+- `get_spot_tickers` — 获取单个交易对或全量交易对的现货行情数据。
+- `get_spot_order_book` — 获取指定交易对的现货盘口深度数据。
+- `create_spot_order` — 创建新的现货买卖订单。
+- `get_futures_tickers` — 获取单个合约或全量合约的合约行情数据。
+- `create_futures_order` — 为指定合约创建新的合约订单。
+
+### `gate-info`
+
+通用信息与元数据工具。[查看详情](docs/tools/gate-info/gate-info-mcp_zh.md)
+
+- 当前模块暂无已发布工具。
+
+### `gate-news`
+
+资讯与公告相关工具。[查看详情](docs/tools/gate-news/gate-news-mcp_zh.md)
+
+- 当前模块暂无已发布工具。
+
+### `gate-wallet`
+
+钱包与资产相关工具。[查看详情](docs/tools/gate-wallet/gate-wallet-mcp_zh.md)
+
+- 当前模块暂无已发布工具。
 
 ## 开发
 
