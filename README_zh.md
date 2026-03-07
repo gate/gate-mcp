@@ -93,7 +93,7 @@ Claude Desktop 需要使用本地 stdio 代理。
 
 ### `gate-dex`
 
-去中心化交易相关工具。[查看详情](docs/tools/gate-dex/gate-dex-mcp_zh.md)
+去中心化交易相关工具。
 
 - 当前模块暂无已发布工具。
 
@@ -109,19 +109,19 @@ Claude Desktop 需要使用本地 stdio 代理。
 
 ### `gate-info`
 
-通用信息与元数据工具。[查看详情](docs/tools/gate-info/gate-info-mcp_zh.md)
+通用信息与元数据工具。
 
 - 当前模块暂无已发布工具。
 
 ### `gate-news`
 
-资讯与公告相关工具。[查看详情](docs/tools/gate-news/gate-news-mcp_zh.md)
+资讯与公告相关工具。
 
 - 当前模块暂无已发布工具。
 
 ### `gate-wallet`
 
-钱包与资产相关工具。[查看详情](docs/tools/gate-wallet/gate-wallet-mcp_zh.md)
+钱包与资产相关工具。
 
 - 当前模块暂无已发布工具。
 

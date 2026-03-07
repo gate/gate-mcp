@@ -93,7 +93,7 @@ Tools are organized into the following modules:
 
 ### `gate-dex`
 
-Decentralized exchange related tools. [View details](docs/tools/gate-dex/gate-dex-mcp.md)
+Decentralized exchange related tools.
 
 - No tools are published in this module yet.
 
@@ -109,19 +109,19 @@ Spot and futures market tools. [View details](docs/tools/gate-exchange/gate-exch
 
 ### `gate-info`
 
-General information and metadata tools. [View details](docs/tools/gate-info/gate-info-mcp.md)
+General information and metadata tools.
 
 - No tools are published in this module yet.
 
 ### `gate-news`
 
-News and announcements tools. [View details](docs/tools/gate-news/gate-news-mcp.md)
+News and announcements tools.
 
 - No tools are published in this module yet.
 
 ### `gate-wallet`
 
-Wallet and asset tools. [View details](docs/tools/gate-wallet/gate-wallet-mcp.md)
+Wallet and asset tools.
 
 - No tools are published in this module yet.
 
