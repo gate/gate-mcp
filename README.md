@@ -22,6 +22,8 @@ A Gate MCP (Model Context Protocol) server that enables AI agents to interact wi
 
 ### Using mcporter (Recommended)
 
+> **Prerequisites**: Node.js >= 18, npm. See [Quick Start - mcporter](#mcporter--openclaw-recommended) for full installation steps.
+
 ```bash
 # 1. Add MCP server with OAuth auth
 mcporter config add gate-mcp --url https://api.gatemcp.ai/mcp --auth oauth
@@ -47,6 +49,7 @@ mcporter auth gate-mcp
 - Gate account
 - MCP-compatible client (Cursor, Claude CLI, Trae, OpenClaw, etc.)
 - **MCP Endpoint**: `https://api.gatemcp.ai/mcp` (OAuth required)
+- **Node.js** >= 18 (for mcporter, Trae, Qoder, and other npm-based clients)
 
 ### Cursor
 
@@ -71,14 +74,35 @@ See [Cursor setup](docs/setup-cursor.md).
 
 ### mcporter / OpenClaw (Recommended)
 
+#### Prerequisites (before installing mcporter)
+
+- **Node.js** >= 18 (mcporter requires npm)
+- **npm** (comes with Node.js) — verify with: `node -v` and `npm -v`
+- **Gate account** (for OAuth login)
+
+#### Install mcporter
+
 ```bash
-# Install mcporter first
+# Global install
 npm install -g mcporter
 
-# Add MCP with OAuth, then authorize
+# Verify installation
+mcporter --version
+```
+
+Alternatively, run without installing: `npx mcporter <command>` (uses current Node.js/npm).
+
+#### Add MCP and authorize
+
+```bash
+# Add MCP with OAuth
 mcporter config add gate-mcp --url https://api.gatemcp.ai/mcp --auth oauth
+
+# Authorize (opens browser to log in)
 mcporter auth gate-mcp
 ```
+
+See [OpenClaw setup](docs/setup-openclaw.md) for detailed steps.
 
 ### Claude CLI
 

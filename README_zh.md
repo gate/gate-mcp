@@ -20,6 +20,8 @@
 
 ### mcporter（推荐）
 
+> **前置条件**：Node.js >= 18、npm。完整安装步骤见 [快速开始 - mcporter](#mcporter--openclaw推荐)。
+
 ```bash
 # 1. 添加 MCP 服务器（OAuth 模式）
 mcporter config add gate-mcp --url https://api.gatemcp.ai/mcp --auth oauth
@@ -72,14 +74,35 @@ mcporter auth gate-mcp
 
 ### mcporter / OpenClaw（推荐）
 
+#### 安装 mcporter 前置条件
+
+- **Node.js** >= 18（mcporter 依赖 npm）
+- **npm**（随 Node.js 安装）— 可用 `node -v` 和 `npm -v` 检查
+- **Gate 账号**（用于 OAuth 登录）
+
+#### 安装 mcporter
+
 ```bash
-# 先安装 mcporter
+# 全局安装
 npm install -g mcporter
 
-# 添加 MCP 并授权
+# 验证安装
+mcporter --version
+```
+
+若不希望全局安装，可使用 `npx mcporter <命令>` 直接运行（依赖当前环境的 Node.js/npm）。
+
+#### 添加 MCP 并授权
+
+```bash
+# 添加 MCP（OAuth 模式）
 mcporter config add gate-mcp --url https://api.gatemcp.ai/mcp --auth oauth
+
+# 授权登录（会打开浏览器）
 mcporter auth gate-mcp
 ```
+
+详见 [OpenClaw 配置指南](docs/setup-openclaw-zh.md)。
 
 ### Claude CLI
 
