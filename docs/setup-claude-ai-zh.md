@@ -16,6 +16,8 @@
 2. **URL**：输入 `https://api.gatemcp.ai/mcp`
 3. **传输方式**：选择 `streamable-http`
 
+![Claude.ai 配置](../images/claude-ai-config.png)
+
 ## 第 3 步：保存并验证
 
 点击 **Save** 添加连接器。你应该能在连接器列表中看到它。
@@ -24,6 +26,8 @@
 
 1. 在 Claude.ai 中开始新对话
 2. 尝试："列出 Gate MCP 的可用工具"
+
+![Claude.ai 验证](../images/claude-ai-verify.png)
 
 ## 故障排除
 
