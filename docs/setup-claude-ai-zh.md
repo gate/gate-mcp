@@ -10,13 +10,22 @@
 
 ![Claude.ai 添加 Connector](../images/claude-ai-connector.png)
 
+
+
 ## 第 2 步：配置 MCP 连接器
 
 1. **名称**：输入 "Gate MCP" 或你喜欢的名称
 2. **URL**：输入 `https://api.gatemcp.ai/mcp`
 3. **传输方式**：选择 `streamable-http`
 
-![Claude.ai 配置](../images/claude-ai-config.png)
+![Claude.ai Connector](../images/claude-ai-connector2.png)
+
+![Claude.ai Connector](../images/claude-ai-connector3.png)
+
+![Claude.ai Connector](../images/claude-ai-connector4.png)
+
+![Claude.ai Connector](../images/claude-ai-connector5.png)
+![Claude.ai Connector](../images/claude-ai-connector6.png)
 
 ## 第 3 步：保存并验证
 
@@ -25,7 +34,8 @@
 要验证是否正常工作：
 
 1. 在 Claude.ai 中开始新对话
-2. 尝试："列出 Gate MCP 的可用工具"
+2. 尝试："BTC market data"
+![Claude.ai 验证](../images/claude-ai-config.png)
 
 ![Claude.ai 验证](../images/claude-ai-verify.png)
 

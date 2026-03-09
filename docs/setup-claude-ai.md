@@ -10,13 +10,22 @@ Navigate to **Settings** → **Connectors** → **Add custom connector**
 
 ![Claude.ai Connector](../images/claude-ai-connector.png)
 
+
+
 ## Step 2: Configure the MCP Connector
 
 1. **Name**: Enter "Gate MCP" or your preferred name
 2. **URL**: Enter `https://api.gatemcp.ai/mcp`
 3. **Transport**: Select `streamable-http`
 
-![Claude.ai Config](../images/claude-ai-config.png)
+![Claude.ai Connector](../images/claude-ai-connector2.png)
+
+![Claude.ai Connector](../images/claude-ai-connector3.png)
+
+![Claude.ai Connector](../images/claude-ai-connector4.png)
+
+![Claude.ai Connector](../images/claude-ai-connector5.png)
+![Claude.ai Connector](../images/claude-ai-connector6.png)
 
 ## Step 3: Save and Verify
 
@@ -25,7 +34,8 @@ Click **Save** to add the connector. You should see it listed in your connectors
 To verify it's working:
 
 1. Start a new conversation in Claude.ai
-2. Try: "List available tools from Gate MCP"
+2. Try: "BTC market data"
+![Claude.ai Verify](../images/claude-ai-config.png)
 
 ![Claude.ai Verify](../images/claude-ai-verify.png)
 
