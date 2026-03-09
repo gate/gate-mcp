@@ -121,7 +121,7 @@ News and announcements tools.
 
 ### `gate-wallet`
 
-Wallet and asset tools.
+Wallet and asset tools. [View details](gate-wallet/gate-wallet-mcp.md)
 
 - No tools are published in this module yet.
 

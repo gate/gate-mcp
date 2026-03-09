@@ -121,7 +121,7 @@ Claude Desktop 需要使用本地 stdio 代理。
 
 ### `gate-wallet`
 
-钱包与资产相关工具。
+钱包与资产相关工具。[查看详情](gate-wallet/gate-wallet-mcp_zh.md)
 
 - 当前模块暂无已发布工具。
 
