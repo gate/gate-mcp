@@ -110,6 +110,25 @@ claude mcp list
 }
 ```
 
+### Qoder
+
+编辑 Qoder MCP 配置（如 `~/.qoder/mcp.json` 或 Qoder 设置中）：
+
+```json
+{
+  "mcpServers": {
+    "gate": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://api.gatemcp.ai/mcp"
+      ]
+    }
+  }
+}
+```
+
 ### Claude Desktop
 
 Claude Desktop 需要使用本地 stdio 代理。
@@ -139,6 +158,7 @@ Claude Desktop 需要使用本地 stdio 代理。
 | Codex CLI | [配置说明](docs/setup-codex-cli-zh.md) |
 | OpenClaw | [配置说明](docs/setup-openclaw-zh.md) |
 | Trae | 见上文 Trae 配置 |
+| Qoder | 见上文 Qoder 配置 |
 
 ### 基础用法
 

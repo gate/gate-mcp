@@ -90,7 +90,26 @@ claude mcp list
 
 ### Trae
 
-Edit Trae settings,Uses `mcp-remote` to proxy HTTP MCP (OAuth prompt on first connect):
+Edit Trae settings. Uses `mcp-remote` to proxy HTTP MCP (OAuth prompt on first connect):
+
+```json
+{
+  "mcpServers": {
+    "gate": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://api.gatemcp.ai/mcp"
+      ]
+    }
+  }
+}
+```
+
+### Qoder
+
+Edit Qoder MCP settings (e.g. `~/.qoder/mcp.json` or in Qoder settings):
 
 ```json
 {
@@ -120,6 +139,7 @@ Claude Desktop requires a local stdio proxy. See [Claude Desktop setup](docs/set
 | Codex CLI | [setup](docs/setup-codex-cli.md) |
 | OpenClaw | [setup](docs/setup-openclaw.md) |
 | Trae | See Trae config above |
+| Qoder | See Qoder config above |
 
 ### Basic Usage
 
