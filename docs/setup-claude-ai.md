@@ -34,7 +34,9 @@ Click **Save** to add the connector. You should see it listed in your connectors
 To verify it's working:
 
 1. Start a new conversation in Claude.ai
+
 2. Try: "BTC market data"
+
 ![Claude.ai Verify](../images/claude-ai-config.png)
 
 ![Claude.ai Verify](../images/claude-ai-verify.png)

@@ -107,7 +107,7 @@ Add the following configuration (replace `/path/to/gate-mcp-proxy.py` with the a
 
 1. **Restart Claude Desktop** completely
 2. Open a new conversation
-3. Try: "List available Gate MCP tools"
+3. Try: "What tools does gate mcp here"
 
 ![Claude Desktop Verify](../images/claude-desktop-verify.png)
 

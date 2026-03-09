@@ -34,7 +34,9 @@
 要验证是否正常工作：
 
 1. 在 Claude.ai 中开始新对话
+
 2. 尝试："BTC market data"
+
 ![Claude.ai 验证](../images/claude-ai-config.png)
 
 ![Claude.ai 验证](../images/claude-ai-verify.png)
