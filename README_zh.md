@@ -32,9 +32,9 @@
 
 **仅 `/mcp/exchange` 需要 OAuth2。** 公开端点 `/mcp` 无需任何认证。
 
-### mcporter（推荐）
+### mcporter
 
-> **前置条件**：Node.js >= 18、npm。完整安装步骤见 [快速开始 - mcporter](#mcporter--openclaw推荐)。
+> **前置条件**：Node.js >= 18、npm。完整安装步骤见 [快速开始 - mcporter](#mcporter--openclaw)。
 
 ```bash
 # 添加私有 MCP（交易，需 OAuth）
@@ -116,7 +116,7 @@ mcporter auth gate-mcp
 
 详见 [Cursor 配置指南](docs/setup-cursor-zh.md)。
 
-### mcporter / OpenClaw（推荐）
+### mcporter / OpenClaw
 
 #### 安装 mcporter 前置条件
 

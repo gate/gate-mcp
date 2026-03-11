@@ -34,7 +34,7 @@ Transport: Streamable HTTP (with SSE fallback).
 
 **Only `/mcp/exchange` requires OAuth2.** The public endpoint `/mcp` does not require any authentication.
 
-### Using mcporter (Recommended)
+### Using mcporter
 
 > **Prerequisites**: Node.js >= 18, npm. See [Quick Start - mcporter](#mcporter--openclaw-recommended) for full installation steps.
 
@@ -105,7 +105,7 @@ Edit `~/.cursor/mcp.json`:
 
 See [Cursor setup](docs/setup-cursor.md).
 
-### mcporter / OpenClaw (Recommended)
+### mcporter / OpenClaw
 
 #### Prerequisites (before installing mcporter)
 
