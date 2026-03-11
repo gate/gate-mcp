@@ -36,7 +36,13 @@ source ~/.zshrc
 
 ## 第 3 步：添加 Gate MCP
 
-添加 Gate MCP 服务器到 Codex CLI：
+**完整交易能力（OAuth）：**
+
+```bash
+codex mcp add gate --url https://api.gatemcp.ai/mcp/exchange
+```
+
+**仅查行情（无需认证）：**
 
 ```bash
 codex mcp add gate --url https://api.gatemcp.ai/mcp
@@ -79,7 +85,7 @@ codex
 
 ```bash
 codex mcp remove gate
-codex mcp add gate --url https://api.gatemcp.ai/mcp
+codex mcp add gate --url https://api.gatemcp.ai/mcp/exchange
 ```
 
 ## 故障排除
@@ -100,12 +106,12 @@ export OPENAI_API_KEY="your-api-key-here"
 
 ### 连接错误
 
-1. 验证 URL 是否正确：`https://api.gatemcp.ai/mcp`
+1. 验证 URL 是否正确：`https://api.gatemcp.ai/mcp/exchange`（交易）或 `https://api.gatemcp.ai/mcp`（行情）
 2. 检查是否需要代理或 VPN
 3. 稍后再试（服务器可能暂时不可用）
 
 ## 下一步
 
 - 探索所有[可用工具](../README_zh.md#工具列表)
-- 了解[合约市场工具](../README_zh.md#合约市场)
-- 查看 [API 文档](https://www.gate.io/docs/developers/apiv4/)
+- 了解[合约工具](../README_zh.md#public-mcpmcp--无需认证)
+- 查看 [API 文档](https://www.gate.com/docs/developers/apiv4/)

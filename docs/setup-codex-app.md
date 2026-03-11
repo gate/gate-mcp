@@ -25,7 +25,7 @@ Enter the following details:
 | Field | Value |
 |-------|-------|
 | Name | `Gate` or `Gate MCP` |
-| URL | `https://api.gatemcp.ai/mcp` |
+| URL | `https://api.gatemcp.ai/mcp` (market data) or `https://api.gatemcp.ai/mcp/exchange` (full trading, OAuth) |
 | Transport | `streamable-http` or `http` |
 
 ![Codex App Config](../images/codex-app-config.png)
@@ -56,6 +56,6 @@ Click **Save** to add the server.
 
 ## Next Steps
 
-- Explore all [available tools](../README.md#tools)
-- Learn about [futures market tools](../README.md#futures-market)
-- Check the [API documentation](https://www.gate.io/docs/developers/apiv4/)
+- Explore all [available tools](../README.md#available-tools)
+- Learn about [futures market tools](../README.md#public-mcp-mcp--no-auth)
+- Check the [API documentation](https://www.gate.com/docs/developers/apiv4/)

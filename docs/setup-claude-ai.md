@@ -15,7 +15,7 @@ Navigate to **Settings** → **Connectors** → **Add custom connector**
 ## Step 2: Configure the MCP Connector
 
 1. **Name**: Enter "Gate MCP" or your preferred name
-2. **URL**: Enter `https://api.gatemcp.ai/mcp`
+2. **URL**: Enter `https://api.gatemcp.ai/mcp` (market data, no auth) or `https://api.gatemcp.ai/mcp/exchange` (full trading, OAuth)
 3. **Transport**: Select `streamable-http`
 
 ![Claude.ai Connector](../images/claude-ai-connector2.png)
@@ -57,6 +57,6 @@ To verify it's working:
 
 ## Next Steps
 
-- Explore all [available tools](../README.md#tools)
-- Learn about [futures market tools](../README.md#futures-market)
-- Check the [API documentation](https://www.gate.io/docs/developers/apiv4/)
+- Explore all [available tools](../README.md#available-tools)
+- Learn about [futures market tools](../README.md#public-mcp-mcp--no-auth)
+- Check the [API documentation](https://www.gate.com/docs/developers/apiv4/)

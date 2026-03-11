@@ -25,7 +25,7 @@
 | 字段 | 值 |
 |------|-----|
 | 名称 | `Gate` 或 `Gate MCP` |
-| URL | `https://api.gatemcp.ai/mcp` |
+| URL | `https://api.gatemcp.ai/mcp`（行情数据）或 `https://api.gatemcp.ai/mcp/exchange`（完整交易，OAuth） |
 | 传输方式 | `streamable-http` 或 `http` |
 
 ![Codex App 配置](../images/codex-app-config.png)
@@ -57,5 +57,5 @@
 ## 下一步
 
 - 探索所有[可用工具](../README_zh.md#工具列表)
-- 了解[合约市场工具](../README_zh.md#合约市场)
-- 查看 [API 文档](https://www.gate.io/docs/developers/apiv4/)
+- 了解[合约工具](../README_zh.md#public-mcpmcp--无需认证)
+- 查看 [API 文档](https://www.gate.com/docs/developers/apiv4/)

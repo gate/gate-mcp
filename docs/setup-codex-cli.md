@@ -36,7 +36,13 @@ source ~/.zshrc
 
 ## Step 3: Add Gate MCP
 
-Add the Gate MCP server to Codex CLI:
+**For full trading (OAuth on connect):**
+
+```bash
+codex mcp add gate --url https://api.gatemcp.ai/mcp/exchange
+```
+
+**For market data only (no auth):**
 
 ```bash
 codex mcp add gate --url https://api.gatemcp.ai/mcp
@@ -79,7 +85,7 @@ To update the MCP server URL or configuration:
 
 ```bash
 codex mcp remove gate
-codex mcp add gate --url https://api.gatemcp.ai/mcp
+codex mcp add gate --url https://api.gatemcp.ai/mcp/exchange
 ```
 
 ## Troubleshooting
@@ -100,12 +106,12 @@ export OPENAI_API_KEY="your-api-key-here"
 
 ### Connection Errors
 
-1. Verify the URL is correct: `https://api.gatemcp.ai/mcp`
+1. Verify the URL is correct: `https://api.gatemcp.ai/mcp/exchange` (trading) or `https://api.gatemcp.ai/mcp` (market data)
 2. Check if you need a proxy or VPN
 3. Try again later (the server might be temporarily down)
 
 ## Next Steps
 
-- Explore all [available tools](../README.md#tools)
-- Learn about [futures market tools](../README.md#futures-market)
-- Check the [API documentation](https://www.gate.io/docs/developers/apiv4/)
+- Explore all [available tools](../README.md#available-tools)
+- Learn about [futures market tools](../README.md#public-mcp-mcp--no-auth)
+- Check the [API documentation](https://www.gate.com/docs/developers/apiv4/)

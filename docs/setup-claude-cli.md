@@ -15,8 +15,19 @@ For other installation methods, see the [official documentation](https://code.cl
 
 ## Step 2: Add Gate MCP
 
+**For full trading (OAuth on connect):**
+
+```bash
+claude mcp add --transport http Gate https://api.gatemcp.ai/mcp/exchange
+# You will be prompted to log in with your Gate account
+claude mcp list
+```
+
+**For market data only (no auth):**
+
 ```bash
 claude mcp add --transport http Gate https://api.gatemcp.ai/mcp
+claude mcp list
 ```
 
 ![Claude CLI Add MCP](../images/claude-cli-add-mcp.png)
@@ -52,7 +63,7 @@ To update the MCP server URL or configuration:
 
 ```bash
 claude mcp remove Gate
-claude mcp add --transport http Gate https://api.gatemcp.ai/mcp
+claude mcp add --transport http Gate https://api.gatemcp.ai/mcp/exchange
 ```
 
 ## Troubleshooting
@@ -65,12 +76,12 @@ claude mcp add --transport http Gate https://api.gatemcp.ai/mcp
 
 ### Connection Errors
 
-1. Verify the URL is correct: `https://api.gatemcp.ai/mcp`
+1. Verify the URL is correct: `https://api.gatemcp.ai/mcp/exchange` (trading) or `https://api.gatemcp.ai/mcp` (market data)
 2. Check if you need a proxy or VPN
 3. Try again later (the server might be temporarily down)
 
 ## Next Steps
 
-- Explore all [available tools](../README.md#tools)
-- Learn about [futures market tools](../README.md#futures-market)
-- Check the [API documentation](https://www.gate.io/docs/developers/apiv4/)
+- Explore all [available tools](../README.md#available-tools)
+- Learn about [futures market tools](../README.md#public-mcp-mcp--no-auth)
+- Check the [API documentation](https://www.gate.com/docs/developers/apiv4/)

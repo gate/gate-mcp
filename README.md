@@ -11,32 +11,46 @@ A Gate MCP (Model Context Protocol) server that enables AI agents to interact wi
 
 ## Features
 
-- 🔍 **Spot & Futures Market** - Tickers, order books, trades, K-line, funding rate, liquidation history
+- 🔍 **Public Market Data** - Spot & futures tickers, order books, trades, K-line, funding rate, liquidation history (**no auth required**)
 - 💹 **Trading** - Create/cancel/amend spot and futures orders
 - 💼 **Account & Wallet** - Balances, transfers, deposits, withdrawals, sub-accounts
-- 🔐 **OAuth2** - Secure authorization via Gate account login (all tools require auth)
+- 🔐 **OAuth2** - Secure authorization for trading and private tools
+
+## MCP Endpoints
+
+The service exposes two MCP endpoints:
+
+| Endpoint | Auth | Tools |
+|----------|------|-------|
+| `https://api.gatemcp.ai/mcp` | None | Market data only (17 public tools: spot + futures) |
+| `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | Trading & account tools (66 tools: spot/futures trading, wallet, unified account, sub-accounts) |
+
+- **Market data only** → Use `/mcp` (no Gate account needed)
+- **Trading, balances, transfers** → Use `/mcp/exchange` (OAuth2 required)
+
+Transport: Streamable HTTP (with SSE fallback).
 
 ## Authorization (OAuth2)
 
-**All access requires OAuth2 authorization**, including public market data. You must log in with your Gate account before using any tool.
+**Only `/mcp/exchange` requires OAuth2.** The public endpoint `/mcp` does not require any authentication.
 
 ### Using mcporter (Recommended)
 
 > **Prerequisites**: Node.js >= 18, npm. See [Quick Start - mcporter](#mcporter--openclaw-recommended) for full installation steps.
 
 ```bash
-# 1. Add MCP server with OAuth auth
-mcporter config add gate-mcp --url https://api.gatemcp.ai/mcp --auth oauth
+# Add Private MCP (trading, requires OAuth)
+mcporter config add gate-mcp --url https://api.gatemcp.ai/mcp/exchange --auth oauth
 
-# 2. Authorize (opens browser to log in)
+# Authorize (opens browser to log in)
 mcporter auth gate-mcp
 ```
 
-### Scopes
+### Scopes (for `/mcp/exchange`)
 
 | Scope | Use |
 |-------|-----|
-| `market` | Market data (tickers, order book, K-line, funding rate, etc.) |
+| `market` | Public market data (tickers, order books, K-line, etc.) |
 | `profile` | Account info, orders, positions (read-only) |
 | `trade` | Create/cancel/amend orders |
 | `wallet` | Transfers, deposits, withdrawals |
@@ -46,14 +60,33 @@ mcporter auth gate-mcp
 
 ### Prerequisites
 
-- Gate account
+- **Gate account** (required only for `/mcp/exchange`)
 - MCP-compatible client (Cursor, Claude CLI, Trae, OpenClaw, etc.)
-- **MCP Endpoint**: `https://api.gatemcp.ai/mcp` (OAuth required)
 - **Node.js** >= 18 (for mcporter, Trae, Qoder, and other npm-based clients)
+- **Python** >= 3.9 (optional, for Claude Desktop proxy)
 
 ### Cursor
 
-Edit `~/.cursor/mcp.json` (OAuth prompt on connect):
+**For full trading (OAuth on connect):**
+
+Edit `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "Gate": {
+      "url": "https://api.gatemcp.ai/mcp/exchange",
+      "transport": "streamable-http",
+      "headers": {
+        "Content-Type": "application/json",
+        "Accept": "application/json, text/event-stream"
+      }
+    }
+  }
+}
+```
+
+**For market data only (no auth):**
 
 ```json
 {
@@ -78,7 +111,7 @@ See [Cursor setup](docs/setup-cursor.md).
 
 - **Node.js** >= 18 (mcporter requires npm)
 - **npm** (comes with Node.js) — verify with: `node -v` and `npm -v`
-- **Gate account** (for OAuth login)
+- **Gate account** (for OAuth login when using `/mcp/exchange`)
 
 #### Install mcporter
 
@@ -95,8 +128,8 @@ Alternatively, run without installing: `npx mcporter <command>` (uses current No
 #### Add MCP and authorize
 
 ```bash
-# Add MCP with OAuth
-mcporter config add gate-mcp --url https://api.gatemcp.ai/mcp --auth oauth
+# Add Private MCP (trading, OAuth)
+mcporter config add gate-mcp --url https://api.gatemcp.ai/mcp/exchange --auth oauth
 
 # Authorize (opens browser to log in)
 mcporter auth gate-mcp
@@ -108,13 +141,15 @@ See [OpenClaw setup](docs/setup-openclaw.md) for detailed steps.
 
 ```bash
 brew install claude-code
-claude mcp add --transport http Gate https://api.gatemcp.ai/mcp
+# Full trading (OAuth)
+claude mcp add --transport http Gate https://api.gatemcp.ai/mcp/exchange
 claude mcp list
+# Restart Claude CLI after authorization is complete
 ```
 
 ### Trae
 
-Edit Trae settings. Uses `mcp-remote` to proxy HTTP MCP (OAuth prompt on first connect):
+Edit Trae settings. Uses `mcp-remote` to proxy HTTP MCP (OAuth prompt on first connect for `/mcp/exchange`):
 
 ```json
 {
@@ -124,7 +159,7 @@ Edit Trae settings. Uses `mcp-remote` to proxy HTTP MCP (OAuth prompt on first c
       "args": [
         "-y",
         "mcp-remote@latest",
-        "https://api.gatemcp.ai/mcp"
+        "https://api.gatemcp.ai/mcp/exchange"
       ]
     }
   }
@@ -143,7 +178,7 @@ Edit Qoder MCP settings (e.g. `~/.qoder/mcp.json` or in Qoder settings):
       "args": [
         "-y",
         "mcp-remote@latest",
-        "https://api.gatemcp.ai/mcp"
+        "https://api.gatemcp.ai/mcp/exchange"
       ]
     }
   }
@@ -152,7 +187,23 @@ Edit Qoder MCP settings (e.g. `~/.qoder/mcp.json` or in Qoder settings):
 
 ### Claude Desktop
 
-Claude Desktop requires a local stdio proxy. See [Claude Desktop setup](docs/setup-claude-desktop.md).
+Claude Desktop requires a local stdio proxy.
+
+1. Download the [Python proxy file](gate-mcp-proxy.py)
+2. Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "Gate": {
+      "command": "python3",
+      "args": ["/path/to/gate-mcp-proxy.py"]
+    }
+  }
+}
+```
+
+See [Claude Desktop setup](docs/setup-claude-desktop.md) for detailed instructions.
 
 ### Other Clients
 
@@ -180,74 +231,91 @@ Claude Desktop requires a local stdio proxy. See [Claude Desktop setup](docs/set
 
 ## Available Tools
 
-Tools are grouped by scope. See [Authorization](#authorization-oauth2) for scope details.
+All tools use the `cex_` prefix. Tools are split between Public MCP (no auth) and Private MCP (OAuth2).
 
-### Market Data (scope: `market`)
-
-| Tool | Description |
-|------|-------------|
-| `list_currencies` | All supported currencies |
-| `get_currency` | Single currency info |
-| `list_currency_pairs` | All trading pairs |
-| `get_currency_pair` | Single trading pair details |
-| `get_spot_tickers` | Spot tickers (price, volume, change) |
-| `get_spot_order_book` | Spot order book depth |
-| `get_spot_trades` | Spot trade history |
-| `get_spot_candlesticks` | Spot K-line data |
-| `list_futures_contracts` | All perpetual contracts |
-| `get_futures_contract` | Single contract details |
-| `get_futures_tickers` | Futures tickers |
-| `get_futures_order_book` | Futures order book |
-| `get_futures_trades` | Futures trade history |
-| `get_futures_candlesticks` | Futures K-line |
-| `get_futures_funding_rate` | Funding rate history |
-| `get_futures_premium_index` | Premium index K-line |
-| `list_futures_liq_orders` | Liquidation history |
-
-### Spot Trading (scope: `profile` / `trade`)
+### Public MCP (`/mcp` — no auth)
 
 | Tool | Description |
 |------|-------------|
-| `get_spot_accounts` | Spot account balances |
-| `list_spot_orders` / `get_spot_order` | Order queries |
-| `list_spot_my_trades` / `list_spot_account_book` | Trades, account book |
-| `get_spot_fee` / `get_spot_batch_fee` | Fee rates |
-| `create_spot_order` / `create_spot_batch_orders` | Place order(s) |
-| `cancel_spot_order` / `cancel_all_spot_orders` / `cancel_spot_batch_orders` | Cancel orders |
-| `amend_spot_order` / `amend_spot_batch_orders` | Amend order(s) |
+| `cex_spot_list_currencies` | All supported currencies |
+| `cex_spot_get_currency` | Single currency info |
+| `cex_spot_list_currency_pairs` | All trading pairs |
+| `cex_spot_get_currency_pair` | Single trading pair details |
+| `cex_spot_get_spot_tickers` | Spot tickers (price, volume, change) |
+| `cex_spot_get_spot_order_book` | Spot order book depth |
+| `cex_spot_get_spot_trades` | Spot trade history |
+| `cex_spot_get_spot_candlesticks` | Spot K-line data |
+| `cex_fx_list_fx_contracts` | All perpetual contracts |
+| `cex_fx_get_fx_contract` | Single contract details |
+| `cex_fx_get_fx_tickers` | Futures tickers |
+| `cex_fx_get_fx_order_book` | Futures order book |
+| `cex_fx_get_fx_trades` | Futures trade history |
+| `cex_fx_get_fx_candlesticks` | Futures K-line |
+| `cex_fx_get_fx_funding_rate` | Funding rate history |
+| `cex_fx_get_fx_premium_index` | Premium index K-line |
+| `cex_fx_list_fx_liq_orders` | Liquidation history |
 
-### Futures Trading (scope: `profile` / `trade`)
+### Private MCP (`/mcp/exchange` — OAuth2)
 
-| Tool | Description |
-|------|-------------|
-| `get_futures_accounts` | Futures account |
-| `list_futures_positions` / `get_futures_position` / `get_futures_dual_mode_position` | Position queries |
-| `list_futures_orders` / `get_futures_order` / `get_futures_orders_timerange` | Order queries |
-| `list_futures_my_trades` / `get_futures_my_trades_timerange` | Personal trades |
-| `list_futures_account_book` / `get_futures_fee` | Account book, fee |
-| `list_futures_risk_limit_tiers` | Risk limit tiers |
-| `create_futures_order` / `create_futures_batch_orders` | Place order(s) |
-| `cancel_futures_order` / `cancel_all_futures_orders` / `cancel_futures_batch_orders` | Cancel orders |
-| `amend_futures_order` / `amend_futures_batch_orders` | Amend order(s) |
-| `update_futures_position_leverage` / `update_futures_position_margin` / `update_futures_position_cross_mode` | Position settings |
-| `set_futures_dual_mode` / `update_futures_dual_mode_position_margin` / `update_futures_dual_mode_position_leverage` / `update_futures_dual_mode_position_risk_limit` | Dual-mode position settings |
+> **Note**: The private endpoint does not include public market data tools. Use `/mcp` for market data queries.
 
-### Wallet & Account (scope: `wallet` / `account`)
+#### Spot Trading (scope: `profile` / `trade`)
 
 | Tool | Description |
 |------|-------------|
-| `get_total_balance` | Total account balance |
-| `create_transfer` | Internal transfer |
-| `get_wallet_fee` / `get_transfer_order_status` | Fee, transfer status |
-| `list_deposits` / `list_withdrawals` | Deposit/withdrawal records |
-| `create_sub_account_transfer` / `create_sub_account_to_sub_account_transfer` | Sub-account transfers |
-| `get_unified_accounts` / `get_unified_mode` / `set_unified_mode` | Unified account |
-| `list_unified_loans` / `get_unified_risk_units` / `get_unified_borrowable` | Loans, risk units |
-| `list_sub_accounts` / `get_sub_account` / `create_sub_account` | Sub-account management |
-| `list_sub_account_keys` / `create_sub_account_key` / `get_sub_account_key` / `update_sub_account_key` / `delete_sub_account_key` | Sub-account API keys |
-| `lock_sub_account` / `unlock_sub_account` / `get_sub_account_unified_mode` | Sub-account lock/unlock |
+| `cex_spot_get_spot_accounts` | Spot account balances |
+| `cex_spot_list_spot_orders` / `cex_spot_get_spot_order` | Order queries |
+| `cex_spot_list_spot_my_trades` / `cex_spot_list_spot_account_book` | Trades, account book |
+| `cex_spot_get_spot_fee` / `cex_spot_get_spot_batch_fee` | Fee rates |
+| `cex_spot_create_spot_order` / `cex_spot_create_spot_batch_orders` | Place order(s) |
+| `cex_spot_cancel_spot_order` / `cex_spot_cancel_all_spot_orders` / `cex_spot_cancel_spot_batch_orders` | Cancel orders |
+| `cex_spot_amend_spot_order` / `cex_spot_amend_spot_batch_orders` | Amend order(s) |
+
+#### Futures Trading (scope: `profile` / `trade`)
+
+| Tool | Description |
+|------|-------------|
+| `cex_fx_get_fx_accounts` | Futures account |
+| `cex_fx_list_fx_positions` / `cex_fx_get_fx_position` / `cex_fx_get_fx_dual_position` | Position queries |
+| `cex_fx_list_fx_orders` / `cex_fx_get_fx_order` | Order queries |
+| `cex_fx_list_fx_my_trades` / `cex_fx_get_fx_my_trades_timerange` | Personal trades |
+| `cex_fx_list_fx_account_book` / `cex_fx_get_fx_fee` | Account book, fee |
+| `cex_fx_list_fx_risk_limit_tiers` | Risk limit tiers |
+| `cex_fx_create_fx_order` / `cex_fx_create_fx_batch_orders` | Place order(s) |
+| `cex_fx_cancel_fx_order` / `cex_fx_cancel_all_fx_orders` / `cex_fx_cancel_fx_batch_orders` | Cancel orders |
+| `cex_fx_amend_fx_order` / `cex_fx_amend_fx_batch_orders` | Amend order(s) |
+| `cex_fx_update_fx_position_leverage` / `cex_fx_update_fx_position_margin` / `cex_fx_update_fx_position_cross_mode` | Position settings |
+| `cex_fx_set_fx_dual` / `cex_fx_update_fx_dual_position_margin` / `cex_fx_update_fx_dual_position_leverage` / `cex_fx_update_fx_dual_position_risk_limit` | Dual-mode position settings |
+| `cex_fx_update_fx_dual_position_cross_mode` / `cex_fx_update_fx_position_risk_limit` | Cross mode, risk limit |
+
+#### Wallet & Account (scope: `wallet` / `account`)
+
+| Tool | Description |
+|------|-------------|
+| `cex_wallet_get_total_balance` | Total account balance |
+| `cex_wallet_create_transfer` | Internal transfer |
+| `cex_wallet_get_wallet_fee` / `cex_wallet_get_transfer_order_status` | Trading fee, transfer status |
+| `cex_wallet_list_deposits` / `cex_wallet_list_withdrawals` | Deposit/withdrawal records |
+| `cex_wallet_create_sa_transfer` / `cex_wallet_create_sa_to_sa_transfer` | Sub-account transfers |
+| `cex_unified_get_unified_accounts` / `cex_unified_get_unified_mode` / `cex_unified_set_unified_mode` | Unified account |
+| `cex_unified_list_unified_loans` / `cex_unified_get_unified_risk_units` / `cex_unified_get_unified_borrowable` | Loans, risk units |
+| `cex_sa_list_sas` / `cex_sa_get_sa` / `cex_sa_create_sa` | Sub-account management |
+| `cex_sa_list_sa_keys` / `cex_sa_create_sa_key` / `cex_sa_get_sa_key` / `cex_sa_update_sa_key` / `cex_sa_delete_sa_key` | Sub-account API keys |
+| `cex_sa_lock_sa` / `cex_sa_unlock_sa` / `cex_sa_get_sa_unified_mode` | Sub-account lock/unlock |
 
 For full tool parameters, see [Gate API Docs](https://www.gate.com/docs/developers/apiv4) or [gate-exchange-mcp](gate-exchange/gate-exchange-mcp.md).
+
+### MCP Resources
+
+Both endpoints also expose MCP Resources for static reference data:
+
+| Resource URI | Description |
+|---|---|
+| `gate://spot/currency_pairs` | All spot trading pairs |
+| `gate://spot/currencies` | All supported currencies |
+| `gate://futures/contracts/usdt` | USDT-settled futures contracts |
+| `gate://futures/contracts/btc` | BTC-settled futures contracts |
+| `gate://futures/contracts/{settle}` | Futures contracts by settlement currency |
 
 ---
 
@@ -255,11 +323,11 @@ For full tool parameters, see [Gate API Docs](https://www.gate.com/docs/develope
 
 ### Q: Do I need a Gate account?
 
-A: Yes. **All tools require OAuth2 authorization**, including market data. Log in with your Gate account via mcporter (`mcporter auth gate-mcp`) or your client's OAuth flow.
+A: **Only for trading and private tools.** For `/mcp`, you can query market data (tickers, order books, K-line, etc.) without any account. For `/mcp/exchange` (trading, balances, transfers), you must log in with your Gate account via OAuth2 (e.g. `mcporter auth gate-mcp`).
 
 ### Q: Does it support trading?
 
-A: Yes. The server supports spot and futures trading, account management, wallet transfers, and sub-accounts. Each tool requires the appropriate scope (e.g. `trade`, `wallet`).
+A: Yes. Connect to `https://api.gatemcp.ai/mcp/exchange` with OAuth2. The server supports spot and futures trading, account management, wallet transfers, and sub-accounts. Each tool requires the appropriate scope (e.g. `trade`, `wallet`).
 
 ### Q: How often is the data updated?
 
@@ -291,4 +359,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 ## License
 
 [MIT](LICENSE) © gate.com
-
