@@ -14,25 +14,34 @@ A Gate MCP (Model Context Protocol) server that enables AI agents to interact wi
 - 🔍 **Public Market Data** - Spot & futures tickers, order books, trades, K-line, funding rate, liquidation history (**no auth required**)
 - 💹 **Trading** - Create/cancel/amend spot and futures orders
 - 💼 **Account & Wallet** - Balances, transfers, deposits, withdrawals, sub-accounts
+- 🌐 **DEX** - On-chain wallet, swap (single-chain & cross-chain), token info, market data across 20+ chains
+- 📰 **Info** - Coin info, market snapshots, technical analysis, on-chain data, compliance checks
+- 📢 **News** - Real-time crypto news, exchange announcements, social sentiment
 - 🔐 **OAuth2** - Secure authorization for trading and private tools
 
 ## MCP Endpoints
 
-The service exposes two MCP endpoints:
+The service exposes five MCP endpoints:
 
 | Endpoint | Auth | Tools |
 |----------|------|-------|
-| `https://api.gatemcp.ai/mcp` | None | Market data only (17 public tools: spot + futures) |
-| `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | Trading & account tools (66 tools: spot/futures trading, wallet, unified account, sub-accounts) |
+| `https://api.gatemcp.ai/mcp` | None | Public market data (17 tools: spot + futures tickers, order books, K-line, etc.) |
+| `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | CEX trading & account (66 tools: spot/futures trading, wallet, unified account, sub-accounts) |
+| `https://api.gatemcp.ai/mcp/dex` | Google OAuth | DEX wallet & swap (25 tools: on-chain wallet, swap, token info, market data across 20+ chains) |
+| `https://api.gatemcp.ai/mcp/info` | None | Coin info & analysis (10 tools: market snapshots, technical analysis, on-chain data, compliance) |
+| `https://api.gatemcp.ai/mcp/news` | None | News & sentiment (3 tools: news search, exchange announcements, social sentiment) |
 
 - **Market data only** → Use `/mcp` (no Gate account needed)
-- **Trading, balances, transfers** → Use `/mcp/exchange` (OAuth2 required)
+- **CEX trading, balances, transfers** → Use `/mcp/exchange` (Gate OAuth2 required)
+- **DEX wallet, swap, on-chain** → Use `/mcp/dex` (Google OAuth required)
+- **Coin info, technical analysis** → Use `/mcp/info` (no auth)
+- **News, announcements** → Use `/mcp/news` (no auth)
 
 Transport: Streamable HTTP (with SSE fallback).
 
 ## Authorization (OAuth2)
 
-**Only `/mcp/exchange` requires OAuth2.** The public endpoint `/mcp` does not require any authentication.
+**`/mcp/exchange` requires Gate OAuth2; `/mcp/dex` requires Google OAuth.** The endpoints `/mcp`, `/mcp/info`, and `/mcp/news` do not require any authentication.
 
 ### Using mcporter
 
@@ -103,6 +112,37 @@ Edit `~/.cursor/mcp.json`:
 }
 ```
 
+**For DEX (on-chain wallet, swap):**
+
+```json
+{
+  "mcpServers": {
+    "Gate-Dex": {
+      "url": "https://api.gatemcp.ai/mcp/dex",
+      "headers": {
+        "x-api-key": "MCP_AK_8W2N7Q",
+        "Authorization": "Bearer ${GATE_MCP_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+**For Info & News (no auth):**
+
+```json
+{
+  "mcpServers": {
+    "Gate-Info": {
+      "url": "https://api.gatemcp.ai/mcp/info"
+    },
+    "Gate-News": {
+      "url": "https://api.gatemcp.ai/mcp/news"
+    }
+  }
+}
+```
+
 See [Cursor setup](docs/setup-cursor.md).
 
 ### mcporter / OpenClaw
@@ -133,6 +173,15 @@ mcporter config add gate-mcp --url https://api.gatemcp.ai/mcp/exchange --auth oa
 
 # Authorize (opens browser to log in)
 mcporter auth gate-mcp
+
+# Add DEX MCP
+mcporter config add gate-dex --url https://api.gatemcp.ai/mcp/dex
+
+# Add Info MCP (no auth)
+mcporter config add gate-info --url https://api.gatemcp.ai/mcp/info
+
+# Add News MCP (no auth)
+mcporter config add gate-news --url https://api.gatemcp.ai/mcp/news
 ```
 
 See [OpenClaw setup](docs/setup-openclaw.md) for detailed steps.
@@ -143,8 +192,15 @@ See [OpenClaw setup](docs/setup-openclaw.md) for detailed steps.
 brew install claude-code
 # Full trading (OAuth)
 claude mcp add --transport http Gate https://api.gatemcp.ai/mcp/exchange
-claude mcp list
 # Restart Claude CLI after authorization is complete
+
+# Info (no auth)
+claude mcp add --transport http Gate-Info https://api.gatemcp.ai/mcp/info
+
+# News (no auth)
+claude mcp add --transport http Gate-News https://api.gatemcp.ai/mcp/news
+
+claude mcp list
 ```
 
 ### Trae
@@ -160,6 +216,22 @@ Edit Trae settings. Uses `mcp-remote` to proxy HTTP MCP (OAuth prompt on first c
         "-y",
         "mcp-remote@latest",
         "https://api.gatemcp.ai/mcp/exchange"
+      ]
+    },
+    "gate-info": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://api.gatemcp.ai/mcp/info"
+      ]
+    },
+    "gate-news": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://api.gatemcp.ai/mcp/news"
       ]
     }
   }
@@ -179,6 +251,22 @@ Edit Qoder MCP settings (e.g. `~/.qoder/mcp.json` or in Qoder settings):
         "-y",
         "mcp-remote@latest",
         "https://api.gatemcp.ai/mcp/exchange"
+      ]
+    },
+    "gate-info": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://api.gatemcp.ai/mcp/info"
+      ]
+    },
+    "gate-news": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://api.gatemcp.ai/mcp/news"
       ]
     }
   }
@@ -305,9 +393,98 @@ All tools use the `cex_` prefix. Tools are split between Public MCP (no auth) an
 
 For full tool parameters, see [Gate API Docs](https://www.gate.com/docs/developers/apiv4) or [gate-exchange-mcp](gate-exchange/gate-exchange-mcp.md).
 
+### DEX — Authentication
+
+| Tool | Description |
+|------|-------------|
+| `auth_google_login_start` | Start Google OAuth login flow |
+| `auth_google_login_poll` | Poll login status, returns mcp_token on success |
+| `auth_login_google_wallet` | Login with Google OAuth authorization code |
+| `auth_logout` | Revoke current MCP session |
+
+### DEX — Wallet
+
+| Tool | Description |
+|------|-------------|
+| `wallet_get_addresses` | Get wallet addresses per chain (EVM, SOL) |
+| `wallet_get_token_list` | Get token balances with prices |
+| `wallet_get_total_asset` | Get total portfolio value and 24h change |
+| `wallet_sign_message` | Sign a message with wallet private key |
+| `wallet_sign_transaction` | Sign a raw transaction with wallet private key |
+
+### DEX — Chain & Transactions
+
+| Tool | Description |
+|------|-------------|
+| `chain_config` | Get chain configuration (networkKey, chainID, endpoint) |
+| `tx_gas` | Estimate gas price and gas limit |
+| `tx_transfer_preview` | Preview transfer details before signing |
+| `tx_get_sol_unsigned` | Build unsigned Solana SOL transfer |
+| `tx_send_raw_transaction` | Broadcast signed transaction on-chain |
+| `tx_quote` | Get swap quote with route and price impact |
+| `tx_swap` | One-shot swap: Quote → Build → Sign → Submit |
+| `tx_swap_detail` | Query swap order status by order ID |
+| `tx_list` / `tx_detail` / `tx_history_list` | Transaction & swap history |
+
+### DEX — Market Data & Token Info
+
+| Tool | Description |
+|------|-------------|
+| `market_get_kline` | K-line (candlestick) data |
+| `market_get_tx_stats` | Trading volume and trader statistics |
+| `market_get_pair_liquidity` | Liquidity pool add/remove events |
+| `token_get_coin_info` | Token info: price, market cap, holders |
+| `token_ranking` | 24h top gainers / top losers |
+| `token_get_coins_range_by_created_at` | Discover new tokens by creation time |
+| `token_get_risk_info` | Security audit: honeypot, tax, blacklist |
+
+For full DEX tool parameters, see [gate-dex-mcp](gate-dex/gate-dex-mcp.md).
+
+### Info — Coin & Market
+
+| Tool | Description |
+|------|-------------|
+| `info_coin_get_coin_info` | Get coin info by name, symbol, or contract address |
+| `info_marketsnapshot_get_market_snapshot` | Market overview: price, K-line summary, market cap, FDV, fear & greed |
+
+### Info — Market Trend & Technical Analysis
+
+| Tool | Description |
+|------|-------------|
+| `info_markettrend_get_kline` | OHLCV K-line data with optional indicators |
+| `info_markettrend_get_indicator_history` | Historical indicator series (RSI, MACD, MA, EMA) |
+| `info_markettrend_get_technical_analysis` | Multi-timeframe technical signals |
+
+### Info — On-chain Data
+
+| Tool | Description |
+|------|-------------|
+| `info_onchain_get_address_info` | On-chain address: labels, risk level, token balances |
+| `info_onchain_get_address_transactions` | Address transaction history |
+| `info_onchain_get_transaction` | Full transaction details by tx hash |
+| `info_onchain_get_token_onchain` | Token on-chain data: holders, activity, smart money |
+
+### Info — Compliance
+
+| Tool | Description |
+|------|-------------|
+| `info_compliance_check_token_security` | Token security check: risk tier, taxes, open source, holders |
+
+For full Info tool parameters, see [gate-info-mcp](gate-info/gate-info-mcp.md).
+
+### News — Search & Announcements
+
+| Tool | Description |
+|------|-------------|
+| `news_feed_search_news` | Search news by keyword, coin, time range, platform type |
+| `news_feed_get_exchange_announcements` | Exchange announcements: listings, delistings, maintenance |
+| `news_feed_get_social_sentiment` | Post detail: author, content, interactions, sentiment |
+
+For full News tool parameters, see [gate-news-mcp](gate-news/gate-news-mcp.md).
+
 ### MCP Resources
 
-Both endpoints also expose MCP Resources for static reference data:
+The `/mcp` and `/mcp/exchange` endpoints also expose MCP Resources for static reference data:
 
 | Resource URI | Description |
 |---|---|
@@ -323,7 +500,7 @@ Both endpoints also expose MCP Resources for static reference data:
 
 ### Q: Do I need a Gate account?
 
-A: **Only for trading and private tools.** For `/mcp`, you can query market data (tickers, order books, K-line, etc.) without any account. For `/mcp/exchange` (trading, balances, transfers), you must log in with your Gate account via OAuth2 (e.g. `mcporter auth gate-mcp`).
+A: **Only for CEX trading and DEX wallet.** `/mcp`, `/mcp/info`, and `/mcp/news` are fully public — no account needed. `/mcp/exchange` (CEX trading, balances, transfers) requires Gate OAuth2. `/mcp/dex` (on-chain wallet, swap) requires Google OAuth.
 
 ### Q: Does it support trading?
 
