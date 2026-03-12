@@ -123,6 +123,37 @@ mcporter auth gate-mcp
 }
 ```
 
+**DEX（链上钱包、兑换）：**
+
+```json
+{
+  "mcpServers": {
+    "Gate-Dex": {
+      "url": "https://api.gatemcp.ai/mcp/dex",
+      "headers": {
+        "x-api-key": "MCP_AK_8W2N7Q",
+        "Authorization": "Bearer ${GATE_MCP_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+**Info 与 News（无需认证）：**
+
+```json
+{
+  "mcpServers": {
+    "Gate-Info": {
+      "url": "https://api.gatemcp.ai/mcp/info"
+    },
+    "Gate-News": {
+      "url": "https://api.gatemcp.ai/mcp/news"
+    }
+  }
+}
+```
+
 详见 [Cursor 配置指南](docs/setup-cursor-zh.md)。
 
 ### mcporter / OpenClaw
@@ -153,6 +184,15 @@ mcporter config add gate-mcp --url https://api.gatemcp.ai/mcp/exchange --auth oa
 
 # 授权登录（会打开浏览器）
 mcporter auth gate-mcp
+
+# 添加 DEX MCP
+mcporter config add gate-dex --url https://api.gatemcp.ai/mcp/dex
+
+# 添加 Info MCP（无需认证）
+mcporter config add gate-info --url https://api.gatemcp.ai/mcp/info
+
+# 添加 News MCP（无需认证）
+mcporter config add gate-news --url https://api.gatemcp.ai/mcp/news
 ```
 
 详见 [OpenClaw 配置指南](docs/setup-openclaw-zh.md)。
@@ -163,9 +203,15 @@ mcporter auth gate-mcp
 brew install claude-code
 # 完整交易（OAuth）
 claude mcp add --transport http Gate https://api.gatemcp.ai/mcp/exchange
-# 连接时会提示 OAuth 登录
-claude mcp list
 # 授权完成之后，需要重启
+
+# Info（无需认证）
+claude mcp add --transport http Gate-Info https://api.gatemcp.ai/mcp/info
+
+# News（无需认证）
+claude mcp add --transport http Gate-News https://api.gatemcp.ai/mcp/news
+
+claude mcp list
 ```
 
 ### Trae
@@ -181,6 +227,22 @@ claude mcp list
         "-y",
         "mcp-remote@latest",
         "https://api.gatemcp.ai/mcp/exchange"
+      ]
+    },
+    "gate-info": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://api.gatemcp.ai/mcp/info"
+      ]
+    },
+    "gate-news": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://api.gatemcp.ai/mcp/news"
       ]
     }
   }
@@ -200,6 +262,22 @@ claude mcp list
         "-y",
         "mcp-remote@latest",
         "https://api.gatemcp.ai/mcp/exchange"
+      ]
+    },
+    "gate-info": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://api.gatemcp.ai/mcp/info"
+      ]
+    },
+    "gate-news": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://api.gatemcp.ai/mcp/news"
       ]
     }
   }

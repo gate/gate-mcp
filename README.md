@@ -112,6 +112,37 @@ Edit `~/.cursor/mcp.json`:
 }
 ```
 
+**For DEX (on-chain wallet, swap):**
+
+```json
+{
+  "mcpServers": {
+    "Gate-Dex": {
+      "url": "https://api.gatemcp.ai/mcp/dex",
+      "headers": {
+        "x-api-key": "MCP_AK_8W2N7Q",
+        "Authorization": "Bearer ${GATE_MCP_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+**For Info & News (no auth):**
+
+```json
+{
+  "mcpServers": {
+    "Gate-Info": {
+      "url": "https://api.gatemcp.ai/mcp/info"
+    },
+    "Gate-News": {
+      "url": "https://api.gatemcp.ai/mcp/news"
+    }
+  }
+}
+```
+
 See [Cursor setup](docs/setup-cursor.md).
 
 ### mcporter / OpenClaw
@@ -142,6 +173,15 @@ mcporter config add gate-mcp --url https://api.gatemcp.ai/mcp/exchange --auth oa
 
 # Authorize (opens browser to log in)
 mcporter auth gate-mcp
+
+# Add DEX MCP
+mcporter config add gate-dex --url https://api.gatemcp.ai/mcp/dex
+
+# Add Info MCP (no auth)
+mcporter config add gate-info --url https://api.gatemcp.ai/mcp/info
+
+# Add News MCP (no auth)
+mcporter config add gate-news --url https://api.gatemcp.ai/mcp/news
 ```
 
 See [OpenClaw setup](docs/setup-openclaw.md) for detailed steps.
@@ -152,8 +192,15 @@ See [OpenClaw setup](docs/setup-openclaw.md) for detailed steps.
 brew install claude-code
 # Full trading (OAuth)
 claude mcp add --transport http Gate https://api.gatemcp.ai/mcp/exchange
-claude mcp list
 # Restart Claude CLI after authorization is complete
+
+# Info (no auth)
+claude mcp add --transport http Gate-Info https://api.gatemcp.ai/mcp/info
+
+# News (no auth)
+claude mcp add --transport http Gate-News https://api.gatemcp.ai/mcp/news
+
+claude mcp list
 ```
 
 ### Trae
@@ -169,6 +216,22 @@ Edit Trae settings. Uses `mcp-remote` to proxy HTTP MCP (OAuth prompt on first c
         "-y",
         "mcp-remote@latest",
         "https://api.gatemcp.ai/mcp/exchange"
+      ]
+    },
+    "gate-info": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://api.gatemcp.ai/mcp/info"
+      ]
+    },
+    "gate-news": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://api.gatemcp.ai/mcp/news"
       ]
     }
   }
@@ -188,6 +251,22 @@ Edit Qoder MCP settings (e.g. `~/.qoder/mcp.json` or in Qoder settings):
         "-y",
         "mcp-remote@latest",
         "https://api.gatemcp.ai/mcp/exchange"
+      ]
+    },
+    "gate-info": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://api.gatemcp.ai/mcp/info"
+      ]
+    },
+    "gate-news": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@latest",
+        "https://api.gatemcp.ai/mcp/news"
       ]
     }
   }
