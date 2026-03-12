@@ -1,5 +1,12 @@
 # Cursor Setup Guide
 
+Gate MCP provides two endpoints. Choose based on your needs:
+
+| Endpoint | Auth | Use Case |
+|----------|------|----------|
+| `https://api.gatemcp.ai/mcp` | None | Market data only (tickers, order books, K-line, etc.) |
+| `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | Full access (trading, balances, transfers — OAuth login on connect) |
+
 ## Step 1: Open Cursor Settings
 
 Navigate to `Settings` → `Tools & MCP` → `Add Custom MCP`
@@ -8,7 +15,26 @@ Navigate to `Settings` → `Tools & MCP` → `Add Custom MCP`
 
 ## Step 2: Edit MCP Configuration
 
-Edit your `mcp.json` file:
+Edit your `mcp.json` file.
+
+**For full trading (OAuth on connect):**
+
+```json
+{
+  "mcpServers": {
+    "Gate": {
+      "url": "https://api.gatemcp.ai/mcp/exchange",
+      "transport": "streamable-http",
+      "headers": {
+        "Content-Type": "application/json",
+        "Accept": "application/json, text/event-stream"
+      }
+    }
+  }
+}
+```
+
+**For market data only (no auth):**
 
 ```json
 {
@@ -53,6 +79,6 @@ Open Cursor AI chat and try:
 
 ## Next Steps
 
-- Explore all [available tools](../README.md#tools)
-- Learn about [futures market tools](../README.md#futures-market)
-- Check the [API documentation](https://www.gate.io/docs/developers/apiv4/)
+- Explore all [available tools](../README.md#available-tools)
+- Learn about [futures market tools](../README.md#public-mcp-mcp--no-auth)
+- Check the [API documentation](https://www.gate.com/docs/developers/apiv4/)

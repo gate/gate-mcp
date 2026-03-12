@@ -2,6 +2,8 @@
 
 Claude Desktop requires a local stdio proxy to connect to the Gate MCP server.
 
+> **Note:** The stdio proxy connects to the public endpoint (`/mcp`) for market data only. For full trading access, use a client that supports HTTP transport directly (e.g., Cursor, Claude CLI).
+
 ## Step 1: Download the Python Proxy
 
 Download the proxy file from the repository:
@@ -147,6 +149,6 @@ chmod +x /path/to/gate-mcp-proxy.py
 
 ## Next Steps
 
-- Explore all [available tools](../README.md#tools)
-- Learn about [futures market tools](../README.md#futures-market)
-- Check the [API documentation](https://www.gate.io/docs/developers/apiv4/)
+- Explore all [available tools](../README.md#available-tools)
+- Learn about [futures market tools](../README.md#public-mcp-mcp--no-auth)
+- Check the [API documentation](https://www.gate.com/docs/developers/apiv4/)
