@@ -14,6 +14,9 @@ A Gate MCP (Model Context Protocol) server that enables AI agents to interact wi
 - 🔍 **Spot & Futures Market** - Tickers, order books, trades, K-line, funding rate, liquidation history
 - 💹 **Trading** - Create/cancel/amend spot and futures orders
 - 💼 **Account & Wallet** - Balances, transfers, deposits, withdrawals, sub-accounts
+- 🌐 **DEX** - On-chain wallet, swap (single-chain & cross-chain), token info, market data across 20+ chains
+- 📰 **Info** - Coin info, market snapshots, technical analysis, on-chain data, compliance checks
+- 📢 **News** - Real-time crypto news, exchange announcements, social sentiment
 - 🔐 **OAuth2** - Secure authorization via Gate account login (all tools require auth)
 
 ## Authorization (OAuth2)
@@ -248,6 +251,95 @@ Tools are grouped by scope. See [Authorization](#authorization-oauth2) for scope
 | `lock_sub_account` / `unlock_sub_account` / `get_sub_account_unified_mode` | Sub-account lock/unlock |
 
 For full tool parameters, see [Gate API Docs](https://www.gate.com/docs/developers/apiv4) or [gate-exchange-mcp](gate-exchange/gate-exchange-mcp.md).
+
+### DEX — Authentication
+
+| Tool | Description |
+|------|-------------|
+| `auth_google_login_start` | Start Google OAuth login flow |
+| `auth_google_login_poll` | Poll login status, returns mcp_token on success |
+| `auth_login_google_wallet` | Login with Google OAuth authorization code |
+| `auth_logout` | Revoke current MCP session |
+
+### DEX — Wallet
+
+| Tool | Description |
+|------|-------------|
+| `wallet_get_addresses` | Get wallet addresses per chain (EVM, SOL) |
+| `wallet_get_token_list` | Get token balances with prices |
+| `wallet_get_total_asset` | Get total portfolio value and 24h change |
+| `wallet_sign_message` | Sign a message with wallet private key |
+| `wallet_sign_transaction` | Sign a raw transaction with wallet private key |
+
+### DEX — Chain & Transactions
+
+| Tool | Description |
+|------|-------------|
+| `chain_config` | Get chain configuration (networkKey, chainID, endpoint) |
+| `tx_gas` | Estimate gas price and gas limit |
+| `tx_transfer_preview` | Preview transfer details before signing |
+| `tx_get_sol_unsigned` | Build unsigned Solana SOL transfer |
+| `tx_send_raw_transaction` | Broadcast signed transaction on-chain |
+| `tx_quote` | Get swap quote with route and price impact |
+| `tx_swap` | One-shot swap: Quote → Build → Sign → Submit |
+| `tx_swap_detail` | Query swap order status by order ID |
+| `tx_list` / `tx_detail` / `tx_history_list` | Transaction & swap history |
+
+### DEX — Market Data & Token Info
+
+| Tool | Description |
+|------|-------------|
+| `market_get_kline` | K-line (candlestick) data |
+| `market_get_tx_stats` | Trading volume and trader statistics |
+| `market_get_pair_liquidity` | Liquidity pool add/remove events |
+| `token_get_coin_info` | Token info: price, market cap, holders |
+| `token_ranking` | 24h top gainers / top losers |
+| `token_get_coins_range_by_created_at` | Discover new tokens by creation time |
+| `token_get_risk_info` | Security audit: honeypot, tax, blacklist |
+
+For full DEX tool parameters, see [gate-dex-mcp](gate-dex/gate-dex-mcp.md).
+
+### Info — Coin & Market
+
+| Tool | Description |
+|------|-------------|
+| `info_coin_get_coin_info` | Get coin info by name, symbol, or contract address |
+| `info_marketsnapshot_get_market_snapshot` | Market overview: price, K-line summary, market cap, FDV, fear & greed |
+
+### Info — Market Trend & Technical Analysis
+
+| Tool | Description |
+|------|-------------|
+| `info_markettrend_get_kline` | OHLCV K-line data with optional indicators |
+| `info_markettrend_get_indicator_history` | Historical indicator series (RSI, MACD, MA, EMA) |
+| `info_markettrend_get_technical_analysis` | Multi-timeframe technical signals |
+
+### Info — On-chain Data
+
+| Tool | Description |
+|------|-------------|
+| `info_onchain_get_address_info` | On-chain address: labels, risk level, token balances |
+| `info_onchain_get_address_transactions` | Address transaction history |
+| `info_onchain_get_transaction` | Full transaction details by tx hash |
+| `info_onchain_get_token_onchain` | Token on-chain data: holders, activity, smart money |
+
+### Info — Compliance
+
+| Tool | Description |
+|------|-------------|
+| `info_compliance_check_token_security` | Token security check: risk tier, taxes, open source, holders |
+
+For full Info tool parameters, see [gate-info-mcp](gate-info/gate-info-mcp.md).
+
+### News — Search & Announcements
+
+| Tool | Description |
+|------|-------------|
+| `news_feed_search_news` | Search news by keyword, coin, time range, platform type |
+| `news_feed_get_exchange_announcements` | Exchange announcements: listings, delistings, maintenance |
+| `news_feed_get_social_sentiment` | Post detail: author, content, interactions, sentiment |
+
+For full News tool parameters, see [gate-news-mcp](gate-news/gate-news-mcp.md).
 
 ---
 

@@ -12,6 +12,9 @@
 - **市场数据** — 现货/合约行情、深度、K 线、资金费率、强平历史
 - **交易** — 现货/合约下单、撤单、改单
 - **账户与钱包** — 余额、划转、充值提现、子账户
+- **DEX** — 链上钱包、兑换（单链及跨链）、代币信息、市场数据，支持 20+ 条链
+- **Info** — 币种信息、行情快照、技术分析、链上数据、合规检测
+- **News** — 实时加密资讯、交易所公告、社交情绪
 - **OAuth2 授权** — 所有工具均需 Gate 账号登录（含公开数据）
 
 ## 授权说明（OAuth2）
@@ -247,6 +250,95 @@ Claude Desktop 需要使用本地 stdio 代理。
 | `list_sub_accounts` / `get_sub_account` / `create_sub_account` | 子账户管理 |
 | `list_sub_account_keys` / `create_sub_account_key` / `get_sub_account_key` / `update_sub_account_key` / `delete_sub_account_key` | 子账户 API Key |
 | `lock_sub_account` / `unlock_sub_account` / `get_sub_account_unified_mode` | 子账户锁定 |
+
+### DEX — 登录认证
+
+| 工具 | 描述 |
+|------|------|
+| `auth_google_login_start` | 发起 Google OAuth 登录流程 |
+| `auth_google_login_poll` | 轮询登录状态，成功后返回 mcp_token |
+| `auth_login_google_wallet` | 使用 Google OAuth 授权码登录 |
+| `auth_logout` | 注销当前 MCP 会话 |
+
+### DEX — 钱包
+
+| 工具 | 描述 |
+|------|------|
+| `wallet_get_addresses` | 获取各链钱包地址（EVM、SOL） |
+| `wallet_get_token_list` | 获取代币余额（含价格） |
+| `wallet_get_total_asset` | 获取总资产价值及 24h 变动 |
+| `wallet_sign_message` | 使用钱包私钥对消息签名 |
+| `wallet_sign_transaction` | 使用钱包私钥对原始交易签名 |
+
+### DEX — 链配置与交易
+
+| 工具 | 描述 |
+|------|------|
+| `chain_config` | 获取链配置信息（networkKey、chainID、endpoint） |
+| `tx_gas` | 估算 Gas 价格和 Gas 用量 |
+| `tx_transfer_preview` | 签名前预览转账详情 |
+| `tx_get_sol_unsigned` | 构建未签名 Solana SOL 转账 |
+| `tx_send_raw_transaction` | 广播已签名交易至链上 |
+| `tx_quote` | 获取兑换报价（含路由与价格影响） |
+| `tx_swap` | 一键兑换：报价 → 构建 → 签名 → 提交 |
+| `tx_swap_detail` | 按订单 ID 查询兑换状态 |
+| `tx_list` / `tx_detail` / `tx_history_list` | 交易历史与兑换记录 |
+
+### DEX — 市场数据与代币信息
+
+| 工具 | 描述 |
+|------|------|
+| `market_get_kline` | K 线（蜡烛图）数据 |
+| `market_get_tx_stats` | 交易量和交易员统计 |
+| `market_get_pair_liquidity` | 流动性池添加/移除事件 |
+| `token_get_coin_info` | 代币信息：价格、市值、持仓分布 |
+| `token_ranking` | 24h 涨幅榜/跌幅榜 |
+| `token_get_coins_range_by_created_at` | 按创建时间发现新代币 |
+| `token_get_risk_info` | 安全审计：蜜罐、买卖税、黑名单 |
+
+完整 DEX 工具参数见 [gate-dex-mcp](gate-dex/gate-dex-mcp_zh.md)。
+
+### Info — 币种与行情
+
+| 工具 | 描述 |
+|------|------|
+| `info_coin_get_coin_info` | 按名称、符号或合约地址查询币种信息 |
+| `info_marketsnapshot_get_market_snapshot` | 行情一览：价格、K 线概况、市值、FDV、恐惧贪婪指数 |
+
+### Info — 行情趋势与技术分析
+
+| 工具 | 描述 |
+|------|------|
+| `info_markettrend_get_kline` | OHLCV K 线数据，可附带指标 |
+| `info_markettrend_get_indicator_history` | 指标历史序列（RSI、MACD、MA、EMA） |
+| `info_markettrend_get_technical_analysis` | 多粒度技术面综合信号 |
+
+### Info — 链上数据
+
+| 工具 | 描述 |
+|------|------|
+| `info_onchain_get_address_info` | 链上地址：标签、风险等级、代币余额 |
+| `info_onchain_get_address_transactions` | 地址交易记录 |
+| `info_onchain_get_transaction` | 按交易哈希查询完整详情 |
+| `info_onchain_get_token_onchain` | 代币链上数据：持仓分布、活跃度、Smart Money |
+
+### Info — 合规检测
+
+| 工具 | 描述 |
+|------|------|
+| `info_compliance_check_token_security` | 代币安全检测：风险分级、税率、是否开源、持币人数 |
+
+完整 Info 工具参数见 [gate-info-mcp](gate-info/gate-info-mcp_zh.md)。
+
+### News — 资讯与公告
+
+| 工具 | 描述 |
+|------|------|
+| `news_feed_search_news` | 按关键词、币种、时间范围、媒体类型搜索资讯 |
+| `news_feed_get_exchange_announcements` | 交易所公告：上新、下架、维护 |
+| `news_feed_get_social_sentiment` | 推文详情：作者、内容、互动、情绪 |
+
+完整 News 工具参数见 [gate-news-mcp](gate-news/gate-news-mcp_zh.md)。
 
 ---
 
