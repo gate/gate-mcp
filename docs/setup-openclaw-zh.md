@@ -1,5 +1,15 @@
 # OpenClaw 配置指南
 
+## 方式一：一键安装
+
+在 AI 对话中输入：
+
+> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+
+![OpenClaw 一键安装](../images/openclaw-one-click-isntaller.png)
+
+## 方式二：手动配置
+
 Gate 提供两种方式在 OpenClaw 中连接 MCP：
 
 | 方式 | 说明 | 认证 | 工具数 |
@@ -153,6 +163,24 @@ mcporter config add gate-mcp --url https://api.gatemcp.ai/mcp/exchange --auth oa
 
 ```bash
 mcporter config add gate-mcp --url https://api.gatemcp.ai/mcp
+```
+
+**DEX（链上钱包、兑换）：**
+
+```bash
+mcporter config add gate-dex --url https://api.gatemcp.ai/mcp/dex
+```
+
+**Info（无需认证）：**
+
+```bash
+mcporter config add gate-info --url https://api.gatemcp.ai/mcp/info
+```
+
+**News（无需认证）：**
+
+```bash
+mcporter config add gate-news --url https://api.gatemcp.ai/mcp/news
 ```
 
 ### 第 4 步：授权登录（仅 `/mcp/exchange` 需要）

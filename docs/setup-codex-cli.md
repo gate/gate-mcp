@@ -1,11 +1,21 @@
 # Codex CLI Setup Guide
 
-## Prerequisites
+## Method 1: One-click Install
+
+In the AI chat, type:
+
+> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+
+![Codex CLI One-Click Installer](../images/codex-cli-one-click-installer.png)
+
+## Method 2: Manual Configuration
+
+### Prerequisites
 
 - OpenAI API key with Codex access
 - Node.js >= 18
 
-## Step 1: Install Codex CLI
+### Step 1: Install Codex CLI
 
 Install the OpenAI Codex CLI globally:
 
@@ -19,7 +29,7 @@ Or use npx (no installation required):
 npx @openai/codex --version
 ```
 
-## Step 2: Configure OpenAI API Key
+### Step 2: Configure OpenAI API Key
 
 Set your OpenAI API key:
 
@@ -34,7 +44,7 @@ echo 'export OPENAI_API_KEY="your-api-key-here"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-## Step 3: Add Gate MCP
+### Step 3: Add Gate MCP
 
 **For full trading (OAuth on connect):**
 
@@ -48,9 +58,21 @@ codex mcp add gate --url https://api.gatemcp.ai/mcp/exchange
 codex mcp add gate --url https://api.gatemcp.ai/mcp
 ```
 
+**For Info (no auth):**
+
+```bash
+codex mcp add gate-info --url https://api.gatemcp.ai/mcp/info
+```
+
+**For News (no auth):**
+
+```bash
+codex mcp add gate-news --url https://api.gatemcp.ai/mcp/news
+```
+
 ![Codex CLI Add MCP](../images/codex-cli-add-mcp.png)
 
-## Step 4: Verify Installation
+### Step 4: Verify Installation
 
 List all configured MCP servers:
 
@@ -62,7 +84,7 @@ You should see the Gate MCP server in the list.
 
 ![Codex CLI List](../images/codex-cli-list.png)
 
-## Step 5: Start Using
+### Step 5: Start Using
 
 Launch the Codex CLI:
 

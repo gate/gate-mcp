@@ -1,5 +1,15 @@
 # Cursor Setup Guide
 
+## Method 1: One-click Install
+
+In the AI chat, type:
+
+> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+
+![Cursor One-Click Installer](../images/cursor-one-click-installer.png)
+
+## Method 2: Manual Configuration
+
 Gate MCP provides two endpoints. Choose based on your needs:
 
 | Endpoint | Auth | Use Case |
@@ -7,13 +17,13 @@ Gate MCP provides two endpoints. Choose based on your needs:
 | `https://api.gatemcp.ai/mcp` | None | Market data only (tickers, order books, K-line, etc.) |
 | `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | Full access (trading, balances, transfers — OAuth login on connect) |
 
-## Step 1: Open Cursor Settings
+### Step 1: Open Cursor Settings
 
 Navigate to `Settings` → `Tools & MCP` → `Add Custom MCP`
 
 ![Cursor Add MCP](../images/cursor-add-mcp.png)
 
-## Step 2: Edit MCP Configuration
+### Step 2: Edit MCP Configuration
 
 Edit your `mcp.json` file.
 
@@ -51,9 +61,40 @@ Edit your `mcp.json` file.
 }
 ```
 
+**For DEX (on-chain wallet, swap):**
+
+```json
+{
+  "mcpServers": {
+    "Gate-Dex": {
+      "url": "https://api.gatemcp.ai/mcp/dex",
+      "headers": {
+        "x-api-key": "MCP_AK_8W2N7Q",
+        "Authorization": "Bearer ${GATE_MCP_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+**For Info & News (no auth):**
+
+```json
+{
+  "mcpServers": {
+    "Gate-Info": {
+      "url": "https://api.gatemcp.ai/mcp/info"
+    },
+    "Gate-News": {
+      "url": "https://api.gatemcp.ai/mcp/news"
+    }
+  }
+}
+```
+
 ![Cursor MCP JSON](../images/cursor-mcp-json.png)
 
-## Step 3: Start Using
+### Step 3: Start Using
 
 Open Cursor AI chat and try:
 

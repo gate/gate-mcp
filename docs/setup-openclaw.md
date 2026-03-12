@@ -1,5 +1,15 @@
 # OpenClaw Setup Guide
 
+## Method 1: One-click Install
+
+In the AI chat, type:
+
+> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+
+![OpenClaw One-Click Installer](../images/openclaw-one-click-isntaller.png)
+
+## Method 2: Manual Configuration
+
 Gate provides two ways to connect MCP in OpenClaw:
 
 | Method | Description | Auth | Tools |
@@ -153,6 +163,24 @@ mcporter config add gate-mcp --url https://api.gatemcp.ai/mcp/exchange --auth oa
 
 ```bash
 mcporter config add gate-mcp --url https://api.gatemcp.ai/mcp
+```
+
+**For DEX (on-chain wallet, swap):**
+
+```bash
+mcporter config add gate-dex --url https://api.gatemcp.ai/mcp/dex
+```
+
+**For Info (no auth):**
+
+```bash
+mcporter config add gate-info --url https://api.gatemcp.ai/mcp/info
+```
+
+**For News (no auth):**
+
+```bash
+mcporter config add gate-news --url https://api.gatemcp.ai/mcp/news
 ```
 
 ### Step 4: Authorize (only for `/mcp/exchange`)

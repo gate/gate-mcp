@@ -1,38 +1,52 @@
 # Codex App Setup Guide
 
-## Prerequisites
+## Method 1: One-click Install
+
+In the AI chat, type:
+
+> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+
+![Codex App One-Click Installer](../images/codex-app-one-click-installer.png)
+
+## Method 2: Manual Configuration
+
+### Prerequisites
 
 - OpenAI Codex App installed
 - OpenAI API key with Codex access
 
-## Step 1: Open Codex Settings
+### Step 1: Open Codex Settings
 
 Launch the Codex App and navigate to **Settings**
 
 ![Codex App Settings](../images/codex-app-settings.png)
 
-## Step 2: Add MCP Server
+### Step 2: Add MCP Server
 
 1. Select **MCP Servers** from the settings menu
 2. Click **Add Server**
 
 ![Codex App Add Server](../images/codex-app-add-server.png)
 
-## Step 3: Configure the MCP Server
+### Step 3: Configure the MCP Server
 
 Enter the following details:
 
 | Field | Value |
 |-------|-------|
-| Name | `Gate` or `Gate MCP` |
-| URL | `https://api.gatemcp.ai/mcp` (market data) or `https://api.gatemcp.ai/mcp/exchange` (full trading, OAuth) |
-| Transport | `streamable-http` or `http` |
+| Name | URL | Auth |
+|------|-----|------|
+| `Gate` | `https://api.gatemcp.ai/mcp` | None (market data) |
+| `Gate` | `https://api.gatemcp.ai/mcp/exchange` | OAuth2 (trading) |
+| `Gate-Dex` | `https://api.gatemcp.ai/mcp/dex` | Headers: `x-api-key: MCP_AK_8W2N7Q`, `Authorization: Bearer ${GATE_MCP_TOKEN}` |
+| `Gate-Info` | `https://api.gatemcp.ai/mcp/info` | None |
+| `Gate-News` | `https://api.gatemcp.ai/mcp/news` | None |
 
 ![Codex App Config](../images/codex-app-config.png)
 
 Click **Save** to add the server.
 
-## Step 4: Verify and Use
+### Step 4: Verify and Use
 
 1. Start a new conversation in Codex App
 2. Try: "What tools are available from Gate MCP?"

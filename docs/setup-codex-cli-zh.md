@@ -1,11 +1,21 @@
 # Codex CLI 配置指南
 
-## 前置条件
+## 方式一：一键安装
+
+在 AI 对话中输入：
+
+> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+
+![Codex CLI 一键安装](../images/codex-cli-one-click-installer.png)
+
+## 方式二：手动配置
+
+### 前置条件
 
 - 拥有 Codex 访问权限的 OpenAI API 密钥
 - Node.js >= 18
 
-## 第 1 步：安装 Codex CLI
+### 第 1 步：安装 Codex CLI
 
 全局安装 OpenAI Codex CLI：
 
@@ -19,7 +29,7 @@ npm install -g @openai/codex
 npx @openai/codex --version
 ```
 
-## 第 2 步：配置 OpenAI API 密钥
+### 第 2 步：配置 OpenAI API 密钥
 
 设置你的 OpenAI API 密钥：
 
@@ -34,7 +44,7 @@ echo 'export OPENAI_API_KEY="your-api-key-here"' >> ~/.zshrc
 source ~/.zshrc
 ```
 
-## 第 3 步：添加 Gate MCP
+### 第 3 步：添加 Gate MCP
 
 **完整交易能力（OAuth）：**
 
@@ -48,9 +58,21 @@ codex mcp add gate --url https://api.gatemcp.ai/mcp/exchange
 codex mcp add gate --url https://api.gatemcp.ai/mcp
 ```
 
+**Info（无需认证）：**
+
+```bash
+codex mcp add gate-info --url https://api.gatemcp.ai/mcp/info
+```
+
+**News（无需认证）：**
+
+```bash
+codex mcp add gate-news --url https://api.gatemcp.ai/mcp/news
+```
+
 ![Codex CLI 添加 MCP](../images/codex-cli-add-mcp.png)
 
-## 第 4 步：验证安装
+### 第 4 步：验证安装
 
 列出所有配置的 MCP 服务器：
 
@@ -62,7 +84,7 @@ codex mcp list
 
 ![Codex CLI 列表](../images/codex-cli-list.png)
 
-## 第 5 步：开始使用
+### 第 5 步：开始使用
 
 启动 Codex CLI：
 

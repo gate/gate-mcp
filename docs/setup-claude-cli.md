@@ -1,11 +1,21 @@
 # Claude CLI Setup Guide
 
-## Prerequisites
+## Method 1: One-click Install
+
+In the AI chat, type:
+
+> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+
+![Claude CLI One-Click Installer](../images/claude-cli-one-click-installer.png)
+
+## Method 2: Manual Configuration
+
+### Prerequisites
 
 - macOS or Linux
 - Homebrew installed
 
-## Step 1: Install Claude Code
+### Step 1: Install Claude Code
 
 ```bash
 brew install claude-code
@@ -13,7 +23,7 @@ brew install claude-code
 
 For other installation methods, see the [official documentation](https://code.claude.com/docs).
 
-## Step 2: Add Gate MCP
+### Step 2: Add Gate MCP
 
 **For full trading (OAuth on connect):**
 
@@ -27,12 +37,27 @@ claude mcp list
 
 ```bash
 claude mcp add --transport http Gate https://api.gatemcp.ai/mcp
+```
+
+**For Info (no auth):**
+
+```bash
+claude mcp add --transport http Gate-Info https://api.gatemcp.ai/mcp/info
+```
+
+**For News (no auth):**
+
+```bash
+claude mcp add --transport http Gate-News https://api.gatemcp.ai/mcp/news
+```
+
+```bash
 claude mcp list
 ```
 
 ![Claude CLI Add MCP](../images/claude-cli-add-mcp.png)
 
-## Step 3: Verify Installation
+### Step 3: Verify Installation
 
 ```bash
 claude mcp list
@@ -42,7 +67,7 @@ You should see the Gate MCP server in the list.
 
 ![Claude CLI List](../images/claude-cli-list.png)
 
-## Step 4: Start Using
+### Step 4: Start Using
 
 Start a conversation with Claude CLI:
 
