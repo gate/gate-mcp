@@ -76,6 +76,16 @@ mcporter auth gate-mcp
 
 ### Cursor
 
+#### Method 1: One-click Install (Recommended)
+
+Just paste the following into the Cursor AI chat — the agent will auto-install all Gate MCP servers and Skills:
+
+> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+
+See [gate-skills](https://github.com/gate/gate-skills) for details.
+
+#### Method 2: Manual Configuration
+
 **For full trading (OAuth on connect):**
 
 Edit `~/.cursor/mcp.json`:
@@ -147,13 +157,23 @@ See [Cursor setup](docs/setup-cursor.md).
 
 ### mcporter / OpenClaw
 
-#### Prerequisites (before installing mcporter)
+#### Method 1: One-click Install (Recommended)
+
+Just paste the following into the OpenClaw AI chat — the agent will auto-install all Gate MCP servers and Skills:
+
+> Help me auto install Gate Skills and MCPs: https://github.com/gate/gate-skills
+
+See [gate-skills](https://github.com/gate/gate-skills) for details.
+
+#### Method 2: Manual Configuration
+
+##### Prerequisites (before installing mcporter)
 
 - **Node.js** >= 18 (mcporter requires npm)
 - **npm** (comes with Node.js) — verify with: `node -v` and `npm -v`
 - **Gate account** (for OAuth login when using `/mcp/exchange`)
 
-#### Install mcporter
+##### Install mcporter
 
 ```bash
 # Global install
@@ -165,7 +185,7 @@ mcporter --version
 
 Alternatively, run without installing: `npx mcporter <command>` (uses current Node.js/npm).
 
-#### Add MCP and authorize
+##### Add MCP and authorize
 
 ```bash
 # Add Private MCP (trading, OAuth)
@@ -187,6 +207,16 @@ mcporter config add gate-news --url https://api.gatemcp.ai/mcp/news
 See [OpenClaw setup](docs/setup-openclaw.md) for detailed steps.
 
 ### Claude CLI
+
+#### Method 1: One-click Install (Recommended)
+
+Just paste the following into Claude CLI — the agent will auto-install all Gate MCP servers and Skills:
+
+> Help me auto install Gate Skills and MCPs: https://github.com/gate/gate-skills
+
+See [gate-skills](https://github.com/gate/gate-skills) for details.
+
+#### Method 2: Manual Configuration
 
 ```bash
 brew install claude-code

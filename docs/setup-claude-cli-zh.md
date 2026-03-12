@@ -1,11 +1,21 @@
 # Claude CLI 配置指南
 
-## 前置条件
+## 方式一：一键安装
+
+在 AI 对话中输入：
+
+> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+
+![Claude CLI 一键安装](../images/claude-cli-one-click-installer.png)
+
+## 方式二：手动配置
+
+### 前置条件
 
 - macOS 或 Linux
 - 已安装 Homebrew
 
-## 第 1 步：安装 Claude Code
+### 第 1 步：安装 Claude Code
 
 ```bash
 brew install claude-code
@@ -13,7 +23,7 @@ brew install claude-code
 
 其他安装方法请参考[官方文档](https://code.claude.com/docs)。
 
-## 第 2 步：添加 Gate MCP
+### 第 2 步：添加 Gate MCP
 
 **完整交易能力（OAuth）：**
 
@@ -27,12 +37,27 @@ claude mcp list
 
 ```bash
 claude mcp add --transport http Gate https://api.gatemcp.ai/mcp
+```
+
+**Info（无需认证）：**
+
+```bash
+claude mcp add --transport http Gate-Info https://api.gatemcp.ai/mcp/info
+```
+
+**News（无需认证）：**
+
+```bash
+claude mcp add --transport http Gate-News https://api.gatemcp.ai/mcp/news
+```
+
+```bash
 claude mcp list
 ```
 
 ![Claude CLI 添加 MCP](../images/claude-cli-add-mcp.png)
 
-## 第 3 步：验证安装
+### 第 3 步：验证安装
 
 ```bash
 claude mcp list
@@ -42,7 +67,7 @@ claude mcp list
 
 ![Claude CLI 列表](../images/claude-cli-list.png)
 
-## 第 4 步：开始使用
+### 第 4 步：开始使用
 
 启动 Claude CLI 对话：
 

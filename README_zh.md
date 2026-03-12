@@ -87,6 +87,16 @@ mcporter auth gate-mcp
 
 ### Cursor
 
+#### 方式一：一键安装（推荐）
+
+在 Cursor AI 对话中粘贴以下内容，AI 会自动安装全部 Gate MCP 服务器和 Skills：
+
+> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+
+详见 [gate-skills](https://github.com/gate/gate-skills)。
+
+#### 方式二：手动配置
+
 **完整交易能力（连接时 OAuth 登录）：**
 
 编辑 `~/.cursor/mcp.json`：
@@ -158,13 +168,23 @@ mcporter auth gate-mcp
 
 ### mcporter / OpenClaw
 
-#### 安装 mcporter 前置条件
+#### 方式一：一键安装（推荐）
+
+在 OpenClaw AI 对话中粘贴以下内容，AI 会自动安装全部 Gate MCP 服务器和 Skills：
+
+> Help me auto install Gate Skills and MCPs: https://github.com/gate/gate-skills
+
+详见 [gate-skills](https://github.com/gate/gate-skills)。
+
+#### 方式二：手动配置
+
+##### 安装 mcporter 前置条件
 
 - **Node.js** >= 18（mcporter 依赖 npm）
 - **npm**（随 Node.js 安装）— 可用 `node -v` 和 `npm -v` 检查
 - **Gate 账号**（使用 `/mcp/exchange` 时用于 OAuth 登录）
 
-#### 安装 mcporter
+##### 安装 mcporter
 
 ```bash
 # 全局安装
@@ -176,7 +196,7 @@ mcporter --version
 
 若不希望全局安装，可使用 `npx mcporter <命令>` 直接运行（依赖当前环境的 Node.js/npm）。
 
-#### 添加 MCP 并授权
+##### 添加 MCP 并授权
 
 ```bash
 # 添加私有 MCP（交易，OAuth）
@@ -198,6 +218,16 @@ mcporter config add gate-news --url https://api.gatemcp.ai/mcp/news
 详见 [OpenClaw 配置指南](docs/setup-openclaw-zh.md)。
 
 ### Claude CLI
+
+#### 方式一：一键安装（推荐）
+
+在 Claude CLI 中粘贴以下内容，AI 会自动安装全部 Gate MCP 服务器和 Skills：
+
+> Help me auto install Gate Skills and MCPs: https://github.com/gate/gate-skills
+
+详见 [gate-skills](https://github.com/gate/gate-skills)。
+
+#### 方式二：手动配置
 
 ```bash
 brew install claude-code

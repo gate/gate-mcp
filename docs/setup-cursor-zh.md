@@ -1,5 +1,15 @@
 # Cursor 配置指南
 
+## 方式一：一键安装
+
+在 AI 对话中输入：
+
+> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+
+![Cursor 一键安装](../images/cursor-one-click-installer.png)
+
+## 方式二：手动配置
+
 Gate MCP 提供两个端点，按需选择：
 
 | 端点 | 认证 | 用途 |
@@ -7,13 +17,13 @@ Gate MCP 提供两个端点，按需选择：
 | `https://api.gatemcp.ai/mcp` | 无 | 仅市场数据（行情、深度、K 线等） |
 | `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | 完整功能（交易、余额、划转 — 连接时 OAuth 登录） |
 
-## 第 1 步：打开 Cursor 设置
+### 第 1 步：打开 Cursor 设置
 
 导航到 `Settings` → `Tools & MCP` → `Add Custom MCP`
 
 ![Cursor 添加 MCP](../images/cursor-add-mcp.png)
 
-## 第 2 步：编辑 MCP 配置
+### 第 2 步：编辑 MCP 配置
 
 编辑你的 `mcp.json` 文件。
 
@@ -51,9 +61,40 @@ Gate MCP 提供两个端点，按需选择：
 }
 ```
 
+**DEX（链上钱包、兑换）：**
+
+```json
+{
+  "mcpServers": {
+    "Gate-Dex": {
+      "url": "https://api.gatemcp.ai/mcp/dex",
+      "headers": {
+        "x-api-key": "MCP_AK_8W2N7Q",
+        "Authorization": "Bearer ${GATE_MCP_TOKEN}"
+      }
+    }
+  }
+}
+```
+
+**Info 与 News（无需认证）：**
+
+```json
+{
+  "mcpServers": {
+    "Gate-Info": {
+      "url": "https://api.gatemcp.ai/mcp/info"
+    },
+    "Gate-News": {
+      "url": "https://api.gatemcp.ai/mcp/news"
+    }
+  }
+}
+```
+
 ![Cursor MCP JSON 配置](../images/cursor-mcp-json.png)
 
-## 第 3 步：开始使用
+### 第 3 步：开始使用
 
 打开 Cursor AI 对话，尝试：
 
