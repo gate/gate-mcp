@@ -9,9 +9,11 @@
 
 ## 功能特性
 
-- **公开市场数据** — 现货/合约行情、深度、K 线、资金费率、强平历史（**无需认证**）
-- **交易** — 现货/合约下单、撤单、改单
-- **账户与钱包** — 余额、划转、充值提现、子账户
+- **公开市场数据** — 现货、合约、杠杆、期权、交割、理财、Alpha 行情、深度、K 线、资金费率、强平历史（**无需认证**）
+- **交易** — 现货/合约/期权/交割下单、撤单、改单；计划委托；追踪委托
+- **账户与钱包** — 余额、划转、充值提现、子账户、统一账户
+- **杠杆与理财** — 杠杆借贷、理财产品、闪兑
+- **TradFi、跨所、OTC、P2P** — 传统金融、跨所交易、场外、P2P
 - **DEX** — 链上钱包、兑换（单链及跨链）、代币信息、市场数据，支持 20+ 条链
 - **Info** — 币种信息、行情快照、技术分析、链上数据、合规检测
 - **News** — 实时加密资讯、交易所公告、社交情绪
@@ -23,8 +25,8 @@
 
 | 端点 | 认证 | 工具 |
 |------|------|------|
-| `https://api.gatemcp.ai/mcp` | 无 | 公开市场数据（17 个工具：现货+合约行情、深度、K 线等） |
-| `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | CEX 交易与账户（66 个工具：现货/合约交易、钱包、统一账户、子账户） |
+| `https://api.gatemcp.ai/mcp` | 无 | 公开市场数据（51 个工具：现货、合约、杠杆、期权、交割、理财、Alpha） |
+| `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | CEX 交易与账户（300+ 工具：现货/合约/期权/交割/杠杆交易、钱包、统一账户、子账户、理财、闪兑、返佣、TradFi、跨所、OTC、P2P、Alpha） |
 | `https://api.gatemcp.ai/mcp/dex` | Google OAuth | DEX 钱包与兑换（25 个工具：链上钱包、Swap、代币信息、市场数据，支持 20+ 条链） |
 | `https://api.gatemcp.ai/mcp/info` | 无 | 币种信息与分析（10 个工具：行情快照、技术分析、链上数据、合规检测） |
 | `https://api.gatemcp.ai/mcp/news` | 无 | 资讯与情绪（3 个工具：新闻搜索、交易所公告、社交情绪） |
@@ -334,6 +336,12 @@ Claude Desktop 需要使用本地 stdio 代理。
 
 详细配置说明请参考 [Claude Desktop 配置指南](docs/setup-claude-desktop-zh.md)。
 
+### 替代方案：gate-local-mcp（本地 stdio + API Key）
+
+本地开发且无需 OAuth 时，可使用 [gate-local-mcp](https://github.com/gateio/gate-local-mcp)（npm 包名：`gate-mcp`）— 以 stdio MCP 服务器方式运行，使用 `GATE_API_KEY` / `GATE_API_SECRET`。在客户端中配置为命令式 MCP（如 `"command": "npx", "args": ["-y", "gate-mcp"]`）。
+
+完整工具列表：[gate-local-mcp-tools.md](gate-exchange/gate-local-mcp-tools.md)。
+
 ### 其他客户端
 
 | 客户端 | 配置指南 |
@@ -357,75 +365,41 @@ Claude Desktop 需要使用本地 stdio 代理。
 
 所有工具均使用 `cex_` 前缀。工具分为 Public MCP（无认证）与 Private MCP（OAuth2）。
 
-### Public MCP（`/mcp` — 无需认证）
+### Public MCP（`/mcp` — 无需认证，51 个工具）
 
-| 工具 | 描述 |
-|------|------|
-| `cex_spot_list_currencies` | 币种列表 |
-| `cex_spot_get_currency` | 单个币种详情 |
-| `cex_spot_list_currency_pairs` | 交易对列表 |
-| `cex_spot_get_currency_pair` | 单个交易对详情 |
-| `cex_spot_get_spot_tickers` | 现货行情 |
-| `cex_spot_get_spot_order_book` | 现货深度 |
-| `cex_spot_get_spot_trades` | 现货成交记录 |
-| `cex_spot_get_spot_candlesticks` | 现货 K 线 |
-| `cex_fx_list_fx_contracts` | 合约列表 |
-| `cex_fx_get_fx_contract` | 单个合约详情 |
-| `cex_fx_get_fx_tickers` | 合约行情 |
-| `cex_fx_get_fx_order_book` | 合约深度 |
-| `cex_fx_get_fx_trades` | 合约成交记录 |
-| `cex_fx_get_fx_candlesticks` | 合约 K 线 |
-| `cex_fx_get_fx_funding_rate` | 资金费率历史 |
-| `cex_fx_get_fx_premium_index` | 溢价指数 K 线 |
-| `cex_fx_list_fx_liq_orders` | 强平历史 |
+| 业务线 | 数量 | 说明 |
+|--------|------|------|
+| **现货** | 9 | `cex_spot_list_currencies`、`cex_spot_get_currency`、`cex_spot_list_currency_pairs`、`cex_spot_get_currency_pair`、`cex_spot_get_spot_tickers`、`cex_spot_get_spot_order_book`、`cex_spot_get_spot_trades`、`cex_spot_get_spot_candlesticks`、`cex_spot_get_system_time` |
+| **合约** | 13 | 合约列表、深度、成交、K 线、行情、资金费率、溢价指数、强平、合约统计、保险账本、指数成分、批量资金费率 |
+| **杠杆** | 3 | `cex_margin_list_uni_currency_pairs`、`cex_margin_get_uni_currency_pair`、`cex_margin_get_market_margin_tier` |
+| **期权** | 12 | 标的、到期日、合约、结算、深度、行情、K 线、成交 |
+| **交割** | 8 | 合约、深度、成交、K 线、行情、保险账本、风险限额档位 |
+| **理财** | 3 | `cex_earn_list_dual_investment_plans`、`cex_earn_list_structured_products`、`cex_earn_list_uni_currencies` |
+| **Alpha** | 3 | `cex_alpha_list_alpha_currencies`、`cex_alpha_list_alpha_tickers`、`cex_alpha_list_alpha_tokens` |
 
-### Private MCP（`/mcp/exchange` — OAuth2）
+### Private MCP（`/mcp/exchange` — OAuth2，300+ 工具）
 
 > **注意**：私有端点不包含公开市场数据工具。如需查询行情，请使用 `/mcp`。
 
-#### 现货交易（scope: `profile` / `trade`）
-
-| 工具 | 描述 |
-|------|------|
-| `cex_spot_get_spot_accounts` | 现货账户余额 |
-| `cex_spot_list_spot_orders` / `cex_spot_get_spot_order` | 订单查询 |
-| `cex_spot_list_spot_my_trades` / `cex_spot_list_spot_account_book` | 成交、流水 |
-| `cex_spot_get_spot_fee` / `cex_spot_get_spot_batch_fee` | 费率查询 |
-| `cex_spot_create_spot_order` / `cex_spot_create_spot_batch_orders` | 下单（单个/批量） |
-| `cex_spot_cancel_spot_order` / `cex_spot_cancel_all_spot_orders` / `cex_spot_cancel_spot_batch_orders` | 撤单 |
-| `cex_spot_amend_spot_order` / `cex_spot_amend_spot_batch_orders` | 改单 |
-
-#### 合约交易（scope: `profile` / `trade`）
-
-| 工具 | 描述 |
-|------|------|
-| `cex_fx_get_fx_accounts` | 合约账户 |
-| `cex_fx_list_fx_positions` / `cex_fx_get_fx_position` / `cex_fx_get_fx_dual_position` | 仓位查询 |
-| `cex_fx_list_fx_orders` / `cex_fx_get_fx_order` | 订单查询 |
-| `cex_fx_list_fx_my_trades` / `cex_fx_get_fx_my_trades_timerange` | 成交查询 |
-| `cex_fx_list_fx_account_book` / `cex_fx_get_fx_fee` | 流水、费率 |
-| `cex_fx_list_fx_risk_limit_tiers` | 风险限额档位 |
-| `cex_fx_create_fx_order` / `cex_fx_create_fx_batch_orders` | 下单 |
-| `cex_fx_cancel_fx_order` / `cex_fx_cancel_all_fx_orders` / `cex_fx_cancel_fx_batch_orders` | 撤单 |
-| `cex_fx_amend_fx_order` / `cex_fx_amend_fx_batch_orders` | 改单 |
-| `cex_fx_update_fx_position_leverage` / `cex_fx_update_fx_position_margin` / `cex_fx_update_fx_position_cross_mode` | 仓位设置 |
-| `cex_fx_set_fx_dual` / `cex_fx_update_fx_dual_position_margin` / `cex_fx_update_fx_dual_position_leverage` / `cex_fx_update_fx_dual_position_risk_limit` | 双向持仓设置 |
-| `cex_fx_update_fx_dual_position_cross_mode` / `cex_fx_update_fx_position_risk_limit` | 逐仓/全仓切换、风险限额 |
-
-#### 钱包与账户（scope: `wallet` / `account`）
-
-| 工具 | 描述 |
-|------|------|
-| `cex_wallet_get_total_balance` | 总资产 |
-| `cex_wallet_create_transfer` | 内部划转 |
-| `cex_wallet_get_wallet_fee` / `cex_wallet_get_transfer_order_status` | 交易手续费、划转状态 |
-| `cex_wallet_list_deposits` / `cex_wallet_list_withdrawals` | 充值、提现记录 |
-| `cex_wallet_create_sa_transfer` / `cex_wallet_create_sa_to_sa_transfer` | 子账户划转 |
-| `cex_unified_get_unified_accounts` / `cex_unified_get_unified_mode` / `cex_unified_set_unified_mode` | 统一账户 |
-| `cex_unified_list_unified_loans` / `cex_unified_get_unified_risk_units` / `cex_unified_get_unified_borrowable` | 借贷、风险单元 |
-| `cex_sa_list_sas` / `cex_sa_get_sa` / `cex_sa_create_sa` | 子账户管理 |
-| `cex_sa_list_sa_keys` / `cex_sa_create_sa_key` / `cex_sa_get_sa_key` / `cex_sa_update_sa_key` / `cex_sa_delete_sa_key` | 子账户 API Key |
-| `cex_sa_lock_sa` / `cex_sa_unlock_sa` / `cex_sa_get_sa_unified_mode` | 子账户锁定 |
+| 业务线 | Scope | 主要工具 |
+|--------|-------|----------|
+| **现货** | profile / trade | 账户、订单、成交、批量订单、计划委托、倒计时撤单、交叉强平 |
+| **合约** | profile / trade | 账户、仓位、订单、成交、双向持仓、追踪委托、计划委托、BBO 订单 |
+| **杠杆** | profile / trade | 杠杆账户、借贷、自动还款、统一杠杆借贷 |
+| **期权** | profile / trade | 账户、仓位、订单、MMP 设置 |
+| **交割** | profile / trade | 账户、仓位、订单、计划委托 |
+| **钱包** | wallet | 总资产、划转、充值、提现、充值地址、子账户余额、零头兑换 |
+| **统一账户** | account | 统一账户、模式、借贷、风险单元、可借额度、抵押品、杠杆配置 |
+| **子账户** | account | 创建/列表/锁定/解锁 SA、API Key |
+| **账户管理** | account | 账户详情、主 Key、限频、借币费率、STP 组 |
+| **返佣** | profile | 代理/合作伙伴/经纪商返佣历史、用户信息 |
+| **闪兑** | profile / trade | `cex_fc_list_fc_currency_pairs`、`cex_fc_list_fc_orders`、`cex_fc_create_fc_order` 等 |
+| **理财** | profile / trade | 双币/结构化/余币宝产品、订单、ETH2 兑换、出借记录 |
+| **Alpha** | profile / trade | Alpha 账户、订单、报价/下单 |
+| **TradFi** | profile / trade | 品类、交易对、MT5 账户、资产、订单、仓位 |
+| **跨所** | profile / trade | 规则交易对、账户、仓位、订单、划转、兑换 |
+| **OTC** | profile / trade | 银行卡列表、OTC 订单、稳定币订单、报价/下单/取消 |
+| **P2P** | profile / trade | 用户信息、广告、聊天、订单、确认付款/收款 |
 
 按 scope 分组详见 [授权说明](#授权说明oauth2)。完整参数见 [gate-exchange 详情](gate-exchange/gate-exchange-mcp_zh.md)。
 

@@ -11,9 +11,11 @@ A Gate MCP (Model Context Protocol) server that enables AI agents to interact wi
 
 ## Features
 
-- 🔍 **Public Market Data** - Spot & futures tickers, order books, trades, K-line, funding rate, liquidation history (**no auth required**)
-- 💹 **Trading** - Create/cancel/amend spot and futures orders
-- 💼 **Account & Wallet** - Balances, transfers, deposits, withdrawals, sub-accounts
+- 🔍 **Public Market Data** - Spot, futures, margin, options, delivery, earn, alpha tickers, order books, K-line, funding rate, liquidation history (**no auth required**)
+- 💹 **Trading** - Create/cancel/amend spot, futures, options, delivery orders; price-triggered orders; trail orders
+- 💼 **Account & Wallet** - Balances, transfers, deposits, withdrawals, sub-accounts, unified account
+- 📊 **Margin & Earn** - Margin loans, earn products, flash swap
+- 🌍 **TradFi, CrossEx, OTC, P2P** - Traditional finance, cross-exchange, OTC, P2P trading
 - 🌐 **DEX** - On-chain wallet, swap (single-chain & cross-chain), token info, market data across 20+ chains
 - 📰 **Info** - Coin info, market snapshots, technical analysis, on-chain data, compliance checks
 - 📢 **News** - Real-time crypto news, exchange announcements, social sentiment
@@ -25,8 +27,8 @@ The service exposes five MCP endpoints:
 
 | Endpoint | Auth | Tools |
 |----------|------|-------|
-| `https://api.gatemcp.ai/mcp` | None | Public market data (17 tools: spot + futures tickers, order books, K-line, etc.) |
-| `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | CEX trading & account (66 tools: spot/futures trading, wallet, unified account, sub-accounts) |
+| `https://api.gatemcp.ai/mcp` | None | Public market data (51 tools: spot, futures, margin, options, delivery, earn, alpha) |
+| `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | CEX trading & account (300+ tools: spot/futures/options/delivery/margin trading, wallet, unified account, sub-accounts, earn, flash swap, rebate, TradFi, CrossEx, OTC, P2P, Alpha) |
 | `https://api.gatemcp.ai/mcp/dex` | Google OAuth | DEX wallet & swap (25 tools: on-chain wallet, swap, token info, market data across 20+ chains) |
 | `https://api.gatemcp.ai/mcp/info` | None | Coin info & analysis (10 tools: market snapshots, technical analysis, on-chain data, compliance) |
 | `https://api.gatemcp.ai/mcp/news` | None | News & sentiment (3 tools: news search, exchange announcements, social sentiment) |
@@ -323,6 +325,12 @@ Claude Desktop requires a local stdio proxy.
 
 See [Claude Desktop setup](docs/setup-claude-desktop.md) for detailed instructions.
 
+### Alternative: gate-local-mcp (local stdio with API keys)
+
+For local development without OAuth, use [gate-local-mcp](https://github.com/gateio/gate-local-mcp) (npm: `gate-mcp`) — an stdio MCP server that uses `GATE_API_KEY` / `GATE_API_SECRET`. Configure it as a command-based MCP server in your client (e.g. `"command": "npx", "args": ["-y", "gate-mcp"]`).
+
+Full tool list: [gate-local-mcp-tools.md](gate-exchange/gate-local-mcp-tools.md).
+
 ### Other Clients
 
 | Client | Guide |
@@ -351,75 +359,41 @@ See [Claude Desktop setup](docs/setup-claude-desktop.md) for detailed instructio
 
 All tools use the `cex_` prefix. Tools are split between Public MCP (no auth) and Private MCP (OAuth2).
 
-### Public MCP (`/mcp` — no auth)
+### Public MCP (`/mcp` — no auth, 51 tools)
 
-| Tool | Description |
-|------|-------------|
-| `cex_spot_list_currencies` | All supported currencies |
-| `cex_spot_get_currency` | Single currency info |
-| `cex_spot_list_currency_pairs` | All trading pairs |
-| `cex_spot_get_currency_pair` | Single trading pair details |
-| `cex_spot_get_spot_tickers` | Spot tickers (price, volume, change) |
-| `cex_spot_get_spot_order_book` | Spot order book depth |
-| `cex_spot_get_spot_trades` | Spot trade history |
-| `cex_spot_get_spot_candlesticks` | Spot K-line data |
-| `cex_fx_list_fx_contracts` | All perpetual contracts |
-| `cex_fx_get_fx_contract` | Single contract details |
-| `cex_fx_get_fx_tickers` | Futures tickers |
-| `cex_fx_get_fx_order_book` | Futures order book |
-| `cex_fx_get_fx_trades` | Futures trade history |
-| `cex_fx_get_fx_candlesticks` | Futures K-line |
-| `cex_fx_get_fx_funding_rate` | Funding rate history |
-| `cex_fx_get_fx_premium_index` | Premium index K-line |
-| `cex_fx_list_fx_liq_orders` | Liquidation history |
+| Business | Tools | Description |
+|----------|-------|-------------|
+| **Spot** | 9 | `cex_spot_list_currencies`, `cex_spot_get_currency`, `cex_spot_list_currency_pairs`, `cex_spot_get_currency_pair`, `cex_spot_get_spot_tickers`, `cex_spot_get_spot_order_book`, `cex_spot_get_spot_trades`, `cex_spot_get_spot_candlesticks`, `cex_spot_get_system_time` |
+| **Futures** | 13 | Contracts, order book, trades, candlesticks, tickers, funding rate, premium index, liquidation, contract stats, insurance ledger, index constituents, batch funding rates |
+| **Margin** | 3 | `cex_margin_list_uni_currency_pairs`, `cex_margin_get_uni_currency_pair`, `cex_margin_get_market_margin_tier` |
+| **Options** | 12 | Underlyings, expirations, contracts, settlements, order book, tickers, candlesticks, trades |
+| **Delivery** | 8 | Contracts, order book, trades, candlesticks, tickers, insurance ledger, risk limit tiers |
+| **Earn** | 3 | `cex_earn_list_dual_investment_plans`, `cex_earn_list_structured_products`, `cex_earn_list_uni_currencies` |
+| **Alpha** | 3 | `cex_alpha_list_alpha_currencies`, `cex_alpha_list_alpha_tickers`, `cex_alpha_list_alpha_tokens` |
 
-### Private MCP (`/mcp/exchange` — OAuth2)
+### Private MCP (`/mcp/exchange` — OAuth2, 300+ tools)
 
 > **Note**: The private endpoint does not include public market data tools. Use `/mcp` for market data queries.
 
-#### Spot Trading (scope: `profile` / `trade`)
-
-| Tool | Description |
-|------|-------------|
-| `cex_spot_get_spot_accounts` | Spot account balances |
-| `cex_spot_list_spot_orders` / `cex_spot_get_spot_order` | Order queries |
-| `cex_spot_list_spot_my_trades` / `cex_spot_list_spot_account_book` | Trades, account book |
-| `cex_spot_get_spot_fee` / `cex_spot_get_spot_batch_fee` | Fee rates |
-| `cex_spot_create_spot_order` / `cex_spot_create_spot_batch_orders` | Place order(s) |
-| `cex_spot_cancel_spot_order` / `cex_spot_cancel_all_spot_orders` / `cex_spot_cancel_spot_batch_orders` | Cancel orders |
-| `cex_spot_amend_spot_order` / `cex_spot_amend_spot_batch_orders` | Amend order(s) |
-
-#### Futures Trading (scope: `profile` / `trade`)
-
-| Tool | Description |
-|------|-------------|
-| `cex_fx_get_fx_accounts` | Futures account |
-| `cex_fx_list_fx_positions` / `cex_fx_get_fx_position` / `cex_fx_get_fx_dual_position` | Position queries |
-| `cex_fx_list_fx_orders` / `cex_fx_get_fx_order` | Order queries |
-| `cex_fx_list_fx_my_trades` / `cex_fx_get_fx_my_trades_timerange` | Personal trades |
-| `cex_fx_list_fx_account_book` / `cex_fx_get_fx_fee` | Account book, fee |
-| `cex_fx_list_fx_risk_limit_tiers` | Risk limit tiers |
-| `cex_fx_create_fx_order` / `cex_fx_create_fx_batch_orders` | Place order(s) |
-| `cex_fx_cancel_fx_order` / `cex_fx_cancel_all_fx_orders` / `cex_fx_cancel_fx_batch_orders` | Cancel orders |
-| `cex_fx_amend_fx_order` / `cex_fx_amend_fx_batch_orders` | Amend order(s) |
-| `cex_fx_update_fx_position_leverage` / `cex_fx_update_fx_position_margin` / `cex_fx_update_fx_position_cross_mode` | Position settings |
-| `cex_fx_set_fx_dual` / `cex_fx_update_fx_dual_position_margin` / `cex_fx_update_fx_dual_position_leverage` / `cex_fx_update_fx_dual_position_risk_limit` | Dual-mode position settings |
-| `cex_fx_update_fx_dual_position_cross_mode` / `cex_fx_update_fx_position_risk_limit` | Cross mode, risk limit |
-
-#### Wallet & Account (scope: `wallet` / `account`)
-
-| Tool | Description |
-|------|-------------|
-| `cex_wallet_get_total_balance` | Total account balance |
-| `cex_wallet_create_transfer` | Internal transfer |
-| `cex_wallet_get_wallet_fee` / `cex_wallet_get_transfer_order_status` | Trading fee, transfer status |
-| `cex_wallet_list_deposits` / `cex_wallet_list_withdrawals` | Deposit/withdrawal records |
-| `cex_wallet_create_sa_transfer` / `cex_wallet_create_sa_to_sa_transfer` | Sub-account transfers |
-| `cex_unified_get_unified_accounts` / `cex_unified_get_unified_mode` / `cex_unified_set_unified_mode` | Unified account |
-| `cex_unified_list_unified_loans` / `cex_unified_get_unified_risk_units` / `cex_unified_get_unified_borrowable` | Loans, risk units |
-| `cex_sa_list_sas` / `cex_sa_get_sa` / `cex_sa_create_sa` | Sub-account management |
-| `cex_sa_list_sa_keys` / `cex_sa_create_sa_key` / `cex_sa_get_sa_key` / `cex_sa_update_sa_key` / `cex_sa_delete_sa_key` | Sub-account API keys |
-| `cex_sa_lock_sa` / `cex_sa_unlock_sa` / `cex_sa_get_sa_unified_mode` | Sub-account lock/unlock |
+| Business | Scope | Key Tools |
+|----------|-------|-----------|
+| **Spot** | profile / trade | Accounts, orders, trades, batch orders, price-triggered orders, countdown cancel, cross liquidate |
+| **Futures** | profile / trade | Accounts, positions, orders, trades, dual positions, trail orders, price-triggered, BBO orders |
+| **Margin** | profile / trade | Margin accounts, loans, auto-repay, uni loans |
+| **Options** | profile / trade | Account, positions, orders, MMP settings |
+| **Delivery** | profile / trade | Accounts, positions, orders, price-triggered orders |
+| **Wallet** | wallet | Total balance, transfers, deposits, withdrawals, deposit address, SA balances, small balance convert |
+| **Unified** | account | Unified accounts, mode, loans, risk units, borrowable, collateral, leverage config |
+| **Sub-account** | account | Create/list/lock/unlock SA, API keys |
+| **Account** | account | Account detail, main keys, rate limit, debit fee, STP groups |
+| **Rebate** | profile | Agency/partner/broker commission history, user info |
+| **Flash Swap** | profile / trade | `cex_fc_list_fc_currency_pairs`, `cex_fc_list_fc_orders`, `cex_fc_create_fc_order`, etc. |
+| **Earn** | profile / trade | Dual/structured/uni products, orders, ETH2 swap, lend records |
+| **Alpha** | profile / trade | Alpha accounts, orders, quote/place |
+| **TradFi** | profile / trade | Categories, symbols, MT5 account, assets, orders, positions |
+| **CrossEx** | profile / trade | Rule symbols, account, positions, orders, transfers, convert |
+| **OTC** | profile / trade | Bank list, OTC orders, stable coin orders, quote/place/cancel |
+| **P2P** | profile / trade | User info, ads, chats, transactions, confirm payment/receipt |
 
 For full tool parameters, see [Gate API Docs](https://www.gate.com/docs/developers/apiv4) or [gate-exchange-mcp](gate-exchange/gate-exchange-mcp.md).
 
