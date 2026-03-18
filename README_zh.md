@@ -93,7 +93,7 @@ mcporter auth gate-mcp
 
 在 Cursor AI 对话中粘贴以下内容，AI 会自动安装全部 Gate MCP 服务器和 Skills：
 
-> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+> Help me auto install Gate Skills and MCPs: https://github.com/gate/gate-skills
 
 详见 [gate-skills](https://github.com/gate/gate-skills)。
 

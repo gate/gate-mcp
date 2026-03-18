@@ -82,7 +82,7 @@ mcporter auth gate-mcp
 
 Just paste the following into the Cursor AI chat — the agent will auto-install all Gate MCP servers and Skills:
 
-> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+> Help me auto install Gate Skills and MCPs: https://github.com/gate/gate-skills
 
 See [gate-skills](https://github.com/gate/gate-skills) for details.
 
