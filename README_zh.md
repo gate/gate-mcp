@@ -27,13 +27,13 @@
 |------|------|------|
 | `https://api.gatemcp.ai/mcp` | 无 | 公开市场数据（51 个工具：现货、合约、杠杆、期权、交割、理财、Alpha） |
 | `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | CEX 交易与账户（300+ 工具：现货/合约/期权/交割/杠杆交易、钱包、统一账户、子账户、理财、闪兑、返佣、TradFi、跨所、OTC、P2P、Alpha） |
-| `https://api.gatemcp.ai/mcp/dex` | Google OAuth | DEX 钱包与兑换（25 个工具：链上钱包、Swap、代币信息、市场数据，支持 20+ 条链） |
+| `https://api.gatemcp.ai/mcp/dex` | Google / Gate OAuth | DEX 钱包与兑换（33 个工具：链上钱包、Swap、代币信息、市场数据、Agentic、RPC，支持 20+ 条链） |
 | `https://api.gatemcp.ai/mcp/info` | 无 | 币种信息与分析（10 个工具：行情快照、技术分析、链上数据、合规检测） |
 | `https://api.gatemcp.ai/mcp/news` | 无 | 资讯与情绪（3 个工具：新闻搜索、交易所公告、社交情绪） |
 
 - **仅查行情** → 使用 `/mcp`（无需 Gate 账号）
 - **CEX 交易、余额、划转** → 使用 `/mcp/exchange`（需 Gate OAuth2）
-- **DEX 钱包、兑换、链上操作** → 使用 `/mcp/dex`（需 Google OAuth）
+- **DEX 钱包、兑换、链上操作** → 使用 `/mcp/dex`（需 Google / Gate OAuth）
 - **币种信息、技术分析** → 使用 `/mcp/info`（无需认证）
 - **资讯、公告** → 使用 `/mcp/news`（无需认证）
 
@@ -41,7 +41,7 @@
 
 ## 授权说明（OAuth2）
 
-**`/mcp/exchange` 需要 Gate OAuth2；`/mcp/dex` 需要 Google OAuth。** `/mcp`、`/mcp/info`、`/mcp/news` 无需任何认证。
+**`/mcp/exchange` 需要 Gate OAuth2；`/mcp/dex` 需要 Google 或 Gate OAuth。** `/mcp`、`/mcp/info`、`/mcp/news` 无需任何认证。
 
 ### mcporter
 
@@ -407,46 +407,59 @@ Claude Desktop 需要使用本地 stdio 代理。
 
 | 工具 | 描述 |
 |------|------|
-| `auth_google_login_start` | 发起 Google OAuth 登录流程 |
-| `auth_google_login_poll` | 轮询登录状态，成功后返回 mcp_token |
-| `auth_login_google_wallet` | 使用 Google OAuth 授权码登录 |
-| `auth_logout` | 注销当前 MCP 会话 |
+| `dex_auth_google_login_start` | 发起 Google OAuth 登录流程 |
+| `dex_auth_google_login_poll` | 轮询登录状态，成功后返回 mcp_token |
+| `dex_auth_login_google_wallet` | 使用 Google OAuth 授权码登录 |
+| `dex_auth_gate_login_start` | 发起 Gate 登录流程 |
+| `dex_auth_gate_login_poll` | 轮询 Gate 登录状态，成功后返回 mcp_token |
+| `dex_auth_login_gate_wallet` | 使用 Gate 授权码登录 |
+| `dex_auth_logout` | 注销当前 MCP 会话 |
 
 ### DEX — 钱包
 
 | 工具 | 描述 |
 |------|------|
-| `wallet_get_addresses` | 获取各链钱包地址（EVM、SOL） |
-| `wallet_get_token_list` | 获取代币余额（含价格） |
-| `wallet_get_total_asset` | 获取总资产价值及 24h 变动 |
-| `wallet_sign_message` | 使用钱包私钥对消息签名 |
-| `wallet_sign_transaction` | 使用钱包私钥对原始交易签名 |
+| `dex_wallet_get_addresses` | 获取各链钱包地址（EVM、SOL） |
+| `dex_wallet_get_token_list` | 获取代币余额（含价格） |
+| `dex_wallet_get_total_asset` | 获取总资产价值及 24h 变动 |
+| `dex_wallet_sign_message` | 使用钱包私钥对消息签名 |
+| `dex_wallet_sign_transaction` | 使用钱包私钥对原始交易签名 |
 
 ### DEX — 链配置与交易
 
 | 工具 | 描述 |
 |------|------|
-| `chain_config` | 获取链配置信息（networkKey、chainID、endpoint） |
-| `tx_gas` | 估算 Gas 价格和 Gas 用量 |
-| `tx_transfer_preview` | 签名前预览转账详情 |
-| `tx_get_sol_unsigned` | 构建未签名 Solana SOL 转账 |
-| `tx_send_raw_transaction` | 广播已签名交易至链上 |
-| `tx_quote` | 获取兑换报价（含路由与价格影响） |
-| `tx_swap` | 一键兑换：报价 → 构建 → 签名 → 提交 |
-| `tx_swap_detail` | 按订单 ID 查询兑换状态 |
-| `tx_list` / `tx_detail` / `tx_history_list` | 交易历史与兑换记录 |
+| `dex_chain_config` | 获取链配置信息（networkKey、chainID、endpoint） |
+| `dex_tx_gas` | 估算 Gas 价格和 Gas 用量 |
+| `dex_tx_transfer_preview` | 签名前预览转账详情 |
+| `dex_tx_approve_preview` | 签名前预览代币授权（ERC-20 / SPL approve） |
+| `dex_tx_get_sol_unsigned` | 构建未签名 Solana SOL 转账 |
+| `dex_tx_send_raw_transaction` | 广播已签名交易至链上 |
+| `dex_tx_quote` | 获取兑换报价（含路由与价格影响） |
+| `dex_tx_swap` | 一键兑换：报价 → 构建 → 签名 → 提交 |
+| `dex_tx_swap_detail` | 按订单 ID 查询兑换状态 |
+| `dex_tx_list` / `dex_tx_detail` / `dex_tx_history_list` | 交易历史与兑换记录 |
 
 ### DEX — 市场数据与代币信息
 
 | 工具 | 描述 |
 |------|------|
-| `market_get_kline` | K 线（蜡烛图）数据 |
-| `market_get_tx_stats` | 交易量和交易员统计 |
-| `market_get_pair_liquidity` | 流动性池添加/移除事件 |
-| `token_get_coin_info` | 代币信息：价格、市值、持仓分布 |
-| `token_ranking` | 24h 涨幅榜/跌幅榜 |
-| `token_get_coins_range_by_created_at` | 按创建时间发现新代币 |
-| `token_get_risk_info` | 安全审计：蜜罐、买卖税、黑名单 |
+| `dex_market_get_kline` | K 线（蜡烛图）数据 |
+| `dex_market_get_tx_stats` | 交易量和交易员统计 |
+| `dex_market_get_pair_liquidity` | 流动性池添加/移除事件 |
+| `dex_token_list_swap_tokens` | 查询指定链上可兑换的代币 |
+| `dex_token_list_cross_chain_bridge_tokens` | 查询跨链桥可桥接的目标代币 |
+| `dex_token_get_coin_info` | 代币信息：价格、市值、持仓分布 |
+| `dex_token_ranking` | 24h 涨幅榜/跌幅榜 |
+| `dex_token_get_coins_range_by_created_at` | 按创建时间发现新代币 |
+| `dex_token_get_risk_info` | 安全审计：蜜罐、买卖税、黑名单 |
+
+### DEX — Agentic 与 RPC
+
+| 工具 | 描述 |
+|------|------|
+| `dex_agentic_report` | 上报 Agentic 钱包地址用于追踪 |
+| `dex_rpc_call` | 通用 JSON-RPC 调用，直接与链节点交互 |
 
 完整 DEX 工具参数见 [gate-dex-mcp](gate-dex/gate-dex-mcp_zh.md)。
 
@@ -498,7 +511,7 @@ Claude Desktop 需要使用本地 stdio 代理。
 
 ### Q: 需要 Gate 账号吗？
 
-A: **仅在使用 CEX 交易和 DEX 钱包时需要**。`/mcp`、`/mcp/info`、`/mcp/news` 完全公开，无需账号。`/mcp/exchange`（CEX 交易、余额、划转）须通过 Gate OAuth2 登录。`/mcp/dex`（链上钱包、兑换）须通过 Google OAuth 登录。
+A: **仅在使用 CEX 交易和 DEX 钱包时需要**。`/mcp`、`/mcp/info`、`/mcp/news` 完全公开，无需账号。`/mcp/exchange`（CEX 交易、余额、划转）须通过 Gate OAuth2 登录。`/mcp/dex`（链上钱包、兑换）须通过 Google 或 Gate OAuth 登录。
 
 ### Q: 支持交易吗？
 

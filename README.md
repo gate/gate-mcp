@@ -29,13 +29,13 @@ The service exposes five MCP endpoints:
 |----------|------|-------|
 | `https://api.gatemcp.ai/mcp` | None | Public market data (51 tools: spot, futures, margin, options, delivery, earn, alpha) |
 | `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | CEX trading & account (300+ tools: spot/futures/options/delivery/margin trading, wallet, unified account, sub-accounts, earn, flash swap, rebate, TradFi, CrossEx, OTC, P2P, Alpha) |
-| `https://api.gatemcp.ai/mcp/dex` | Google OAuth | DEX wallet & swap (25 tools: on-chain wallet, swap, token info, market data across 20+ chains) |
+| `https://api.gatemcp.ai/mcp/dex` | Google / Gate OAuth | DEX wallet & swap (33 tools: auth, wallet, chain config, transfer, swap, market data, token info, agentic, RPC across 20+ chains) |
 | `https://api.gatemcp.ai/mcp/info` | None | Coin info & analysis (10 tools: market snapshots, technical analysis, on-chain data, compliance) |
 | `https://api.gatemcp.ai/mcp/news` | None | News & sentiment (3 tools: news search, exchange announcements, social sentiment) |
 
 - **Market data only** → Use `/mcp` (no Gate account needed)
 - **CEX trading, balances, transfers** → Use `/mcp/exchange` (Gate OAuth2 required)
-- **DEX wallet, swap, on-chain** → Use `/mcp/dex` (Google OAuth required)
+- **DEX wallet, swap, on-chain** → Use `/mcp/dex` (Google / Gate OAuth required)
 - **Coin info, technical analysis** → Use `/mcp/info` (no auth)
 - **News, announcements** → Use `/mcp/news` (no auth)
 
@@ -43,7 +43,7 @@ Transport: Streamable HTTP (with SSE fallback).
 
 ## Authorization (OAuth2)
 
-**`/mcp/exchange` requires Gate OAuth2; `/mcp/dex` requires Google OAuth.** The endpoints `/mcp`, `/mcp/info`, and `/mcp/news` do not require any authentication.
+**`/mcp/exchange` requires Gate OAuth2; `/mcp/dex` requires Google or Gate OAuth.** The endpoints `/mcp`, `/mcp/info`, and `/mcp/news` do not require any authentication.
 
 ### Using mcporter
 
@@ -401,46 +401,59 @@ For full tool parameters, see [Gate API Docs](https://www.gate.com/docs/develope
 
 | Tool | Description |
 |------|-------------|
-| `auth_google_login_start` | Start Google OAuth login flow |
-| `auth_google_login_poll` | Poll login status, returns mcp_token on success |
-| `auth_login_google_wallet` | Login with Google OAuth authorization code |
-| `auth_logout` | Revoke current MCP session |
+| `dex_auth_google_login_start` | Start Google OAuth login flow, returns verification URL |
+| `dex_auth_google_login_poll` | Poll login status, returns mcp_token on success |
+| `dex_auth_login_google_wallet` | Login with Google OAuth authorization code |
+| `dex_auth_gate_login_start` | Start Gate OAuth login flow, returns verification URL |
+| `dex_auth_gate_login_poll` | Poll Gate OAuth login status, returns mcp_token on success |
+| `dex_auth_login_gate_wallet` | Login directly with Gate OAuth authorization code |
+| `dex_auth_logout` | Revoke current session |
 
 ### DEX — Wallet
 
 | Tool | Description |
 |------|-------------|
-| `wallet_get_addresses` | Get wallet addresses per chain (EVM, SOL) |
-| `wallet_get_token_list` | Get token balances with prices |
-| `wallet_get_total_asset` | Get total portfolio value and 24h change |
-| `wallet_sign_message` | Sign a message with wallet private key |
-| `wallet_sign_transaction` | Sign a raw transaction with wallet private key |
+| `dex_wallet_get_addresses` | Get wallet addresses for each chain (EVM, Solana) |
+| `dex_wallet_get_token_list` | Token balances with prices and pagination |
+| `dex_wallet_get_total_asset` | Total portfolio value and 24h change |
+| `dex_wallet_sign_message` | Sign a message with wallet private key (EVM / Solana) |
+| `dex_wallet_sign_transaction` | Sign a raw transaction with wallet private key |
 
 ### DEX — Chain & Transactions
 
 | Tool | Description |
 |------|-------------|
-| `chain_config` | Get chain configuration (networkKey, chainID, endpoint) |
-| `tx_gas` | Estimate gas price and gas limit |
-| `tx_transfer_preview` | Preview transfer details before signing |
-| `tx_get_sol_unsigned` | Build unsigned Solana SOL transfer |
-| `tx_send_raw_transaction` | Broadcast signed transaction on-chain |
-| `tx_quote` | Get swap quote with route and price impact |
-| `tx_swap` | One-shot swap: Quote → Build → Sign → Submit |
-| `tx_swap_detail` | Query swap order status by order ID |
-| `tx_list` / `tx_detail` / `tx_history_list` | Transaction & swap history |
+| `dex_chain_config` | Chain configuration (chain ID, capabilities) |
+| `dex_tx_gas` | Estimate gas price and gas limit |
+| `dex_tx_transfer_preview` | Preview transfer details before signing |
+| `dex_tx_approve_preview` | Token approval preview: build ERC20/SPL approve transaction |
+| `dex_tx_get_sol_unsigned` | Build unsigned Solana SOL transfer with latest blockhash |
+| `dex_tx_send_raw_transaction` | Broadcast signed transaction on-chain |
+| `dex_tx_quote` | Swap quote with route, price impact and gas estimation |
+| `dex_tx_swap` | One-click swap: quote → build → sign → submit |
+| `dex_tx_swap_detail` | Query swap order status by order ID |
+| `dex_tx_list` / `dex_tx_detail` / `dex_tx_history_list` | Transaction & swap / bridge history |
 
 ### DEX — Market Data & Token Info
 
 | Tool | Description |
 |------|-------------|
-| `market_get_kline` | K-line (candlestick) data |
-| `market_get_tx_stats` | Trading volume and trader statistics |
-| `market_get_pair_liquidity` | Liquidity pool add/remove events |
-| `token_get_coin_info` | Token info: price, market cap, holders |
-| `token_ranking` | 24h top gainers / top losers |
-| `token_get_coins_range_by_created_at` | Discover new tokens by creation time |
-| `token_get_risk_info` | Security audit: honeypot, tax, blacklist |
+| `dex_market_get_kline` | K-line (candlestick) data: 1m, 5m, 1h, 4h, 1d |
+| `dex_market_get_tx_stats` | Trading volume and trader statistics (5m / 1h / 4h / 24h) |
+| `dex_market_get_pair_liquidity` | Liquidity pool add / remove events |
+| `dex_token_list_swap_tokens` | Available tokens for swap on a given chain |
+| `dex_token_list_cross_chain_bridge_tokens` | Bridgeable tokens for cross-chain transfers |
+| `dex_token_get_coin_info` | Token info: price, market cap, supply, holder distribution |
+| `dex_token_ranking` | 24h top gainers / top losers |
+| `dex_token_get_coins_range_by_created_at` | Discover new tokens by creation time range |
+| `dex_token_get_risk_info` | Security audit: honeypot, buy/sell tax, blacklist, permissions |
+
+### DEX — Agentic & RPC
+
+| Tool | Description |
+|------|-------------|
+| `dex_agentic_report` | Report agentic wallet addresses to wallet service |
+| `dex_rpc_call` | Execute JSON-RPC call to blockchain node |
 
 For full DEX tool parameters, see [gate-dex-mcp](gate-dex/gate-dex-mcp.md).
 
@@ -504,7 +517,7 @@ The `/mcp` and `/mcp/exchange` endpoints also expose MCP Resources for static re
 
 ### Q: Do I need a Gate account?
 
-A: **Only for CEX trading and DEX wallet.** `/mcp`, `/mcp/info`, and `/mcp/news` are fully public — no account needed. `/mcp/exchange` (CEX trading, balances, transfers) requires Gate OAuth2. `/mcp/dex` (on-chain wallet, swap) requires Google OAuth.
+A: **Only for CEX trading and DEX wallet.** `/mcp`, `/mcp/info`, and `/mcp/news` are fully public — no account needed. `/mcp/exchange` (CEX trading, balances, transfers) requires Gate OAuth2. `/mcp/dex` (on-chain wallet, swap) requires Google or Gate OAuth.
 
 ### Q: Does it support trading?
 
