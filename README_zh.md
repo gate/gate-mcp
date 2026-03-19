@@ -12,7 +12,8 @@
 - **公开市场数据** — 现货、合约、杠杆、期权、交割、理财、Alpha 行情、深度、K 线、资金费率、强平历史（**无需认证**）
 - **交易** — 现货/合约/期权/交割下单、撤单、改单；计划委托；追踪委托
 - **账户与钱包** — 余额、划转、充值提现、子账户、统一账户
-- **杠杆与理财** — 杠杆借贷、理财产品、闪兑
+- **杠杆与理财** — 杠杆借贷、理财产品、闪兑（含多币种）
+- **活动中心、卡券、新币挖矿、广场、新手福利** — 活动类型、用户卡券、LaunchPool、AI 搜索、新手任务
 - **TradFi、跨所、OTC、P2P** — 传统金融、跨所交易、场外、P2P
 - **DEX** — 链上钱包、兑换（单链及跨链）、代币信息、市场数据，支持 20+ 条链
 - **Info** — 币种信息、行情快照、技术分析、链上数据、合规检测
@@ -25,8 +26,8 @@
 
 | 端点 | 认证 | 工具 |
 |------|------|------|
-| `https://api.gatemcp.ai/mcp` | 无 | 公开市场数据（51 个工具：现货、合约、杠杆、期权、交割、理财、Alpha） |
-| `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | CEX 交易与账户（300+ 工具：现货/合约/期权/交割/杠杆交易、钱包、统一账户、子账户、理财、闪兑、返佣、TradFi、跨所、OTC、P2P、Alpha） |
+| `https://api.gatemcp.ai/mcp` | 无 | 公开市场数据（58 个工具：现货、合约、杠杆、期权、交割、理财、Alpha、活动中心、新币挖矿、广场、闪兑） |
+| `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | CEX 交易与账户（400+ 工具：现货/合约/期权/交割/杠杆交易、钱包、统一账户、子账户、理财、闪兑、返佣、TradFi、跨所、P2P、Alpha、活动中心、卡券、新币挖矿、广场、新手福利） |
 | `https://api.gatemcp.ai/mcp/dex` | Google / Gate OAuth | DEX 钱包与兑换（33 个工具：链上钱包、Swap、代币信息、市场数据、Agentic、RPC，支持 20+ 条链） |
 | `https://api.gatemcp.ai/mcp/info` | 无 | 币种信息与分析（10 个工具：行情快照、技术分析、链上数据、合规检测） |
 | `https://api.gatemcp.ai/mcp/news` | 无 | 资讯与情绪（3 个工具：新闻搜索、交易所公告、社交情绪） |
@@ -365,19 +366,23 @@ Claude Desktop 需要使用本地 stdio 代理。
 
 所有工具均使用 `cex_` 前缀。工具分为 Public MCP（无认证）与 Private MCP（OAuth2）。
 
-### Public MCP（`/mcp` — 无需认证，51 个工具）
+### Public MCP（`/mcp` — 无需认证，58 个工具）
 
 | 业务线 | 数量 | 说明 |
 |--------|------|------|
-| **现货** | 9 | `cex_spot_list_currencies`、`cex_spot_get_currency`、`cex_spot_list_currency_pairs`、`cex_spot_get_currency_pair`、`cex_spot_get_spot_tickers`、`cex_spot_get_spot_order_book`、`cex_spot_get_spot_trades`、`cex_spot_get_spot_candlesticks`、`cex_spot_get_system_time` |
-| **合约** | 13 | 合约列表、深度、成交、K 线、行情、资金费率、溢价指数、强平、合约统计、保险账本、指数成分、批量资金费率 |
+| **现货** | 8 | `cex_spot_list_currencies`、`cex_spot_get_currency`、`cex_spot_list_currency_pairs`、`cex_spot_get_currency_pair`、`cex_spot_get_spot_tickers`、`cex_spot_get_spot_order_book`、`cex_spot_get_spot_trades`、`cex_spot_get_spot_candlesticks` |
+| **合约** | 14 | 合约列表、深度、成交、K 线、行情、资金费率、溢价指数、强平、合约统计、保险账本、指数成分、批量资金费率、`cex_fx_get_fx_risk_limit_table` |
 | **杠杆** | 3 | `cex_margin_list_uni_currency_pairs`、`cex_margin_get_uni_currency_pair`、`cex_margin_get_market_margin_tier` |
 | **期权** | 12 | 标的、到期日、合约、结算、深度、行情、K 线、成交 |
 | **交割** | 8 | 合约、深度、成交、K 线、行情、保险账本、风险限额档位 |
-| **理财** | 3 | `cex_earn_list_dual_investment_plans`、`cex_earn_list_structured_products`、`cex_earn_list_uni_currencies` |
+| **理财** | 5 | `cex_earn_list_dual_investment_plans`、`cex_earn_list_structured_products`、`cex_earn_list_uni_currencies`、`cex_earn_list_earn_fixed_term_products`、`cex_earn_list_earn_fixed_term_products_by_asset` |
 | **Alpha** | 3 | `cex_alpha_list_alpha_currencies`、`cex_alpha_list_alpha_tickers`、`cex_alpha_list_alpha_tokens` |
+| **活动中心** | 1 | `cex_activity_list_activity_types` |
+| **新币挖矿** | 1 | `cex_launch_list_launch_pool_projects` |
+| **广场** | 2 | `cex_square_list_square_ai_search`、`cex_square_list_live_replay` |
+| **闪兑** | 1 | `cex_fc_list_fc_currency_pairs` |
 
-### Private MCP（`/mcp/exchange` — OAuth2，300+ 工具）
+### Private MCP（`/mcp/exchange` — OAuth2，400+ 工具）
 
 > **注意**：私有端点不包含公开市场数据工具。如需查询行情，请使用 `/mcp`。
 
@@ -393,13 +398,17 @@ Claude Desktop 需要使用本地 stdio 代理。
 | **子账户** | account | 创建/列表/锁定/解锁 SA、API Key |
 | **账户管理** | account | 账户详情、主 Key、限频、借币费率、STP 组 |
 | **返佣** | profile | 代理/合作伙伴/经纪商返佣历史、用户信息 |
-| **闪兑** | profile / trade | `cex_fc_list_fc_currency_pairs`、`cex_fc_list_fc_orders`、`cex_fc_create_fc_order` 等 |
+| **闪兑** | profile / trade | `cex_fc_list_fc_currency_pairs`、`cex_fc_list_fc_orders`、`cex_fc_create_fc_order_v1`、多币种闪兑 等 |
 | **理财** | profile / trade | 双币/结构化/余币宝产品、订单、ETH2 兑换、出借记录 |
 | **Alpha** | profile / trade | Alpha 账户、订单、报价/下单 |
 | **TradFi** | profile / trade | 品类、交易对、MT5 账户、资产、订单、仓位 |
 | **跨所** | profile / trade | 规则交易对、账户、仓位、订单、划转、兑换 |
-| **OTC** | profile / trade | 银行卡列表、OTC 订单、稳定币订单、报价/下单/取消 |
 | **P2P** | profile / trade | 用户信息、广告、聊天、订单、确认付款/收款 |
+| **活动中心** | profile | 活动类型、推荐活动、用户参与状态 |
+| **卡券** | profile | 用户卡券列表、卡券详情 |
+| **新币挖矿** | profile / trade | LaunchPool 项目列表、质押/赎回、奖励记录 |
+| **广场** | market | AI 搜索、直播回放 |
+| **新手福利** | profile | 新手资格检查、任务列表和奖励 |
 
 按 scope 分组详见 [授权说明](#授权说明oauth2)。完整参数见 [gate-exchange 详情](gate-exchange/gate-exchange-mcp_zh.md)。
 

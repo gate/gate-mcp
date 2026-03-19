@@ -14,8 +14,9 @@ A Gate MCP (Model Context Protocol) server that enables AI agents to interact wi
 - 🔍 **Public Market Data** - Spot, futures, margin, options, delivery, earn, alpha tickers, order books, K-line, funding rate, liquidation history (**no auth required**)
 - 💹 **Trading** - Create/cancel/amend spot, futures, options, delivery orders; price-triggered orders; trail orders
 - 💼 **Account & Wallet** - Balances, transfers, deposits, withdrawals, sub-accounts, unified account
-- 📊 **Margin & Earn** - Margin loans, earn products, flash swap
-- 🌍 **TradFi, CrossEx, OTC, P2P** - Traditional finance, cross-exchange, OTC, P2P trading
+- 📊 **Margin & Earn** - Margin loans, earn products, multi-currency flash swap
+- 🎯 **Activity & Welfare** - Activity center, coupons, launch pool, square, welfare
+- 🌍 **TradFi, CrossEx, P2P** - Traditional finance, cross-exchange, P2P trading
 - 🌐 **DEX** - On-chain wallet, swap (single-chain & cross-chain), token info, market data across 20+ chains
 - 📰 **Info** - Coin info, market snapshots, technical analysis, on-chain data, compliance checks
 - 📢 **News** - Real-time crypto news, exchange announcements, social sentiment
@@ -27,8 +28,8 @@ The service exposes five MCP endpoints:
 
 | Endpoint | Auth | Tools |
 |----------|------|-------|
-| `https://api.gatemcp.ai/mcp` | None | Public market data (51 tools: spot, futures, margin, options, delivery, earn, alpha) |
-| `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | CEX trading & account (300+ tools: spot/futures/options/delivery/margin trading, wallet, unified account, sub-accounts, earn, flash swap, rebate, TradFi, CrossEx, OTC, P2P, Alpha) |
+| `https://api.gatemcp.ai/mcp` | None | Public market data (58 tools: spot, futures, margin, options, delivery, earn, alpha, activity, launch pool, square, flash swap) |
+| `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | CEX trading & account (400+ tools: spot/futures/options/delivery/margin trading, wallet, unified account, sub-accounts, earn, flash swap, rebate, TradFi, CrossEx, P2P, Alpha, activity center, coupon, launch pool, square, welfare) |
 | `https://api.gatemcp.ai/mcp/dex` | Google / Gate OAuth | DEX wallet & swap (33 tools: auth, wallet, chain config, transfer, swap, market data, token info, agentic, RPC across 20+ chains) |
 | `https://api.gatemcp.ai/mcp/info` | None | Coin info & analysis (10 tools: market snapshots, technical analysis, on-chain data, compliance) |
 | `https://api.gatemcp.ai/mcp/news` | None | News & sentiment (3 tools: news search, exchange announcements, social sentiment) |
@@ -359,19 +360,23 @@ Full tool list: [gate-local-mcp-tools.md](gate-exchange/gate-local-mcp-tools.md)
 
 All tools use the `cex_` prefix. Tools are split between Public MCP (no auth) and Private MCP (OAuth2).
 
-### Public MCP (`/mcp` — no auth, 51 tools)
+### Public MCP (`/mcp` — no auth, 58 tools)
 
 | Business | Tools | Description |
 |----------|-------|-------------|
-| **Spot** | 9 | `cex_spot_list_currencies`, `cex_spot_get_currency`, `cex_spot_list_currency_pairs`, `cex_spot_get_currency_pair`, `cex_spot_get_spot_tickers`, `cex_spot_get_spot_order_book`, `cex_spot_get_spot_trades`, `cex_spot_get_spot_candlesticks`, `cex_spot_get_system_time` |
-| **Futures** | 13 | Contracts, order book, trades, candlesticks, tickers, funding rate, premium index, liquidation, contract stats, insurance ledger, index constituents, batch funding rates |
+| **Spot** | 8 | `cex_spot_list_currencies`, `cex_spot_get_currency`, `cex_spot_list_currency_pairs`, `cex_spot_get_currency_pair`, `cex_spot_get_spot_tickers`, `cex_spot_get_spot_order_book`, `cex_spot_get_spot_trades`, `cex_spot_get_spot_candlesticks` |
+| **Futures** | 14 | Contracts, order book, trades, candlesticks, tickers, funding rate, premium index, liquidation, contract stats, insurance ledger, index constituents, batch funding rates, risk limit tiers |
 | **Margin** | 3 | `cex_margin_list_uni_currency_pairs`, `cex_margin_get_uni_currency_pair`, `cex_margin_get_market_margin_tier` |
 | **Options** | 12 | Underlyings, expirations, contracts, settlements, order book, tickers, candlesticks, trades |
 | **Delivery** | 8 | Contracts, order book, trades, candlesticks, tickers, insurance ledger, risk limit tiers |
-| **Earn** | 3 | `cex_earn_list_dual_investment_plans`, `cex_earn_list_structured_products`, `cex_earn_list_uni_currencies` |
+| **Earn** | 5 | `cex_earn_list_dual_investment_plans`, `cex_earn_list_structured_products`, `cex_earn_list_uni_currencies`, `cex_earn_list_earn_fixed_term_products`, `cex_earn_list_earn_fixed_term_products_by_asset` |
 | **Alpha** | 3 | `cex_alpha_list_alpha_currencies`, `cex_alpha_list_alpha_tickers`, `cex_alpha_list_alpha_tokens` |
+| **Activity** | 1 | `cex_activity_list_activity_types` |
+| **Launch** | 1 | `cex_launch_list_launch_pool_projects` |
+| **Square** | 2 | `cex_square_list_square_ai_search`, `cex_square_list_live_replay` |
+| **Flash Swap** | 1 | `cex_fc_list_fc_currency_pairs` |
 
-### Private MCP (`/mcp/exchange` — OAuth2, 300+ tools)
+### Private MCP (`/mcp/exchange` — OAuth2, 400+ tools)
 
 > **Note**: The private endpoint does not include public market data tools. Use `/mcp` for market data queries.
 
@@ -387,13 +392,17 @@ All tools use the `cex_` prefix. Tools are split between Public MCP (no auth) an
 | **Sub-account** | account | Create/list/lock/unlock SA, API keys |
 | **Account** | account | Account detail, main keys, rate limit, debit fee, STP groups |
 | **Rebate** | profile | Agency/partner/broker commission history, user info |
-| **Flash Swap** | profile / trade | `cex_fc_list_fc_currency_pairs`, `cex_fc_list_fc_orders`, `cex_fc_create_fc_order`, etc. |
+| **Flash Swap** | profile / trade | `cex_fc_list_fc_currency_pairs`, `cex_fc_list_fc_orders`, `cex_fc_create_fc_order_v1`, multi-currency flash swap |
 | **Earn** | profile / trade | Dual/structured/uni products, orders, ETH2 swap, lend records |
 | **Alpha** | profile / trade | Alpha accounts, orders, quote/place |
 | **TradFi** | profile / trade | Categories, symbols, MT5 account, assets, orders, positions |
 | **CrossEx** | profile / trade | Rule symbols, account, positions, orders, transfers, convert |
-| **OTC** | profile / trade | Bank list, OTC orders, stable coin orders, quote/place/cancel |
 | **P2P** | profile / trade | User info, ads, chats, transactions, confirm payment/receipt |
+| **Activity** | profile | Activity types, recommended activities, user participation |
+| **Coupon** | profile | User coupons, coupon details |
+| **Launch Pool** | profile / trade | LaunchPool projects, pledge/redeem, reward records |
+| **Square** | market | AI search, live replay |
+| **Welfare** | profile | Beginner eligibility, task list and rewards |
 
 For full tool parameters, see [Gate API Docs](https://www.gate.com/docs/developers/apiv4) or [gate-exchange-mcp](gate-exchange/gate-exchange-mcp.md).
 

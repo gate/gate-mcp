@@ -5,7 +5,7 @@
 >
 > **OAuth2 Scopes**: `market`, `profile`, `trade`, `wallet`, `account`
 
-All tools use the `cex_` prefix. The endpoint exposes 300+ tools across spot, futures, margin, options, delivery, wallet, unified account, sub-account, earn, flash swap, rebate, TradFi, CrossEx, OTC, P2P, and Alpha.
+All tools use the `cex_` prefix. The endpoint exposes 400+ tools across spot, futures, margin, options, delivery, wallet, unified account, sub-account, earn, flash swap, rebate, TradFi, CrossEx, P2P, Alpha, activity center, coupon, launch pool, square, and welfare.
 
 > **api.gatemcp.ai**：工具列表见 [gateapi-mcp-service-tools.md](gateapi-mcp-service-tools.md)。**gate-local-mcp**：工具列表见 [gate-local-mcp-tools.md](gate-local-mcp-tools.md)。
 
@@ -108,15 +108,20 @@ All tools use the `cex_` prefix. The endpoint exposes 300+ tools across spot, fu
 | Tool | Description |
 |------|-------------|
 | `cex_fx_get_fx_orders_with_time_range` | Query orders by time range |
-| `cex_fx_get_fx_leverage` | Get leverage setting |
-| `cex_fx_list_fx_position_close` | List position close records |
-| `cex_fx_list_fx_auto_deleverages` | List auto deleverage records |
-| `cex_fx_list_fx_price_triggered_orders` / `cex_fx_get_fx_price_triggered_order` | Price-triggered orders |
-| `cex_fx_get_fx_trail_orders` / `cex_fx_get_fx_trail_order_detail` / `cex_fx_get_fx_trail_order_change_log` | Trail orders |
+| `cex_fx_get_leverage` | Get leverage setting |
+| `cex_fx_list_position_close` | List position close records |
+| `cex_fx_list_auto_deleverages` | List auto deleverage records |
+| `cex_fx_list_price_triggered_orders` / `cex_fx_get_fx_price_triggered_order` | Price-triggered orders |
+| `cex_fx_get_trail_orders` / `cex_fx_get_trail_order_detail` / `cex_fx_get_trail_order_change_log` | Trail orders |
 | `cex_fx_create_fx_bbo_order` | Create BBO (best bid/offer) order |
 | `cex_fx_create_fx_price_triggered_order` / `cex_fx_cancel_fx_price_triggered_order` / `cex_fx_cancel_fx_price_triggered_order_list` / `cex_fx_update_fx_price_triggered_order` | Price-triggered order management |
 | `cex_fx_countdown_cancel_all_fx` | Countdown cancel all futures orders |
-| `cex_fx_create_fx_trail_order` / `cex_fx_update_fx_trail_order` / `cex_fx_stop_fx_trail_order` / `cex_fx_stop_all_fx_trail_orders` | Trail order management |
+| `cex_fx_create_trail_order` / `cex_fx_update_trail_order` / `cex_fx_stop_trail_order` / `cex_fx_stop_all_trail_orders` | Trail order management |
+| `cex_fx_get_fx_risk_limit_table` | Query risk limit table by ID |
+| `cex_fx_list_fx_liquidates` | Query user liquidation history |
+| `cex_fx_list_fx_positions_timerange` | Query position history by time range |
+| `cex_fx_set_fx_position_mode` | Set position mode (one-way/hedge) |
+| `cex_fx_update_fx_contract_position_leverage` | Update leverage for specified margin mode |
 
 ## 3. Margin (scope: profile / trade)
 
@@ -139,20 +144,21 @@ All tools use the `cex_` prefix. The endpoint exposes 300+ tools across spot, fu
 | `cex_options_list_options_orders` / `cex_options_get_options_order` / `cex_options_list_my_options_trades` | Orders & trades |
 | `cex_options_get_options_mmp` | MMP (Market Maker Protection) |
 | `cex_options_create_options_order` / `cex_options_cancel_options_orders` / `cex_options_cancel_options_order` | Order management |
+| `cex_options_amend_options_order` | Amend options order (price/size) |
 | `cex_options_countdown_cancel_all_options` / `cex_options_set_options_mmp` / `cex_options_reset_options_mmp` | Countdown, MMP |
 
 ## 5. Delivery (scope: profile / trade)
 
 | Tool | Description |
 |------|-------------|
-| `cex_dt_list_dt_accounts` / `cex_dt_list_dt_account_book` | Account & ledger |
-| `cex_dt_list_dt_positions` / `cex_dt_get_dt_position` | Positions |
-| `cex_dt_list_dt_orders` / `cex_dt_get_dt_order` | Orders |
-| `cex_dt_get_my_dt_trades` / `cex_dt_list_dt_position_close` / `cex_dt_list_dt_liquidates` / `cex_dt_list_dt_settlements` | Trades, settlements |
-| `cex_dt_list_price_triggered_dt_orders` / `cex_dt_get_price_triggered_dt_order` | Price-triggered orders |
-| `cex_dt_update_dt_position_margin` / `cex_dt_update_dt_position_leverage` / `cex_dt_update_dt_position_risk_limit` | Position settings |
-| `cex_dt_create_dt_order` / `cex_dt_cancel_dt_orders` / `cex_dt_cancel_dt_order` | Order management |
-| `cex_dt_create_price_triggered_dt_order` / `cex_dt_cancel_price_triggered_dt_order` / `cex_dt_cancel_price_triggered_dt_order_list` | Price-triggered order management |
+| `cex_dc_list_dc_accounts` / `cex_dc_list_dc_account_book` | Account & ledger |
+| `cex_dc_list_dc_positions` / `cex_dc_get_dc_position` | Positions |
+| `cex_dc_list_dc_orders` / `cex_dc_get_dc_order` | Orders |
+| `cex_dc_get_my_dc_trades` / `cex_dc_list_dc_position_close` / `cex_dc_list_dc_liquidates` / `cex_dc_list_dc_settlements` | Trades, settlements |
+| `cex_dc_list_price_triggered_dc_orders` / `cex_dc_get_price_triggered_dc_order` | Price-triggered orders |
+| `cex_dc_update_dc_position_margin` / `cex_dc_update_dc_position_leverage` / `cex_dc_update_dc_position_risk_limit` | Position settings |
+| `cex_dc_create_dc_order` / `cex_dc_cancel_dc_orders` / `cex_dc_cancel_dc_order` | Order management |
+| `cex_dc_create_price_triggered_dc_order` / `cex_dc_cancel_price_triggered_dc_order` / `cex_dc_cancel_price_triggered_dc_order_list` | Price-triggered order management |
 
 ## 6. Unified Account (scope: account)
 
@@ -176,7 +182,6 @@ All tools use the `cex_` prefix. The endpoint exposes 300+ tools across spot, fu
 
 | Tool | Description | Main Parameters |
 |---|---|---|
-| `cex_wallet_create_transfer` | Transfer between accounts | `currency` (required), `from` (required), `to` (required), `amount` (required), `currency_pair` (for margin), `settle` (for futures/delivery) |
 | `cex_wallet_get_transfer_order_status` | Get transfer status | `client_order_id`, `tx_id` |
 | `cex_wallet_get_total_balance` | Get total balance | `currency` (optional, BTC/CNY/USD/USDT) |
 | `cex_wallet_get_wallet_fee` | Get trading fee rates | `currency_pair`, `settle` (for futures) |
@@ -227,10 +232,11 @@ All tools use the `cex_` prefix. The endpoint exposes 300+ tools across spot, fu
 
 | Tool | Description |
 |------|-------------|
-| `cex_rebate_agency_commissions_history` / `cex_rebate_agency_transaction_history` | Agency rebate |
 | `cex_rebate_partner_commissions_history` / `cex_rebate_partner_sub_list` / `cex_rebate_partner_transaction_history` | Partner rebate |
-| `cex_rebate_rebate_broker_commission_history` / `cex_rebate_rebate_broker_transaction_history` | Broker rebate |
-| `cex_rebate_rebate_user_info` / `cex_rebate_user_sub_relation` | User rebate info |
+| `cex_rebate_broker_commission_history` / `cex_rebate_broker_transaction_history` | Broker rebate |
+| `cex_rebate_user_info` / `cex_rebate_user_sub_relation` | User rebate info |
+| `cex_rebate_get_partner_application_recent` | Get partner application records (last 30 days) |
+| `cex_rebate_get_partner_eligibility` | Check partner application eligibility |
 
 ## 11. Flash Swap (scope: profile / trade)
 
@@ -238,8 +244,12 @@ All tools use the `cex_` prefix. The endpoint exposes 300+ tools across spot, fu
 |------|-------------|
 | `cex_fc_list_fc_currency_pairs` | List flash swap currency pairs |
 | `cex_fc_list_fc_orders` / `cex_fc_get_fc_order` | Query orders |
-| `cex_fc_create_fc_order` | Create flash swap order |
-| `cex_fc_preview_fc_order` | Preview flash swap |
+| `cex_fc_preview_fc_order_v1` | Preview one-to-one flash swap |
+| `cex_fc_create_fc_order_v1` | Create one-to-one flash swap order |
+| `cex_fc_preview_fc_multi_currency_many_to_one_order` | Preview many-to-one flash swap |
+| `cex_fc_preview_fc_multi_currency_one_to_many_order` | Preview one-to-many flash swap |
+| `cex_fc_create_fc_multi_currency_many_to_one_order` | Create many-to-one flash swap order |
+| `cex_fc_create_fc_multi_currency_one_to_many_order` | Create one-to-many flash swap order |
 
 ## 12. Earn (scope: profile / trade)
 
@@ -251,6 +261,9 @@ All tools use the `cex_` prefix. The endpoint exposes 300+ tools across spot, fu
 | `cex_earn_get_uni_currency` / `cex_earn_get_uni_interest` / `cex_earn_get_uni_interest_status` | Uni earn |
 | `cex_earn_list_uni_chart` / `cex_earn_list_uni_interest_records` / `cex_earn_list_uni_lend_records` | Uni records |
 | `cex_earn_place_structured_order` / `cex_earn_swap_eth2` / `cex_earn_change_uni_lend` | Trading actions |
+| `cex_earn_list_earn_fixed_term_products` / `cex_earn_list_earn_fixed_term_products_by_asset` | Fixed-term products |
+| `cex_earn_list_earn_fixed_term_lends` / `cex_earn_list_earn_fixed_term_history` | Fixed-term subscriptions & history |
+| `cex_earn_create_earn_fixed_term_lend` / `cex_earn_create_earn_fixed_term_pre_redeem` | Fixed-term subscribe & redeem |
 
 ## 13. Alpha (scope: profile / trade)
 
@@ -269,8 +282,8 @@ All tools use the `cex_` prefix. The endpoint exposes 300+ tools across spot, fu
 | `cex_tradfi_query_mt5_account_info` / `cex_tradfi_query_user_assets` | MT5 account, assets |
 | `cex_tradfi_query_transaction` / `cex_tradfi_query_order_list` / `cex_tradfi_query_order_history_list` | Transactions, orders |
 | `cex_tradfi_query_position_list` / `cex_tradfi_query_position_history_list` | Positions |
-| `cex_tradfi_create_trad_fi_user` / `cex_tradfi_create_transaction` | Create user, transaction |
-| `cex_tradfi_create_trad_fi_order` / `cex_tradfi_delete_order` / `cex_tradfi_update_order` | Order management |
+| `cex_tradfi_create_transaction` | Create transaction |
+| `cex_tradfi_create_tradfi_order` / `cex_tradfi_delete_order` / `cex_tradfi_update_order` | Order management |
 | `cex_tradfi_close_position` / `cex_tradfi_update_position` | Position management |
 
 ## 15. CrossEx (scope: profile / trade)
@@ -286,16 +299,7 @@ All tools use the `cex_` prefix. The endpoint exposes 300+ tools across spot, fu
 | `cex_crx_close_crx_position` / `cex_crx_create_crx_convert_quote` / `cex_crx_create_crx_convert_order` | Close, convert |
 | `cex_crx_update_crx_account` / `cex_crx_update_crx_positions_leverage` / `cex_crx_update_crx_margin_positions_leverage` | Update account, leverage |
 
-## 16. OTC (scope: profile / trade)
-
-| Tool | Description |
-|------|-------------|
-| `cex_otc_get_bank_list` / `cex_otc_get_user_default_bank` | Bank list |
-| `cex_otc_get_otc_order_detail` / `cex_otc_list_otc_orders` / `cex_otc_list_stable_coin_orders` | OTC orders |
-| `cex_otc_create_otc_quote` / `cex_otc_create_otc_order` / `cex_otc_cancel_otc_order` | OTC quote, order |
-| `cex_otc_mark_otc_order_paid` / `cex_otc_create_stable_coin_order` | Mark paid, stable coin |
-
-## 17. P2P (scope: profile / trade)
+## 16. P2P (scope: profile / trade)
 
 | Tool | Description |
 |------|-------------|
@@ -306,3 +310,42 @@ All tools use the `cex_` prefix. The endpoint exposes 300+ tools across spot, fu
 | `cex_p2p_ads_update_status` / `cex_p2p_place_biz_push_order` | Ads, push order |
 | `cex_p2p_send_chat_message` / `cex_p2p_upload_chat_file` | Chat |
 | `cex_p2p_transaction_cancel` / `cex_p2p_transaction_confirm_payment` / `cex_p2p_transaction_confirm_receipt` | Transaction actions |
+
+## 17. Activity Center (scope: profile)
+
+| Tool | Description |
+|------|-------------|
+| `cex_activity_list_activity_types` | List all activity types |
+| `cex_activity_list_activities` | List recommended activities |
+| `cex_activity_get_my_activity_entry` | Get user activity entry and participation status |
+
+## 18. Coupon (scope: profile)
+
+| Tool | Description |
+|------|-------------|
+| `cex_coupon_list_user_coupons` | List user coupons |
+| `cex_coupon_get_user_coupon_detail` | Get coupon detail by type and ID |
+
+## 19. Launch Pool (scope: profile / trade)
+
+| Tool | Description |
+|------|-------------|
+| `cex_launch_list_launch_pool_projects` | List LaunchPool projects |
+| `cex_launch_list_launch_pool_pledge_records` | List user pledge/redeem records |
+| `cex_launch_list_launch_pool_reward_records` | List user pledge reward records |
+| `cex_launch_create_launch_pool_order` | Create LaunchPool pledge order |
+| `cex_launch_redeem_launch_pool` | Redeem LaunchPool pledge |
+
+## 20. Square (scope: market)
+
+| Tool | Description |
+|------|-------------|
+| `cex_square_list_square_ai_search` | AI search Gate Square posts |
+| `cex_square_list_live_replay` | Search Gate live streams and replays |
+
+## 21. Welfare (scope: profile)
+
+| Tool | Description |
+|------|-------------|
+| `cex_welfare_get_user_identity` | Check user beginner welfare eligibility |
+| `cex_welfare_get_beginner_task_list` | Get beginner task list and reward info |

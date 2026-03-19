@@ -4,6 +4,40 @@ All notable changes to the Gate AI MCP Server are documented here.
 
 ---
 
+## [3.0.0] - 2026-03-19
+
+### Breaking Changes
+- **Delivery tools renamed**: All `cex_dt_*` tools renamed to `cex_dc_*` (29 tools)
+- **Futures tools renamed**: Removed redundant `_fx_` infix from 11 tools (e.g., `cex_fx_get_fx_leverage` → `cex_fx_get_leverage`)
+- **Rebate tools renamed**: Removed redundant `_rebate_` prefix from 3 tools (e.g., `cex_rebate_rebate_broker_commission_history` → `cex_rebate_broker_commission_history`)
+- **TradFi tools renamed**: `trad_fi` → `tradfi` naming unification (e.g., `cex_tradfi_create_trad_fi_order` → `cex_tradfi_create_tradfi_order`)
+- **Flash Swap upgraded**: `cex_fc_create_fc_order` / `cex_fc_preview_fc_order` replaced by v1 series + multi-currency series
+
+### Added
+- 47 new tools across 11 business areas:
+  - **Activity Center** (3): activity types, activities list, user entry
+  - **Coupon** (2): user coupons, coupon detail
+  - **Earn Fixed Term** (6): products, subscriptions, history, subscribe, early redeem
+  - **Flash Swap** (6): one-to-one v1 preview/create, many-to-one, one-to-many preview/create
+  - **Futures** (5): risk limit table, liquidation history, position history by time range, position mode, leverage update
+  - **Launch Pool** (5): projects, pledge records, reward records, create order, redeem
+  - **Options** (1): amend options order
+  - **Rebate** (2): partner application, eligibility check
+  - **Square** (2): AI search, live replay
+  - **Unified Account** (16): portfolio margin, loans, rates, transferable, leverage config, discount tiers, collateral, currencies
+  - **Welfare** (2): identity check, beginner tasks
+- Collateral Loan module enabled (public + private)
+- Flash Swap public tools enabled
+
+### Removed
+- OTC module (10 tools)
+- `cex_spot_get_system_time`, `cex_tradfi_create_tradfi_user`, `cex_wallet_create_transfer`
+- `cex_rebate_agency_commissions_history`, `cex_rebate_agency_transaction_history`
+
+### Changed
+- Total `/mcp/exchange` tool count: 300+ → 400+
+- Public `/mcp` tool count: 51 → 58
+
 ## [2.1.0] - 2026-03-19
 
 ### Added
