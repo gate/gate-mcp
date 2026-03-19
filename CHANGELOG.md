@@ -4,6 +4,15 @@ All notable changes to the Gate AI MCP Server are documented here.
 
 ---
 
+## [2.1.0] - 2026-03-19
+
+### Added
+- Gate Agentic Wallet MCP documentation (`gate-dex/gate-agentic-wallet-mcp.md`, `gate-dex/gate-agentic-wallet-mcp_zh.md`): subset of DEX tools covering auth, wallet, market data, token info, and MCP resources
+- Gate OAuth login support (`dex_auth_gate_login_start`, `dex_auth_gate_login_poll`, `dex_auth_login_gate_wallet`)
+
+### Changed
+- Updated README to reference gate-agentic-wallet-mcp documentation
+
 ## [2.0.0] - 2026-03-11
 
 ### Changed

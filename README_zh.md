@@ -461,7 +461,7 @@ Claude Desktop 需要使用本地 stdio 代理。
 | `dex_agentic_report` | 上报 Agentic 钱包地址用于追踪 |
 | `dex_rpc_call` | 通用 JSON-RPC 调用，直接与链节点交互 |
 
-完整 DEX 工具参数见 [gate-dex-mcp](gate-dex/gate-dex-mcp_zh.md)。
+完整 DEX 工具参数见 [gate-dex-mcp](gate-dex/gate-dex-mcp_zh.md)。Agentic Wallet 子集文档（认证、钱包、市场数据、资源）见 [gate-agentic-wallet-mcp](gate-dex/gate-agentic-wallet-mcp_zh.md)。
 
 ### Info — 币种与行情
 

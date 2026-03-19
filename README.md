@@ -455,7 +455,7 @@ For full tool parameters, see [Gate API Docs](https://www.gate.com/docs/develope
 | `dex_agentic_report` | Report agentic wallet addresses to wallet service |
 | `dex_rpc_call` | Execute JSON-RPC call to blockchain node |
 
-For full DEX tool parameters, see [gate-dex-mcp](gate-dex/gate-dex-mcp.md).
+For full DEX tool parameters, see [gate-dex-mcp](gate-dex/gate-dex-mcp.md). For the Agentic Wallet subset (auth, wallet, market data, resources), see [gate-agentic-wallet-mcp](gate-dex/gate-agentic-wallet-mcp.md).
 
 ### Info — Coin & Market
 
