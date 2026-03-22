@@ -7,7 +7,7 @@
 
 All tools use the `cex_` prefix. The endpoint exposes 400+ tools across spot, futures, margin, options, delivery, wallet, unified account, sub-account, earn, flash swap, rebate, TradFi, CrossEx, P2P, Alpha, activity center, coupon, launch pool, square, and welfare.
 
-> **api.gatemcp.ai**：工具列表见 [gateapi-mcp-service-tools.md](gateapi-mcp-service-tools.md)。**gate-local-mcp**：工具列表见 [gate-local-mcp-tools.md](gate-local-mcp-tools.md)。
+> **api.gatemcp.ai**: full tool list in [gateapi-mcp-service-tools.md](gateapi-mcp-service-tools.md). **gate-local-mcp** (npm `gate-mcp`): see [gate-local-mcp-tools.md](gate-local-mcp-tools.md) — stdio tool names use abbreviations (`fx`, `dc`, `sa`, etc.) and do not match the remote endpoint naming in this document.
 
 ## 1. Spot Trading (scope: profile / trade)
 

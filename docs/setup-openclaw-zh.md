@@ -14,7 +14,7 @@ Gate 提供两种方式在 OpenClaw 中连接 MCP：
 
 | 方式 | 说明 | 认证 | 工具数 |
 |------|------|------|--------|
-| **本地 MCP**（推荐） | 通过 `npx gate-mcp` 本地运行，支持 API Key 认证 | API Key | 161 个工具（11 个模块） |
+| **本地 MCP**（推荐） | 通过 `npx gate-mcp` 本地运行，支持 API Key 认证 | API Key | 384 个工具（22 个模块） |
 | **远程 MCP**（通过 mcporter） | 连接远程服务器，支持 OAuth2 | OAuth2 | 17 个公开 / 66 个私有 |
 
 ## 前置条件
@@ -27,7 +27,7 @@ Gate 提供两种方式在 OpenClaw 中连接 MCP：
 
 ## 方式 A：本地 MCP（推荐）
 
-> 使用 [gate-local-mcp](https://github.com/gate/gate-local-mcp) — 通过 `npx gate-mcp` 运行的本地 stdio MCP 服务器，涵盖 11 个模块的 161 个工具（现货、合约、交割、杠杆、钱包、账户、期权、理财、闪兑、统一账户、子账户）。
+> 使用 [gate-local-mcp](https://github.com/gate/gate-local-mcp) — 通过 `npx gate-mcp` 运行的本地 stdio MCP 服务器。默认注册 **384** 个工具、**22** 个模块（含多币种质押借币、P2P、TradFi、CrossEx、Alpha、返佣、活动、卡券、新币挖矿、广场、新手福利等）。MCP 上暴露的工具名会做缩写（如 `futures`→`fx`、`delivery`→`dc`），完整名称见 [gate-local-mcp-tools.md](../gate-exchange/gate-local-mcp-tools.md)。
 
 ### 第 1 步：创建 Gate API Key（交易用）
 
@@ -93,7 +93,7 @@ Gate 提供两种方式在 OpenClaw 中连接 MCP：
 
 ### 第 3 步：模块过滤（可选）
 
-默认加载全部 161 个工具（11 个模块）。可通过 `GATE_MODULES` 和 `GATE_READONLY` 精简工具数量：
+默认加载全部 384 个工具（22 个模块）。可通过 `GATE_MODULES` 和 `GATE_READONLY` 精简工具数量：
 
 ```json
 {
@@ -117,7 +117,7 @@ Gate 提供两种方式在 OpenClaw 中连接 MCP：
 | `GATE_API_KEY` | Gate API Key（设置后启用交易工具） |
 | `GATE_API_SECRET` | Gate API Secret |
 | `GATE_BASE_URL` | 覆盖 API 端点（如测试网） |
-| `GATE_MODULES` | 逗号分隔的模块列表：`spot`、`futures`、`delivery`、`margin`、`wallet`、`account`、`options`、`earn`、`flash_swap`、`unified`、`sub_account` |
+| `GATE_MODULES` | 逗号分隔的模块列表：`spot`、`futures`、`delivery`、`margin`、`wallet`、`account`、`options`、`earn`、`flash_swap`、`unified`、`sub_account`、`multi_collateral_loan`、`p2p`、`tradfi`、`crossex`、`alpha`、`rebate`、`activity`、`coupon`、`launch`、`square`、`welfare` |
 | `GATE_READONLY` | 设为 `true` 禁用写操作 |
 
 ### 第 4 步：开始使用
@@ -125,7 +125,7 @@ Gate 提供两种方式在 OpenClaw 中连接 MCP：
 1. 在 OpenClaw 中开始新会话
 2. 尝试："BTC/USDT 的当前价格是多少？"
 
-更多详情请参阅 [gate-local-mcp 仓库](https://github.com/gate/gate-local-mcp)。
+更多详情请参阅 [gate-local-mcp 仓库](https://github.com/gate/gate-local-mcp) 与 [实际工具名列表](../gate-exchange/gate-local-mcp-tools.md)。
 
 ---
 

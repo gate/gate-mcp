@@ -14,7 +14,7 @@ Gate provides two ways to connect MCP in OpenClaw:
 
 | Method | Description | Auth | Tools |
 |--------|-------------|------|-------|
-| **Local MCP** (Recommended) | Run locally via `npx gate-mcp`, supports API Key auth | API Key | 161 tools (11 modules) |
+| **Local MCP** (Recommended) | Run locally via `npx gate-mcp`, supports API Key auth | API Key | 384 tools (22 modules) |
 | **Remote MCP** (via mcporter) | Connect to remote server, supports OAuth2 | OAuth2 | 17 public / 66 private |
 
 ## Prerequisites
@@ -27,7 +27,7 @@ Gate provides two ways to connect MCP in OpenClaw:
 
 ## Option A: Local MCP (Recommended)
 
-> Uses [gate-local-mcp](https://github.com/gate/gate-local-mcp) — a local stdio MCP server that runs via `npx gate-mcp`, covering 161 tools across 11 modules (Spot, Futures, Delivery, Margin, Wallet, Account, Options, Earn, Flash Swap, Unified Account, Sub-Account).
+> Uses [gate-local-mcp](https://github.com/gate/gate-local-mcp) — a local stdio MCP server via `npx gate-mcp`. By default it registers **384 tools** across **22 modules** (spot, futures, delivery, margin, wallet, account, options, earn, flash_swap, unified, sub_account, multi_collateral_loan, p2p, tradfi, crossex, alpha, rebate, activity, coupon, launch, square, welfare). Tool names exposed to MCP use abbreviations (`futures`→`fx`, `delivery`→`dc`, etc.); see the canonical list in [gate-local-mcp-tools.md](../gate-exchange/gate-local-mcp-tools.md).
 
 ### Step 1: Create Gate API Key (for trading)
 
@@ -93,7 +93,7 @@ Edit your OpenClaw MCP configuration:
 
 ### Step 3: Module Filtering (Optional)
 
-By default all 161 tools (11 modules) are loaded. To reduce tool count, use `GATE_MODULES` and `GATE_READONLY`:
+By default all 384 tools (22 modules) are loaded. To reduce tool count, use `GATE_MODULES` and `GATE_READONLY`:
 
 ```json
 {
@@ -117,7 +117,7 @@ By default all 161 tools (11 modules) are loaded. To reduce tool count, use `GAT
 | `GATE_API_KEY` | Gate API Key (enables trading tools) |
 | `GATE_API_SECRET` | Gate API Secret |
 | `GATE_BASE_URL` | Override API endpoint (e.g., testnet) |
-| `GATE_MODULES` | Comma-separated module list: `spot`, `futures`, `delivery`, `margin`, `wallet`, `account`, `options`, `earn`, `flash_swap`, `unified`, `sub_account` |
+| `GATE_MODULES` | Comma-separated module list: `spot`, `futures`, `delivery`, `margin`, `wallet`, `account`, `options`, `earn`, `flash_swap`, `unified`, `sub_account`, `multi_collateral_loan`, `p2p`, `tradfi`, `crossex`, `alpha`, `rebate`, `activity`, `coupon`, `launch`, `square`, `welfare` |
 | `GATE_READONLY` | Set to `true` to disable write operations |
 
 ### Step 4: Start Using
@@ -125,7 +125,7 @@ By default all 161 tools (11 modules) are loaded. To reduce tool count, use `GAT
 1. Start a new session in OpenClaw
 2. Try: "What is the current price of BTC/USDT?"
 
-For more details, see the [gate-local-mcp repository](https://github.com/gate/gate-local-mcp).
+For more details, see the [gate-local-mcp repository](https://github.com/gate/gate-local-mcp) and the [wire-level tool list](../gate-exchange/gate-local-mcp-tools.md).
 
 ---
 

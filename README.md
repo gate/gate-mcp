@@ -328,9 +328,51 @@ See [Claude Desktop setup](docs/setup-claude-desktop.md) for detailed instructio
 
 ### Alternative: gate-local-mcp (local stdio with API keys)
 
-For local development without OAuth, use [gate-local-mcp](https://github.com/gateio/gate-local-mcp) (npm: `gate-mcp`) — an stdio MCP server that uses `GATE_API_KEY` / `GATE_API_SECRET`. Configure it as a command-based MCP server in your client (e.g. `"command": "npx", "args": ["-y", "gate-mcp"]`).
+For local development without OAuth, use [gate-local-mcp](https://github.com/gate/gate-local-mcp) (npm: `gate-mcp`) — a stdio MCP server that uses `GATE_API_KEY` / `GATE_API_SECRET` (optional for public market data only). Configure it as a command-based MCP server (e.g. `"command": "npx", "args": ["-y", "gate-mcp"]`). By default it registers **384 tools** across **22 modules** (spot, futures, delivery, margin, wallet, account, options, earn, flash_swap, unified, sub_account, multi_collateral_loan, p2p, tradfi, crossex, alpha, rebate, activity, coupon, launch, square, welfare). Reduce the set with `GATE_MODULES` or `--modules=spot,futures`, or enable read-only mode with `GATE_READONLY=true` / `--readonly`.
+
+**Important:** Wire-level tool names use abbreviations (`futures`→`fx`, `delivery`→`dc`, `sub_account`→`sa`, etc.); they differ from the remote `api.gatemcp.ai` naming. Always use the names returned by `tools/list`.
 
 Full tool list: [gate-local-mcp-tools.md](gate-exchange/gate-local-mcp-tools.md).
+
+#### LobeHub (desktop)
+
+On the [LobeHub MCP marketplace](https://lobehub.com/zh/mcp/gate-gate-mcp) this server appears as identifier `gate-gate-mcp`. The **npm package name is `gate-mcp`** — run `npx -y gate-mcp`, not `gate-gate-mcp`.
+
+Per [LobeHub custom MCP](https://lobehub.com/zh/docs/usage/community/custom-mcp), stdio servers work on the **desktop** app only; inject **environment variables** for Gate API authentication. Use **Import JSON** when adding a custom skill.
+
+**Public endpoints only:**
+
+```json
+{
+  "mcpServers": {
+    "gate-mcp": {
+      "command": "npx",
+      "args": ["-y", "gate-mcp"],
+      "type": "stdio"
+    }
+  }
+}
+```
+
+**With API key authentication:**
+
+```json
+{
+  "mcpServers": {
+    "gate-mcp": {
+      "command": "npx",
+      "args": ["-y", "gate-mcp"],
+      "type": "stdio",
+      "env": {
+        "GATE_API_KEY": "your-api-key",
+        "GATE_API_SECRET": "your-api-secret"
+      }
+    }
+  }
+}
+```
+
+You can add `GATE_MODULES`, `GATE_READONLY`, or `GATE_BASE_URL` inside `env` as needed. Click **Test connection** before saving.
 
 ### Other Clients
 

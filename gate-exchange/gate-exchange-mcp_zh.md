@@ -7,7 +7,7 @@
 
 所有工具均使用 `cex_` 前缀。端点提供 400+ 工具，涵盖现货、合约、杠杆、期权、交割、钱包、统一账户、子账户、理财、闪兑、返佣、TradFi、跨所、P2P、Alpha、活动中心、卡券、新币挖矿、广场、新手福利。
 
-> **api.gatemcp.ai**：工具列表见 [gateapi-mcp-service-tools.md](gateapi-mcp-service-tools.md)。**gate-local-mcp**：工具列表见 [gate-local-mcp-tools.md](gate-local-mcp-tools.md)。
+> **api.gatemcp.ai**：工具列表见 [gateapi-mcp-service-tools.md](gateapi-mcp-service-tools.md)。**gate-local-mcp**（npm `gate-mcp`）：工具列表见 [gate-local-mcp-tools.md](gate-local-mcp-tools.md)（本地 stdio 实际工具名含 `fx`/`dc`/`sa` 等缩写，与本文档描述的远端私有 MCP 工具名不完全一致）。
 
 ## 1. 现货交易（scope: profile / trade）
 

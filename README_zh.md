@@ -339,9 +339,51 @@ Claude Desktop 需要使用本地 stdio 代理。
 
 ### 替代方案：gate-local-mcp（本地 stdio + API Key）
 
-本地开发且无需 OAuth 时，可使用 [gate-local-mcp](https://github.com/gateio/gate-local-mcp)（npm 包名：`gate-mcp`）— 以 stdio MCP 服务器方式运行，使用 `GATE_API_KEY` / `GATE_API_SECRET`。在客户端中配置为命令式 MCP（如 `"command": "npx", "args": ["-y", "gate-mcp"]`）。
+本地开发且无需 OAuth 时，可使用 [gate-local-mcp](https://github.com/gate/gate-local-mcp)（npm 包名：`gate-mcp`）— 以 stdio MCP 方式运行；公开行情可不配密钥，交易/钱包等需设置 `GATE_API_KEY` / `GATE_API_SECRET`。在客户端中配置为命令式 MCP（如 `"command": "npx", "args": ["-y", "gate-mcp"]`）。默认注册 **384** 个工具、**22** 个模块（spot、futures、delivery、margin、wallet、account、options、earn、flash_swap、unified、sub_account、multi_collateral_loan、p2p、tradfi、crossex、alpha、rebate、activity、coupon、launch、square、welfare）。可用环境变量 `GATE_MODULES` 或参数 `--modules=spot,futures` 裁剪模块；`GATE_READONLY=true` 或 `--readonly` 仅保留只读工具。
+
+**注意：** gate-local-mcp 注册到 MCP 的工具名会做缩写（如 `futures`→`fx`、`delivery`→`dc`、`sub_account`→`sa`），与远端 `api.gatemcp.ai` 私有端点上的命名不一致；请以 `tools/list` 返回或 [gate-local-mcp-tools.md](gate-exchange/gate-local-mcp-tools.md) 为准。
 
 完整工具列表：[gate-local-mcp-tools.md](gate-exchange/gate-local-mcp-tools.md)。
+
+#### LobeHub（桌面端）
+
+[LobeHub MCP 市场](https://lobehub.com/zh/mcp/gate-gate-mcp) 中插件标识为 `gate-gate-mcp`，**实际 npm 包名为 `gate-mcp`**，安装时请使用 `npx -y gate-mcp`，不要使用 `gate-gate-mcp`。
+
+按 [LobeHub 自定义 MCP 说明](https://lobehub.com/zh/docs/usage/community/custom-mcp)，stdio 技能需在**桌面客户端**配置，并通过 **环境变量** 注入 Gate API 密钥（交易、钱包、账户类工具）。在「添加自定义技能」中可使用 **导入 JSON 配置**，例如：
+
+**仅公开行情（无需密钥）：**
+
+```json
+{
+  "mcpServers": {
+    "gate-mcp": {
+      "command": "npx",
+      "args": ["-y", "gate-mcp"],
+      "type": "stdio"
+    }
+  }
+}
+```
+
+**含 API Key 认证：**
+
+```json
+{
+  "mcpServers": {
+    "gate-mcp": {
+      "command": "npx",
+      "args": ["-y", "gate-mcp"],
+      "type": "stdio",
+      "env": {
+        "GATE_API_KEY": "your-api-key",
+        "GATE_API_SECRET": "your-api-secret"
+      }
+    }
+  }
+}
+```
+
+可在 `env` 中按需增加 `GATE_MODULES`、`GATE_READONLY`、`GATE_BASE_URL`（测试网等）。保存前请点击 **测试连接**。
 
 ### 其他客户端
 
