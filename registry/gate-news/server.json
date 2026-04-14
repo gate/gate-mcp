@@ -1,0 +1,18 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.gate/gate-news",
+  "title": "Gate News MCP",
+  "description": "Gate news MCP for crypto news, structured events, announcements, and social sentiment.",
+  "version": "0.1.0",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://api.gatemcp.ai/mcp/news"
+    }
+  ],
+  "repository": {
+    "source": "github",
+    "url": "https://github.com/gate/gate-mcp",
+    "id": "1147714938"
+  }
+}
