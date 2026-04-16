@@ -1,6 +1,6 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.gate/gate-exchange",
+  "name": "io.github.gateio-dev/gate-exchange",
   "title": "Gate Exchange MCP",
   "description": "OAuth Gate exchange MCP for CEX trading, account, wallet, unified account, and sub-account.",
   "version": "1.0.0",

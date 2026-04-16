@@ -1,6 +1,6 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.gate/gate-info",
+  "name": "io.github.gateio-dev/gate-info",
   "title": "Gate Info MCP",
   "description": "Gate info MCP for coin discovery, market snapshots, technical analysis, and on-chain data.",
   "version": "0.1.0",

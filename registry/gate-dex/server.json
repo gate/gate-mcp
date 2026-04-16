@@ -1,6 +1,6 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.gate/gate-dex",
+  "name": "io.github.gateio-dev/gate-dex",
   "title": "Gate DEX MCP",
   "description": "Gate DEX MCP for wallet auth, transfers, swaps, token info, market data, and RPC access.",
   "version": "1.0.0",

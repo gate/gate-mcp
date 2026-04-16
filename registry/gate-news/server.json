@@ -1,6 +1,6 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.gate/gate-news",
+  "name": "io.github.gateio-dev/gate-news",
   "title": "Gate News MCP",
   "description": "Gate news MCP for crypto news, structured events, announcements, and social sentiment.",
   "version": "0.1.0",

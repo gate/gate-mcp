@@ -1,6 +1,6 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.gate/gate-mcp",
+  "name": "io.github.gateio-dev/gate-mcp",
   "title": "Gate MCP",
   "description": "Public Gate market data MCP for spot, futures, margin, options, delivery, earn, and alpha.",
   "version": "1.0.0",
