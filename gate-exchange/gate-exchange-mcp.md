@@ -1,351 +1,2131 @@
-# Gate Exchange MCP Tools
-
-> This document describes the tools available on the **private endpoint** (`/mcp/exchange`, OAuth2 required).
-> For public market data tools (no auth), see the [Public MCP section in README](../README.md#public-mcp-mcp--no-auth).
->
-> **OAuth2 Scopes**: `market`, `profile`, `trade`, `wallet`, `account`
-
-All tools use the `cex_` prefix. The endpoint exposes 400+ tools across spot, futures, margin, options, delivery, wallet, unified account, sub-account, earn, flash swap, rebate, TradFi, CrossEx, P2P, Alpha, activity center, coupon, launch pool, square, and welfare.
-
-> **api.gatemcp.ai**: full tool list in [gateapi-mcp-service-tools.md](gateapi-mcp-service-tools.md). **gate-local-mcp** (npm `gate-mcp`): see [gate-local-mcp-tools.md](gate-local-mcp-tools.md) — stdio tool names use abbreviations (`fx`, `dc`, `sa`, etc.) and do not match the remote endpoint naming in this document.
-
-## 1. Spot Trading (scope: profile / trade)
-
-### 1.1 Account Queries
-
-| Tool | Description | Main Parameters |
-|---|---|---|
-| `cex_spot_get_spot_accounts` | Get spot account balances | `currency` (optional, returns all if omitted) |
-| `cex_spot_list_spot_account_book` | Get spot account ledger records | `currency`, `limit`, `page`, `from`, `to`, `type`, `code` |
-| `cex_spot_get_spot_fee` | Get trading fee rate | `currency_pair` |
-| `cex_spot_get_spot_batch_fee` | Get trading fee rates in batch | `currency_pairs` (required, up to 50 pairs) |
-| `cex_spot_list_all_open_orders` | List all open orders across pairs | - |
-| `cex_spot_get_spot_price_triggered_order` | Get price-triggered order | `order_id` |
-| `cex_spot_list_spot_price_triggered_orders` | List price-triggered orders | `status`, `page`, `limit` |
-| `cex_spot_get_spot_insurance_history` | Get insurance fund history | `currency_pair`, `limit` |
-
-### 1.2 Order Management
-
-| Tool | Description | Main Parameters |
-|---|---|---|
-| `cex_spot_create_spot_order` | Create a spot order | `currency_pair` (required), `side` (required, buy/sell), `amount` (required), `price`, `type` (limit/market), `account`, `time_in_force`, `iceberg`, `auto_borrow`, `auto_repay`, `text`, `stp_act`, `action_mode`, `slippage` |
-| `cex_spot_create_spot_batch_orders` | Create spot orders in batch | `orders` (required, JSON array) |
-| `cex_spot_list_spot_orders` | List spot orders | `currency_pair` (required), `status` (open/finished), `page`, `limit`, `account`, `from`, `to`, `side` |
-| `cex_spot_get_spot_order` | Get a single spot order | `order_id` (required), `currency_pair` (required), `account` |
-| `cex_spot_cancel_spot_order` | Cancel a single spot order | `order_id` (required), `currency_pair` (required), `account`, `action_mode` |
-| `cex_spot_cancel_all_spot_orders` | Cancel all spot orders in specified pair | `currency_pair` (required), `side`, `account`, `action_mode` |
-| `cex_spot_cancel_spot_batch_orders` | Cancel spot orders in batch | `order_ids` (required), `currency_pair` (required) |
-| `cex_spot_amend_spot_order` | Amend a spot order | `order_id` (required), `currency_pair`, `account`, `amount`, `price`, `amend_text`, `action_mode` |
-| `cex_spot_amend_spot_batch_orders` | Amend spot orders in batch | `orders` (required, JSON array) |
-| `cex_spot_create_spot_price_triggered_order` | Create price-triggered order | `market`, `trigger`, `put`, `options` |
-| `cex_spot_cancel_spot_price_triggered_order` | Cancel price-triggered order | `order_id` |
-| `cex_spot_cancel_spot_price_triggered_order_list` | Cancel price-triggered orders in batch | `order_ids` |
-| `cex_spot_countdown_cancel_all_spot` | Countdown cancel all spot orders | `timeout`, `currency_pair`, `market` |
-| `cex_spot_create_cross_liquidate_order` | Create cross-margin liquidation order | `currency_pair`, `side`, `amount`, `price` |
-
-### 1.3 Trade Queries
-
-| Tool | Description | Main Parameters |
-|---|---|---|
-| `cex_spot_list_spot_my_trades` | Query personal spot trade history | `currency_pair`, `limit`, `page`, `order_id`, `account`, `from`, `to` |
-
-## 2. Futures Trading
-
-### 2.1 Accounts and Positions
-
-| Tool | Description | Main Parameters |
-|---|---|---|
-| `cex_fx_get_fx_accounts` | Get futures account information | `settle` (required, usdt/btc) |
-| `cex_fx_list_fx_account_book` | Get futures account ledger records | `settle` (required), `contract`, `limit`, `offset`, `from`, `to`, `type` |
-| `cex_fx_get_fx_position` | Get a single position | `settle` (required), `contract` (required) |
-| `cex_fx_list_fx_positions` | List all positions | `settle` (required), `holding`, `limit`, `offset` |
-| `cex_fx_get_fx_dual_position` | Get dual-mode position | `settle` (required), `contract` (required) |
-
-### 2.2 Position Settings
-
-| Tool | Description | Main Parameters |
-|---|---|---|
-| `cex_fx_update_fx_position_leverage` | Update leverage | `settle` (required), `contract` (required), `leverage` (required), `cross_leverage_limit`, `pid` |
-| `cex_fx_update_fx_position_margin` | Update margin | `settle` (required), `contract` (required), `change` (required) |
-| `cex_fx_update_fx_position_risk_limit` | Update risk limit tier | `settle` (required), `contract` (required), `risk_limit` (required) |
-| `cex_fx_update_fx_position_cross_mode` | Switch cross/isolated mode | `settle` (required), `contract`, `mode` (required, CROSS/ISOLATED) |
-| `cex_fx_update_fx_dual_position_cross_mode` | Switch mode for dual positions | `settle` (required), `contract` (required), `mode` (required, CROSS/ISOLATED) |
-| `cex_fx_update_fx_dual_position_leverage` | Update leverage for dual positions | `settle` (required), `contract` (required), `leverage` (required), `cross_leverage_limit` |
-| `cex_fx_update_fx_dual_position_margin` | Update margin for dual positions | `settle` (required), `contract` (required), `change` (required), `dual_side` (required, long/short) |
-| `cex_fx_update_fx_dual_position_risk_limit` | Update risk limit for dual positions | `settle` (required), `contract` (required), `risk_limit` (required) |
-| `cex_fx_set_fx_dual` | Set dual-position mode | `settle` (required), `dual_mode` (required, true/false) |
-
-### 2.3 Order Management
-
-| Tool | Description | Main Parameters |
-|---|---|---|
-| `cex_fx_create_fx_order` | Create a futures order | `settle` (required), `contract` (required), `size` (required, positive=long/negative=short), `price`, `tif` (gtc/ioc/poc/fok), `close`, `reduce_only`, `iceberg`, `text`, `auto_size`, `stp_act`, `market_order_slip_ratio`, `pos_margin_mode` |
-| `cex_fx_create_fx_batch_orders` | Create futures orders in batch | `settle` (required), `orders` (required, JSON array) |
-| `cex_fx_list_fx_orders` | List futures orders | `settle` (required), `status` (required, open/finished), `contract`, `limit`, `offset`, `last_id` |
-| `cex_fx_get_fx_order` | Get a single futures order | `settle` (required), `order_id` (required) |
-| `cex_fx_cancel_fx_order` | Cancel a single futures order | `settle` (required), `order_id` (required) |
-| `cex_fx_cancel_all_fx_orders` | Cancel all futures orders | `settle` (required), `contract` (required), `side`, `exclude_reduce_only`, `text` |
-| `cex_fx_cancel_fx_batch_orders` | Cancel futures orders in batch | `settle` (required), `order_ids` (required) |
-| `cex_fx_amend_fx_order` | Amend a futures order | `settle` (required), `order_id` (required), `size`, `price`, `amend_text`, `text` |
-| `cex_fx_amend_fx_batch_orders` | Amend futures orders in batch | `settle` (required), `orders` (required, JSON array), `order_id`, `text` |
-
-### 2.4 Trade Queries
-
-| Tool | Description | Main Parameters |
-|---|---|---|
-| `cex_fx_list_fx_my_trades` | Query personal futures trade history | `settle` (required), `contract`, `limit`, `offset`, `last_id`, `order` |
-| `cex_fx_get_fx_my_trades_timerange` | Query personal trades by time range | `settle` (required), `contract`, `from`, `to`, `limit`, `offset`, `role` |
-
-### 2.5 Fee & Risk
-
-| Tool | Description | Main Parameters |
-|---|---|---|
-| `cex_fx_get_fx_fee` | Get futures fee rate | `settle` (required), `contract` |
-| `cex_fx_list_fx_risk_limit_tiers` | Get risk limit tiers | `settle` (required), `contract`, `limit`, `offset` |
-
-### 2.6 Additional Futures Tools
-
-| Tool | Description |
-|------|-------------|
-| `cex_fx_get_fx_orders_with_time_range` | Query orders by time range |
-| `cex_fx_get_leverage` | Get leverage setting |
-| `cex_fx_list_position_close` | List position close records |
-| `cex_fx_list_auto_deleverages` | List auto deleverage records |
-| `cex_fx_list_price_triggered_orders` / `cex_fx_get_fx_price_triggered_order` | Price-triggered orders |
-| `cex_fx_get_trail_orders` / `cex_fx_get_trail_order_detail` / `cex_fx_get_trail_order_change_log` | Trail orders |
-| `cex_fx_create_fx_bbo_order` | Create BBO (best bid/offer) order |
-| `cex_fx_create_fx_price_triggered_order` / `cex_fx_cancel_fx_price_triggered_order` / `cex_fx_cancel_fx_price_triggered_order_list` / `cex_fx_update_fx_price_triggered_order` | Price-triggered order management |
-| `cex_fx_countdown_cancel_all_fx` | Countdown cancel all futures orders |
-| `cex_fx_create_trail_order` / `cex_fx_update_trail_order` / `cex_fx_stop_trail_order` / `cex_fx_stop_all_trail_orders` | Trail order management |
-| `cex_fx_get_fx_risk_limit_table` | Query risk limit table by ID |
-| `cex_fx_list_fx_liquidates` | Query user liquidation history |
-| `cex_fx_list_fx_positions_timerange` | Query position history by time range |
-| `cex_fx_set_fx_position_mode` | Set position mode (one-way/hedge) |
-| `cex_fx_update_fx_contract_position_leverage` | Update leverage for specified margin mode |
-
-## 3. Margin (scope: profile / trade)
-
-| Tool | Description |
-|------|-------------|
-| `cex_margin_list_margin_accounts` / `cex_margin_list_margin_account_book` | Margin account & ledger |
-| `cex_margin_list_funding_accounts` / `cex_margin_get_auto_repay_status` | Funding account, auto repay |
-| `cex_margin_get_margin_transferable` / `cex_margin_get_user_margin_tier` | Transferable, tier |
-| `cex_margin_list_uni_loans` / `cex_margin_list_uni_loan_records` / `cex_margin_list_uni_loan_interest_records` | Uni loans |
-| `cex_margin_get_uni_borrowable` / `cex_margin_list_cross_margin_loans` / `cex_margin_list_cross_margin_repayments` | Borrowable, cross margin |
-| `cex_margin_set_auto_repay` / `cex_margin_set_user_market_leverage` | Auto repay, leverage |
-| `cex_margin_create_uni_loan` | Create uni loan |
-
-## 4. Options (scope: profile / trade)
-
-| Tool | Description |
-|------|-------------|
-| `cex_options_list_my_options_settlements` / `cex_options_list_options_account` / `cex_options_list_options_account_book` | Account & settlements |
-| `cex_options_list_options_positions` / `cex_options_get_options_position` / `cex_options_list_options_position_close` | Positions |
-| `cex_options_list_options_orders` / `cex_options_get_options_order` / `cex_options_list_my_options_trades` | Orders & trades |
-| `cex_options_get_options_mmp` | MMP (Market Maker Protection) |
-| `cex_options_create_options_order` / `cex_options_cancel_options_orders` / `cex_options_cancel_options_order` | Order management |
-| `cex_options_amend_options_order` | Amend options order (price/size) |
-| `cex_options_countdown_cancel_all_options` / `cex_options_set_options_mmp` / `cex_options_reset_options_mmp` | Countdown, MMP |
-
-## 5. Delivery (scope: profile / trade)
-
-| Tool | Description |
-|------|-------------|
-| `cex_dc_list_dc_accounts` / `cex_dc_list_dc_account_book` | Account & ledger |
-| `cex_dc_list_dc_positions` / `cex_dc_get_dc_position` | Positions |
-| `cex_dc_list_dc_orders` / `cex_dc_get_dc_order` | Orders |
-| `cex_dc_get_my_dc_trades` / `cex_dc_list_dc_position_close` / `cex_dc_list_dc_liquidates` / `cex_dc_list_dc_settlements` | Trades, settlements |
-| `cex_dc_list_price_triggered_dc_orders` / `cex_dc_get_price_triggered_dc_order` | Price-triggered orders |
-| `cex_dc_update_dc_position_margin` / `cex_dc_update_dc_position_leverage` / `cex_dc_update_dc_position_risk_limit` | Position settings |
-| `cex_dc_create_dc_order` / `cex_dc_cancel_dc_orders` / `cex_dc_cancel_dc_order` | Order management |
-| `cex_dc_create_price_triggered_dc_order` / `cex_dc_cancel_price_triggered_dc_order` / `cex_dc_cancel_price_triggered_dc_order_list` | Price-triggered order management |
-
-## 6. Unified Account (scope: account)
-
-| Tool | Description | Main Parameters |
-|---|---|---|
-| `cex_unified_get_unified_accounts` | Get unified account information | `currency`, `sub_uid` |
-| `cex_unified_get_unified_mode` | Get unified account mode | - |
-| `cex_unified_set_unified_mode` | Set unified account mode | `mode` (required), `usdt_futures`, `spot_hedge`, `use_funding`, `options` |
-| `cex_unified_get_unified_borrowable` | Get borrowable amount | `currency` (required) |
-| `cex_unified_get_unified_risk_units` | Get risk units | - |
-| `cex_unified_list_unified_loans` | Get unified account loan records | `currency`, `limit`, `page`, `type` |
-| `cex_unified_calculate_portfolio_margin` / `cex_unified_create_unified_loan` | Portfolio margin, create loan |
-| `cex_unified_get_history_loan_rate` / `cex_unified_get_unified_borrowable_list` / `cex_unified_get_unified_estimate_rate` | Loan rate, borrowable list |
-| `cex_unified_get_unified_transferable` / `cex_unified_get_unified_transferables` | Transferable amounts |
-| `cex_unified_get_user_leverage_currency_config` / `cex_unified_set_user_leverage_currency_setting` | Leverage config |
-| `cex_unified_list_currency_discount_tiers` / `cex_unified_list_loan_margin_tiers` | Discount tiers |
-| `cex_unified_list_unified_currencies` / `cex_unified_list_unified_loan_interest_records` / `cex_unified_list_unified_loan_records` | Currencies, loan records |
-| `cex_unified_set_unified_collateral` | Set collateral |
-
-## 7. Wallet & Transfer (scope: wallet)
-
-| Tool | Description | Main Parameters |
-|---|---|---|
-| `cex_wallet_get_transfer_order_status` | Get transfer status | `client_order_id`, `tx_id` |
-| `cex_wallet_get_total_balance` | Get total balance | `currency` (optional, BTC/CNY/USD/USDT) |
-| `cex_wallet_get_wallet_fee` | Get trading fee rates | `currency_pair`, `settle` (for futures) |
-| `cex_wallet_list_deposits` | List deposits | `currency`, `limit`, `offset`, `from`, `to` |
-| `cex_wallet_list_withdrawals` | List withdrawals | `currency`, `limit`, `offset`, `from`, `to` |
-| `cex_wallet_create_sa_transfer` | Transfer between main and sub account | `sub_account` (required), `currency` (required), `amount` (required), `direction` (required, to/from), `sub_account_type`, `client_order_id` |
-| `cex_wallet_create_sa_to_sa_transfer` | Transfer between sub accounts | `currency` (required), `sub_account_from` (required), `sub_account_from_type` (required), `sub_account_to` (required), `sub_account_to_type` (required), `amount` (required) |
-| `cex_wallet_get_deposit_address` / `cex_wallet_list_currency_chains` | Deposit address, chains |
-| `cex_wallet_list_sa_balances` / `cex_wallet_list_sa_cross_margin_balances` / `cex_wallet_list_sa_futures_balances` / `cex_wallet_list_sa_margin_balances` / `cex_wallet_list_sa_transfers` | Sub-account balances & transfers |
-| `cex_wallet_list_small_balance` / `cex_wallet_list_small_balance_history` / `cex_wallet_convert_small_balance` | Small balance convert |
-
-## 8. Sub Account (scope: account)
-
-### 8.1 Sub Account Management
-
-| Tool | Description | Main Parameters |
-|---|---|---|
-| `cex_sa_create_sa` | Create a sub account | `login_name` (required), `password`, `email`, `remark` |
-| `cex_sa_get_sa` | Get sub account information | `user_id` (required) |
-| `cex_sa_list_sas` | List sub accounts | `type` |
-| `cex_sa_lock_sa` | Lock a sub account | `user_id` (required) |
-| `cex_sa_unlock_sa` | Unlock a sub account | `user_id` (required) |
-| `cex_sa_get_sa_unified_mode` | Get sub account unified mode | - |
-
-### 8.2 Sub Account API Key
-
-| Tool | Description | Main Parameters |
-|---|---|---|
-| `cex_sa_create_sa_key` | Create sub account API key | `user_id` (required), `mode`, `name`, `perms` (JSON array), `ip_whitelist` |
-| `cex_sa_get_sa_key` | Get sub account API key | `user_id` (required), `key` (required) |
-| `cex_sa_list_sa_keys` | List sub account API keys | `user_id` (required) |
-| `cex_sa_update_sa_key` | Update sub account API key | `user_id` (required), `key` (required), `mode`, `name`, `perms` (JSON array), `ip_whitelist` |
-| `cex_sa_delete_sa_key` | Delete sub account API key | `user_id` (required), `key` (required) |
-
-## 9. Account Management (scope: account)
-
-| Tool | Description |
-|------|-------------|
-| `cex_account_get_account_detail` | Get account detail |
-| `cex_account_get_account_main_keys` | Get main API keys |
-| `cex_account_get_account_rate_limit` | Get rate limit |
-| `cex_account_get_debit_fee` / `cex_account_set_debit_fee` | Debit fee |
-| `cex_account_list_stp_groups` / `cex_account_list_stp_groups_users` | STP groups |
-| `cex_account_create_stp_group` | Create STP group |
-| `cex_account_add_stp_group_users` / `cex_account_delete_stp_group_users` | Manage STP users |
-
-## 10. Rebate (scope: profile)
-
-| Tool | Description |
-|------|-------------|
-| `cex_rebate_partner_commissions_history` / `cex_rebate_partner_sub_list` / `cex_rebate_partner_transaction_history` | Partner rebate |
-| `cex_rebate_broker_commission_history` / `cex_rebate_broker_transaction_history` | Broker rebate |
-| `cex_rebate_user_info` / `cex_rebate_user_sub_relation` | User rebate info |
-| `cex_rebate_get_partner_application_recent` | Get partner application records (last 30 days) |
-| `cex_rebate_get_partner_eligibility` | Check partner application eligibility |
-
-## 11. Flash Swap (scope: profile / trade)
-
-| Tool | Description |
-|------|-------------|
-| `cex_fc_list_fc_currency_pairs` | List flash swap currency pairs |
-| `cex_fc_list_fc_orders` / `cex_fc_get_fc_order` | Query orders |
-| `cex_fc_preview_fc_order_v1` | Preview one-to-one flash swap |
-| `cex_fc_create_fc_order_v1` | Create one-to-one flash swap order |
-| `cex_fc_preview_fc_multi_currency_many_to_one_order` | Preview many-to-one flash swap |
-| `cex_fc_preview_fc_multi_currency_one_to_many_order` | Preview one-to-many flash swap |
-| `cex_fc_create_fc_multi_currency_many_to_one_order` | Create many-to-one flash swap order |
-| `cex_fc_create_fc_multi_currency_one_to_many_order` | Create one-to-many flash swap order |
-
-## 12. Earn (scope: profile / trade)
-
-| Tool | Description |
-|------|-------------|
-| `cex_earn_asset_list` / `cex_earn_award_list` | Assets, awards |
-| `cex_earn_list_dual_balance` / `cex_earn_list_dual_orders` | Dual investment |
-| `cex_earn_list_structured_orders` / `cex_earn_order_list` | Structured products |
-| `cex_earn_get_uni_currency` / `cex_earn_get_uni_interest` / `cex_earn_get_uni_interest_status` | Uni earn |
-| `cex_earn_list_uni_chart` / `cex_earn_list_uni_interest_records` / `cex_earn_list_uni_lend_records` | Uni records |
-| `cex_earn_place_structured_order` / `cex_earn_swap_eth2` / `cex_earn_change_uni_lend` | Trading actions |
-| `cex_earn_list_earn_fixed_term_products` / `cex_earn_list_earn_fixed_term_products_by_asset` | Fixed-term products |
-| `cex_earn_list_earn_fixed_term_lends` / `cex_earn_list_earn_fixed_term_history` | Fixed-term subscriptions & history |
-| `cex_earn_create_earn_fixed_term_lend` / `cex_earn_create_earn_fixed_term_pre_redeem` | Fixed-term subscribe & redeem |
-
-## 13. Alpha (scope: profile / trade)
-
-| Tool | Description |
-|------|-------------|
-| `cex_alpha_list_alpha_accounts` / `cex_alpha_list_alpha_account_book` | Alpha account |
-| `cex_alpha_list_alpha_orders` / `cex_alpha_get_alpha_order` | Alpha orders |
-| `cex_alpha_quote_alpha_order` / `cex_alpha_place_alpha_order` | Quote & place |
-
-## 14. TradFi (scope: profile / trade)
-
-| Tool | Description |
-|------|-------------|
-| `cex_tradfi_query_categories` / `cex_tradfi_query_symbols` / `cex_tradfi_query_symbol_detail` | Categories & symbols |
-| `cex_tradfi_query_symbol_kline` / `cex_tradfi_query_symbol_ticker` | Market data |
-| `cex_tradfi_query_mt5_account_info` / `cex_tradfi_query_user_assets` | MT5 account, assets |
-| `cex_tradfi_query_transaction` / `cex_tradfi_query_order_list` / `cex_tradfi_query_order_history_list` | Transactions, orders |
-| `cex_tradfi_query_position_list` / `cex_tradfi_query_position_history_list` | Positions |
-| `cex_tradfi_create_transaction` | Create transaction |
-| `cex_tradfi_create_tradfi_order` / `cex_tradfi_delete_order` / `cex_tradfi_update_order` | Order management |
-| `cex_tradfi_close_position` / `cex_tradfi_update_position` | Position management |
-
-## 15. CrossEx (scope: profile / trade)
-
-| Tool | Description |
-|------|-------------|
-| `cex_crx_list_crx_rule_symbols` / `cex_crx_list_crx_rule_risk_limits` | Rule symbols, risk limits |
-| `cex_crx_list_crx_transfer_coins` / `cex_crx_list_crx_transfers` | Transfer coins, transfers |
-| `cex_crx_get_crx_account` / `cex_crx_get_crx_fee` / `cex_crx_get_crx_interest_rate` | Account, fee, interest |
-| `cex_crx_list_crx_positions` / `cex_crx_list_crx_margin_positions` | Positions |
-| `cex_crx_list_crx_open_orders` / `cex_crx_get_crx_order` | Orders |
-| `cex_crx_create_crx_transfer` / `cex_crx_create_crx_order` / `cex_crx_cancel_crx_order` / `cex_crx_update_crx_order` | Transfers, orders |
-| `cex_crx_close_crx_position` / `cex_crx_create_crx_convert_quote` / `cex_crx_create_crx_convert_order` | Close, convert |
-| `cex_crx_update_crx_account` / `cex_crx_update_crx_positions_leverage` / `cex_crx_update_crx_margin_positions_leverage` | Update account, leverage |
-
-## 16. P2P (scope: profile / trade)
-
-| Tool | Description |
-|------|-------------|
-| `cex_p2p_get_user_info` / `cex_p2p_get_counterparty_user_info` / `cex_p2p_get_myself_payment` | User info |
-| `cex_p2p_ads_detail` / `cex_p2p_ads_list` / `cex_p2p_my_ads_list` | Ads |
-| `cex_p2p_get_chats_list` | Chats |
-| `cex_p2p_get_completed_transaction_list` / `cex_p2p_get_pending_transaction_list` / `cex_p2p_get_transaction_details` | Transactions |
-| `cex_p2p_ads_update_status` / `cex_p2p_place_biz_push_order` | Ads, push order |
-| `cex_p2p_send_chat_message` / `cex_p2p_upload_chat_file` | Chat |
-| `cex_p2p_transaction_cancel` / `cex_p2p_transaction_confirm_payment` / `cex_p2p_transaction_confirm_receipt` | Transaction actions |
-
-## 17. Activity Center (scope: profile)
-
-| Tool | Description |
-|------|-------------|
-| `cex_activity_list_activity_types` | List all activity types |
-| `cex_activity_list_activities` | List recommended activities |
-| `cex_activity_get_my_activity_entry` | Get user activity entry and participation status |
-
-## 18. Coupon (scope: profile)
-
-| Tool | Description |
-|------|-------------|
-| `cex_coupon_list_user_coupons` | List user coupons |
-| `cex_coupon_get_user_coupon_detail` | Get coupon detail by type and ID |
-
-## 19. Launch Pool (scope: profile / trade)
-
-| Tool | Description |
-|------|-------------|
-| `cex_launch_list_launch_pool_projects` | List LaunchPool projects |
-| `cex_launch_list_launch_pool_pledge_records` | List user pledge/redeem records |
-| `cex_launch_list_launch_pool_reward_records` | List user pledge reward records |
-| `cex_launch_create_launch_pool_order` | Create LaunchPool pledge order |
-| `cex_launch_redeem_launch_pool` | Redeem LaunchPool pledge |
-
-## 20. Square (scope: market)
-
-| Tool | Description |
-|------|-------------|
-| `cex_square_list_square_ai_search` | AI search Gate Square posts |
-| `cex_square_list_live_replay` | Search Gate live streams and replays |
-
-## 21. Welfare (scope: profile)
-
-| Tool | Description |
-|------|-------------|
-| `cex_welfare_get_user_identity` | Check user beginner welfare eligibility |
-| `cex_welfare_get_beginner_task_list` | Get beginner task list and reward info |
+ <a name="gate" id="gate"></a>
+## gate{docsify-ignore}
+**Kind**: global class
+**Extends**: <code>Exchange</code>
+* [loadUnifiedStatus](#loadunifiedstatus)
+* [fetchTime](#fetchtime)
+* [fetchMarkets](#fetchmarkets)
+* [fetchCurrencies](#fetchcurrencies)
+* [fetchFundingRate](#fetchfundingrate)
+* [fetchFundingRates](#fetchfundingrates)
+* [fetchDepositAddressesByNetwork](#fetchdepositaddressesbynetwork)
+* [fetchDepositAddress](#fetchdepositaddress)
+* [fetchTradingFee](#fetchtradingfee)
+* [fetchTradingFees](#fetchtradingfees)
+* [fetchTransactionFees](#fetchtransactionfees)
+* [fetchDepositWithdrawFees](#fetchdepositwithdrawfees)
+* [fetchFundingHistory](#fetchfundinghistory)
+* [fetchOrderBook](#fetchorderbook)
+* [fetchTicker](#fetchticker)
+* [fetchTickers](#fetchtickers)
+* [fetchBalance](#fetchbalance)
+* [fetchFundingRateHistory](#fetchfundingratehistory)
+* [fetchTrades](#fetchtrades)
+* [fetchOrderTrades](#fetchordertrades)
+* [fetchMyTrades](#fetchmytrades)
+* [fetchDeposits](#fetchdeposits)
+* [fetchWithdrawals](#fetchwithdrawals)
+* [withdraw](#withdraw)
+* [createOrder](#createorder)
+* [createOrders](#createorders)
+* [createMarketBuyOrderWithCost](#createmarketbuyorderwithcost)
+* [editOrder](#editorder)
+* [fetchOrder](#fetchorder)
+* [fetchOpenOrders](#fetchopenorders)
+* [fetchClosedOrders](#fetchclosedorders)
+* [cancelOrder](#cancelorder)
+* [cancelOrders](#cancelorders)
+* [cancelOrdersForSymbols](#cancelordersforsymbols)
+* [cancelAllOrders](#cancelallorders)
+* [transfer](#transfer)
+* [setLeverage](#setleverage)
+* [fetchPosition](#fetchposition)
+* [fetchPositions](#fetchpositions)
+* [fetchLeverageTiers](#fetchleveragetiers)
+* [fetchMarketLeverageTiers](#fetchmarketleveragetiers)
+* [repayIsolatedMargin](#repayisolatedmargin)
+* [repayCrossMargin](#repaycrossmargin)
+* [borrowIsolatedMargin](#borrowisolatedmargin)
+* [borrowCrossMargin](#borrowcrossmargin)
+* [fetchBorrowInterest](#fetchborrowinterest)
+* [reduceMargin](#reducemargin)
+* [addMargin](#addmargin)
+* [fetchOpenInterest](#fetchopeninterest)
+* [fetchSettlementHistory](#fetchsettlementhistory)
+* [fetchMySettlementHistory](#fetchmysettlementhistory)
+* [fetchLedger](#fetchledger)
+* [setPositionMode](#setpositionmode)
+* [fetchUnderlyingAssets](#fetchunderlyingassets)
+* [fetchLiquidations](#fetchliquidations)
+* [fetchMyLiquidations](#fetchmyliquidations)
+
+ * [fetchGreeks](#fetchgreeks)
+* [closePosition](#closeposition)
+* [fetchLeverage](#fetchleverage)
+* [fetchLeverages](#fetchleverages)
+* [fetchOption](#fetchoption)
+* [fetchOptionChain](#fetchoptionchain)
+* [fetchPositionsHistory](#fetchpositionshistory)
+* [createOrderWs](#createorderws)
+* [createOrdersWs](#createordersws)
+* [cancelAllOrdersWs](#cancelallordersws)
+* [cancelOrderWs](#cancelorderws)
+* [editOrderWs](#editorderws)
+* [fetchOrderWs](#fetchorderws)
+* [fetchOpenOrdersWs](#fetchopenordersws)
+* [fetchClosedOrdersWs](#fetchclosedordersws)
+* [fetchOrdersWs](#fetchordersws)
+* [watchOrderBook](#watchorderbook)
+* [unWatchOrderBook](#unwatchorderbook)
+* [watchTicker](#watchticker)
+* [watchTickers](#watchtickers)
+* [watchBidsAsks](#watchbidsasks)
+* [watchTrades](#watchtrades)
+* [watchTradesForSymbols](#watchtradesforsymbols)
+* [unWatchTradesForSymbols](#unwatchtradesforsymbols)
+* [unWatchTrades](#unwatchtrades)
+* [watchOHLCV](#watchohlcv)
+* [watchMyTrades](#watchmytrades)
+* [watchBalance](#watchbalance)
+* [watchPositions](#watchpositions)
+* [watchOrders](#watchorders)
+* [watchMyLiquidations](#watchmyliquidations)
+* [watchMyLiquidationsForSymbols](#watchmyliquidationsforsymbols)
+<a name="loadUnifiedStatus" id="loadunifiedstatus"></a>
+### loadUnifiedStatus{docsify-ignore}
+returns unifiedAccount so the user can check if the unified account is enabled
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>boolean</code> - true or false if the enabled unified account
+is enabled or not and sets the unifiedAccount option if it is undefined
+**See**: https://www.gate.com/docs/developers/apiv4/#retrieve-user-account-
+information
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.loadUnifiedStatus ([params])
+```
+<a name="fetchTime" id="fetchtime"></a>
+### fetchTime{docsify-ignore}
+fetches the current integer timestamp in milliseconds from the exchange server
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>int</code> - the current integer timestamp in milliseconds
+from the exchange server
+
+ **See**: https://www.gate.com/docs/developers/apiv4/#get-server-current-time
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchTime ([params])
+```
+<a name="fetchMarkets" id="fetchmarkets"></a>
+### fetchMarkets{docsify-ignore}
+retrieves data on all markets for gate
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - an array of objects representing
+market data
+**See**
+- https://www.gate.com/docs/developers/apiv4/#query-all-supported-currency-pairs
+// spot
+- https://www.gate.com/docs/developers/apiv4/en/#list-all-supported-currency-
+pairs-supported-in-margin-trading         // margin
+- https://www.gate.com/docs/developers/apiv4/en/#query-all-futures-contracts
+// swap
+- https://www.gate.com/docs/developers/apiv4/en/#query-all-futures-contracts-2
+// future
+- https://www.gate.com/docs/developers/apiv4/en/#list-all-contracts-for-
+specified-underlying-and-expiration-date       // option
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchMarkets ([params])
+```
+<a name="fetchCurrencies" id="fetchcurrencies"></a>
+### fetchCurrencies{docsify-ignore}
+fetches all available currencies on an exchange
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - an associative dictionary of currencies
+**See**: https://www.gate.com/docs/developers/apiv4/en/#query-all-currency-
+information
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+
+ ```javascript
+gate.fetchCurrencies ([params])
+```
+<a name="fetchFundingRate" id="fetchfundingrate"></a>
+### fetchFundingRate{docsify-ignore}
+fetch the current funding rate
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [funding rate structure]
+(https://docs.ccxt.com/?id=funding-rate-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#query-single-contract-
+information
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchFundingRate (symbol[, params])
+```
+<a name="fetchFundingRates" id="fetchfundingrates"></a>
+### fetchFundingRates{docsify-ignore}
+fetch the funding rate for multiple markets
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [funding rate
+structures](https://docs.ccxt.com/?id=funding-rates-structure), indexed by market
+symbols
+**See**: https://www.gate.com/docs/developers/apiv4/en/#query-all-futures-
+contracts
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbols | <code>Array&lt;string&gt;</code>, <code>undefined</code> | Yes | list
+of unified market symbols |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchFundingRates (symbols[, params])
+```
+<a name="fetchDepositAddressesByNetwork" id="fetchdepositaddressesbynetwork"></a>
+### fetchDepositAddressesByNetwork{docsify-ignore}
+fetch a dictionary of addresses for a currency, indexed by network
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a dictionary of [address structures]
+(https://docs.ccxt.com/?id=address-structure) indexed by the network
+
+ **See**: https://www.gate.com/docs/developers/apiv4/en/#generate-currency-
+deposit-address
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| code | <code>string</code> | Yes | unified currency code of the currency for
+the deposit address |
+| params | <code>object</code> | No | extra parameters specific to the api
+endpoint |
+```javascript
+gate.fetchDepositAddressesByNetwork (code[, params])
+```
+<a name="fetchDepositAddress" id="fetchdepositaddress"></a>
+### fetchDepositAddress{docsify-ignore}
+fetch the deposit address for a currency associated with this account
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - an [address structure](https://docs.ccxt.com/?
+id=address-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#generate-currency-
+deposit-address
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| code | <code>string</code> | Yes | unified currency code |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.network | <code>string</code> | No | unified network code (not used
+directly by gate.com but used by ccxt to filter the response) |
+```javascript
+gate.fetchDepositAddress (code[, params])
+```
+<a name="fetchTradingFee" id="fetchtradingfee"></a>
+### fetchTradingFee{docsify-ignore}
+fetch the trading fees for a market
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [fee structure](https://docs.ccxt.com/?
+id=fee-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#query-personal-trading-
+fees
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchTradingFee (symbol[, params])
+
+ ```
+<a name="fetchTradingFees" id="fetchtradingfees"></a>
+### fetchTradingFees{docsify-ignore}
+fetch the trading fees for multiple markets
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a dictionary of [fee structures]
+(https://docs.ccxt.com/?id=fee-structure) indexed by market symbols
+**See**: https://www.gate.com/docs/developers/apiv4/en/#query-personal-trading-
+fees
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchTradingFees ([params])
+```
+<a name="fetchTransactionFees" id="fetchtransactionfees"></a>
+### fetchTransactionFees{docsify-ignore}
+`DEPRECATED`
+please use fetchDepositWithdrawFees instead
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a list of [fee structures]
+(https://docs.ccxt.com/?id=fee-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#query-withdrawal-status
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| codes | <code>Array&lt;string&gt;</code>, <code>undefined</code> | Yes | list
+of unified currency codes |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchTransactionFees (codes[, params])
+```
+<a name="fetchDepositWithdrawFees" id="fetchdepositwithdrawfees"></a>
+### fetchDepositWithdrawFees{docsify-ignore}
+fetch deposit and withdraw fees
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a list of [fee structures]
+(https://docs.ccxt.com/?id=fee-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#query-withdrawal-status
+| Param | Type | Required | Description |
+
+ | --- | --- | --- | --- |
+| codes | <code>Array&lt;string&gt;</code>, <code>undefined</code> | Yes | list
+of unified currency codes |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchDepositWithdrawFees (codes[, params])
+```
+<a name="fetchFundingHistory" id="fetchfundinghistory"></a>
+### fetchFundingHistory{docsify-ignore}
+fetch the history of funding payments paid and received on this account
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [funding history structure]
+(https://docs.ccxt.com/?id=funding-history-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#query-futures-account-change-
+history
+- https://www.gate.com/docs/developers/apiv4/en/#query-futures-account-change-
+history-2
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol |
+| since | <code>int</code> | No | the earliest time in ms to fetch funding
+history for |
+| limit | <code>int</code> | No | the maximum number of funding history
+structures to retrieve |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchFundingHistory (symbol[, since, limit, params])
+```
+<a name="fetchOrderBook" id="fetchorderbook"></a>
+### fetchOrderBook{docsify-ignore}
+fetches information on open orders with bid (buy) and ask (sell) prices, volumes
+and other data
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - A dictionary of [order book structures]
+(https://docs.ccxt.com/?id=order-book-structure) indexed by market symbols
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#get-market-depth-information
+- https://www.gate.com/docs/developers/apiv4/en/#query-futures-market-depth-
+information
+- https://www.gate.com/docs/developers/apiv4/en/#query-futures-market-depth-
+information-2
+- https://www.gate.com/docs/developers/apiv4/en/#query-options-contract-order-
+book
+
+ | Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified symbol of the market to fetch the
+order book for |
+| limit | <code>int</code> | No | the maximum amount of order book entries to
+return |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchOrderBook (symbol[, limit, params])
+```
+<a name="fetchTicker" id="fetchticker"></a>
+### fetchTicker{docsify-ignore}
+fetches a price ticker, a statistical calculation with the information calculated
+over the past 24 hours for a specific market
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [ticker structure](https://docs.ccxt.com/?
+id=ticker-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#get-currency-pair-ticker-
+information
+- https://www.gate.com/docs/developers/apiv4/en/#get-all-futures-trading-
+statistics
+- https://www.gate.com/docs/developers/apiv4/en/#get-all-futures-trading-
+statistics-2
+- https://www.gate.com/docs/developers/apiv4/en/#query-options-market-ticker-
+information
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified symbol of the market to fetch the
+ticker for |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchTicker (symbol[, params])
+```
+<a name="fetchTickers" id="fetchtickers"></a>
+### fetchTickers{docsify-ignore}
+fetches price tickers for multiple markets, statistical information calculated
+over the past 24 hours for each market
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a dictionary of [ticker structures]
+(https://docs.ccxt.com/?id=ticker-structure)
+**See**
+
+ - https://www.gate.com/docs/developers/apiv4/en/#get-currency-pair-ticker-
+information
+- https://www.gate.com/docs/developers/apiv4/en/#get-all-futures-trading-
+statistics
+- https://www.gate.com/docs/developers/apiv4/en/#get-all-futures-trading-
+statistics-2
+- https://www.gate.com/docs/developers/apiv4/en/#query-options-market-ticker-
+information
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbols | <code>Array&lt;string&gt;</code>, <code>undefined</code> | Yes |
+unified symbols of the markets to fetch the ticker for, all market tickers are
+returned if not assigned |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchTickers (symbols[, params])
+```
+<a name="fetchBalance" id="fetchbalance"></a>
+### fetchBalance{docsify-ignore}
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [balance structure](https://docs.ccxt.com/?
+id=balance-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#get-unified-account-information
+- https://www.gate.com/docs/developers/apiv4/en/#list-spot-trading-accounts
+- https://www.gate.com/docs/developers/apiv4/en/#margin-account-list
+- https://www.gate.com/docs/developers/apiv4/en/#funding-account-list
+- https://www.gate.com/docs/developers/apiv4/en/#get-futures-account
+- https://www.gate.com/docs/developers/apiv4/en/#get-futures-account-2
+- https://www.gate.com/docs/developers/apiv4/en/#query-account-information
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| params | <code>object</code> | No | exchange specific parameters |
+| params.type | <code>string</code> | No | spot, margin, swap or future, if not
+provided this.options['defaultType'] is used |
+| params.settle | <code>string</code> | No | 'btc' or 'usdt' - settle currency
+for perpetual swap and future - default="usdt" for swap and "btc" for future |
+| params.marginMode | <code>string</code> | No | 'cross' or 'isolated' -
+marginMode for margin trading if not provided this.options['defaultMarginMode']
+is used |
+| params.symbol | <code>string</code> | No | margin only - unified ccxt symbol |
+| params.unifiedAccount | <code>boolean</code> | No | default false, set to true
+for fetching the unified account balance |
+```javascript
+gate.fetchBalance ([params])
+```
+<a name="fetchFundingRateHistory" id="fetchfundingratehistory"></a>
+
+ ### fetchFundingRateHistory{docsify-ignore}
+fetches historical funding rate prices
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [funding rate
+structures](https://docs.ccxt.com/?id=funding-rate-history-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#get-all-futures-trading-
+statistics
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified symbol of the market to fetch the
+funding rate history for |
+| since | <code>int</code> | No | timestamp in ms of the earliest funding rate to
+fetch |
+| limit | <code>int</code> | No | the maximum amount of [funding rate structures]
+(https://docs.ccxt.com/?id=funding-rate-history-structure) to fetch |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.until | <code>int</code> | No | timestamp in ms of the latest funding
+rate to fetch |
+| params.paginate | <code>boolean</code> | No | default false, when true will
+automatically paginate by calling this endpoint multiple times. See in the docs
+all the [available parameters]
+(https://github.com/ccxt/ccxt/wiki/Manual#pagination-params) |
+```javascript
+gate.fetchFundingRateHistory (symbol[, since, limit, params])
+```
+<a name="fetchTrades" id="fetchtrades"></a>
+### fetchTrades{docsify-ignore}
+get the list of most recent trades for a particular symbol
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;Trade&gt;</code> - a list of [trade structures]
+(https://docs.ccxt.com/?id=public-trades)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#query-market-transaction-records
+- https://www.gate.com/docs/developers/apiv4/en/#futures-market-transaction-
+records
+- https://www.gate.com/docs/developers/apiv4/en/#futures-market-transaction-
+records-2
+- https://www.gate.com/docs/developers/apiv4/en/#market-trade-records
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified symbol of the market to fetch
+trades for |
+| since | <code>int</code> | No | timestamp in ms of the earliest trade to fetch
+|
+| limit | <code>int</code> | No | the maximum amount of trades to fetch |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.until | <code>int</code> | No | timestamp in ms of the latest trade to
+fetch |
+| params.paginate | <code>boolean</code> | No | default false, when true will
+
+ automatically paginate by calling this endpoint multiple times. See in the docs
+all the [availble parameters]
+(https://github.com/ccxt/ccxt/wiki/Manual#pagination-params) |
+```javascript
+gate.fetchTrades (symbol[, since, limit, params])
+```
+<a name="fetchOrderTrades" id="fetchordertrades"></a>
+### fetchOrderTrades{docsify-ignore}
+fetch all the trades made from a single order
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [trade structures]
+(https://docs.ccxt.com/?id=trade-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#query-personal-trading-records
+- https://www.gate.com/docs/developers/apiv4/en/#query-personal-trading-records-
+by-time-range
+- https://www.gate.com/docs/developers/apiv4/en/#query-personal-trading-records-3
+- https://www.gate.com/docs/developers/apiv4/en/#query-personal-trading-records-4
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| id | <code>string</code> | Yes | order id |
+| symbol | <code>string</code> | Yes | unified market symbol |
+| since | <code>int</code> | No | the earliest time in ms to fetch trades for |
+| limit | <code>int</code> | No | the maximum number of trades to retrieve |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchOrderTrades (id, symbol[, since, limit, params])
+```
+<a name="fetchMyTrades" id="fetchmytrades"></a>
+### fetchMyTrades{docsify-ignore}
+Fetch personal trading history
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;Trade&gt;</code> - a list of [trade structures]
+(https://docs.ccxt.com/?id=trade-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#query-personal-trading-records
+- https://www.gate.com/docs/developers/apiv4/en/#query-personal-trading-records-
+by-time-range
+- https://www.gate.com/docs/developers/apiv4/en/#query-personal-trading-records-3
+- https://www.gate.com/docs/developers/apiv4/en/#query-personal-trading-records-4
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol |
+
+ | since | <code>int</code> | No | the earliest time in ms to fetch trades for |
+| limit | <code>int</code> | No | the maximum number of trades structures to
+retrieve |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.marginMode | <code>string</code> | No | 'cross' or 'isolated' -
+marginMode for margin trading if not provided this.options['defaultMarginMode']
+is used |
+| params.type | <code>string</code> | No | 'spot', 'swap', or 'future', if not
+provided this.options['defaultMarginMode'] is used |
+| params.until | <code>int</code> | No | The latest timestamp, in ms, that
+fetched trades were made |
+| params.page | <code>int</code> | No | *spot only* Page number |
+| params.order_id | <code>string</code> | No | *spot only* Filter trades with
+specified order ID. symbol is also required if this field is present |
+| params.order | <code>string</code> | No | *contract only* Futures order ID,
+return related data only if specified |
+| params.offset | <code>int</code> | No | *contract only* list offset, starting
+from 0 |
+| params.last_id | <code>string</code> | No | *contract only* specify list
+staring point using the id of last record in previous list-query results |
+| params.count_total | <code>int</code> | No | *contract only* whether to return
+total number matched, default to 0(no return) |
+| params.unifiedAccount | <code>bool</code> | No | set to true for fetching
+trades in a unified account |
+| params.paginate | <code>bool</code> | No | default false, when true will
+automatically paginate by calling this endpoint multiple times. See in the docs
+all the [available parameters]
+(https://github.com/ccxt/ccxt/wiki/Manual#pagination-params) |
+```javascript
+gate.fetchMyTrades (symbol[, since, limit, params])
+```
+<a name="fetchDeposits" id="fetchdeposits"></a>
+### fetchDeposits{docsify-ignore}
+fetch all deposits made to an account
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [transaction
+structures](https://docs.ccxt.com/?id=transaction-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#get-deposit-records
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| code | <code>string</code> | Yes | unified currency code |
+| since | <code>int</code> | No | the earliest time in ms to fetch deposits for |
+| limit | <code>int</code> | No | the maximum number of deposits structures to
+retrieve |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.until | <code>int</code> | No | end time in ms |
+| params.paginate | <code>boolean</code> | No | default false, when true will
+automatically paginate by calling this endpoint multiple times. See in the docs
+all the [availble parameters]
+(https://github.com/ccxt/ccxt/wiki/Manual#pagination-params) |
+```javascript
+gate.fetchDeposits (code[, since, limit, params])
+
+ ```
+<a name="fetchWithdrawals" id="fetchwithdrawals"></a>
+### fetchWithdrawals{docsify-ignore}
+fetch all withdrawals made from an account
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [transaction
+structures](https://docs.ccxt.com/?id=transaction-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#get-withdrawal-records
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| code | <code>string</code> | Yes | unified currency code |
+| since | <code>int</code> | No | the earliest time in ms to fetch withdrawals
+for |
+| limit | <code>int</code> | No | the maximum number of withdrawals structures to
+retrieve |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.until | <code>int</code> | No | end time in ms |
+| params.paginate | <code>boolean</code> | No | default false, when true will
+automatically paginate by calling this endpoint multiple times. See in the docs
+all the [availble parameters]
+(https://github.com/ccxt/ccxt/wiki/Manual#pagination-params) |
+```javascript
+gate.fetchWithdrawals (code[, since, limit, params])
+```
+<a name="withdraw" id="withdraw"></a>
+### withdraw{docsify-ignore}
+make a withdrawal
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [transaction structure]
+(https://docs.ccxt.com/?id=transaction-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#withdraw
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| code | <code>string</code> | Yes | unified currency code |
+| amount | <code>float</code> | Yes | the amount to withdraw |
+| address | <code>string</code> | Yes | the address to withdraw to |
+| tag | <code>string</code> | Yes |  |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.withdraw (code, amount, address, tag[, params])
+```
+<a name="createOrder" id="createorder"></a>
+### createOrder{docsify-ignore}
+
+ Create an order on the exchange
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> \| <code>undefined</code> - [An order structure]
+(https://docs.ccxt.com/?id=order-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#create-an-order
+- https://www.gate.com/docs/developers/apiv4/en/#create-price-triggered-order
+- https://www.gate.com/docs/developers/apiv4/en/#place-futures-order
+- https://www.gate.com/docs/developers/apiv4/en/#create-price-triggered-order-2
+- https://www.gate.com/docs/developers/apiv4/en/#place-futures-order-2
+- https://www.gate.com/docs/developers/apiv4/en/#create-price-triggered-order-3
+- https://www.gate.com/docs/developers/apiv4/en/#create-an-options-order
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | Unified CCXT market symbol |
+| type | <code>string</code> | Yes | 'limit' or 'market' *"market" is contract
+only* |
+| side | <code>string</code> | Yes | 'buy' or 'sell' |
+| amount | <code>float</code> | Yes | the amount of currency to trade |
+| price | <code>float</code> | No | the price at which the order is to be
+fulfilled, in units of the quote currency, ignored in market orders |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.triggerPrice | <code>float</code> | No | The price at which a trigger
+order is triggered at |
+| params.timeInForce | <code>string</code> | No | "GTC", "IOC", or "PO" |
+| params.stopLossPrice | <code>float</code> | No | The price at which a stop loss
+order is triggered at |
+| params.takeProfitPrice | <code>float</code> | No | The price at which a take
+profit order is triggered at |
+| params.marginMode | <code>string</code> | No | 'cross' or 'isolated' -
+marginMode for margin trading if not provided this.options['defaultMarginMode']
+is used |
+| params.iceberg | <code>int</code> | No | Amount to display for the iceberg
+order, Null or 0 for normal orders, Set to -1 to hide the order completely |
+| params.text | <code>string</code> | No | User defined information |
+| params.account | <code>string</code> | No | *spot and margin only* "spot",
+"margin" or "cross_margin" |
+| params.auto_borrow | <code>bool</code> | No | *margin only* Used in margin or
+cross margin trading to allow automatic loan of insufficient amount if balance is
+not enough |
+| params.settle | <code>string</code> | No | *contract only* Unified Currency
+Code for settle currency |
+| params.reduceOnly | <code>bool</code> | No | *contract only* Indicates if this
+order is to reduce the size of a position |
+| params.close | <code>bool</code> | No | *contract only* Set as true to close
+the position, with size set to 0 |
+| params.auto_size | <code>bool</code> | No | *contract only* Set side to close
+dual-mode position, close_long closes the long side, while close_short the short
+one, size also needs to be set to 0 |
+| params.price_type | <code>int</code> | No | *contract only* 0 latest deal
+price, 1 mark price, 2 index price |
+| params.cost | <code>float</code> | No | *spot market buy only* the quote
+quantity that can be used as an alternative for the amount |
+| params.unifiedAccount | <code>bool</code> | No | set to true for creating an
+order in the unified account |
+| params.clientOrderId | <code>string</code> | No | the clientOrderId of the
+order |
+
+ ```javascript
+gate.createOrder (symbol, type, side, amount[, price, params])
+```
+<a name="createOrders" id="createorders"></a>
+### createOrders{docsify-ignore}
+create a list of trade orders
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - an [order structure](https://docs.ccxt.com/?
+id=order-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#batch-place-orders
+- https://www.gate.com/docs/developers/apiv4/en/#place-batch-futures-orders
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| orders | <code>Array</code> | Yes | list of orders to create, each object
+should contain the parameters required by createOrder, namely symbol, type, side,
+amount, price and params |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.createOrders (orders[, params])
+```
+<a name="createMarketBuyOrderWithCost" id="createmarketbuyorderwithcost"></a>
+### createMarketBuyOrderWithCost{docsify-ignore}
+create a market buy order by providing the symbol and cost
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - an [order structure](https://docs.ccxt.com/?
+id=order-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#create-an-order
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified symbol of the market to create an
+order in |
+| cost | <code>float</code> | Yes | how much you want to trade in units of the
+quote currency |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.unifiedAccount | <code>bool</code> | No | set to true for creating a
+unified account order |
+```javascript
+gate.createMarketBuyOrderWithCost (symbol, cost[, params])
+```
+<a name="editOrder" id="editorder"></a>
+
+ ### editOrder{docsify-ignore}
+edit a trade order, gate currently only supports the modification of the price or
+amount fields
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - an [order structure](https://docs.ccxt.com/?
+id=order-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#amend-single-order
+- https://www.gate.com/docs/developers/apiv4/en/#amend-single-order-2
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| id | <code>string</code> | Yes | order id |
+| symbol | <code>string</code> | Yes | unified symbol of the market to create an
+order in |
+| type | <code>string</code> | Yes | 'market' or 'limit' |
+| side | <code>string</code> | Yes | 'buy' or 'sell' |
+| amount | <code>float</code> | Yes | how much of the currency you want to trade
+in units of the base currency |
+| price | <code>float</code> | No | the price at which the order is to be
+fulfilled, in units of the quote currency, ignored in market orders |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.unifiedAccount | <code>bool</code> | No | set to true for editing an
+order in a unified account |
+```javascript
+gate.editOrder (id, symbol, type, side, amount[, price, params])
+```
+<a name="fetchOrder" id="fetchorder"></a>
+### fetchOrder{docsify-ignore}
+Retrieves information on an order
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: An [order structure](https://docs.ccxt.com/?id=order-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#query-single-order-details
+- https://www.gate.com/docs/developers/apiv4/en/#query-single-auto-order-details
+- https://www.gate.com/docs/developers/apiv4/en/#query-single-order-details-2
+- https://www.gate.com/docs/developers/apiv4/en/#query-single-auto-order-details-
+2
+- https://www.gate.com/docs/developers/apiv4/en/#query-single-order-details-3
+- https://www.gate.com/docs/developers/apiv4/en/#query-single-auto-order-details-
+3
+- https://www.gate.com/docs/developers/apiv4/en/#query-single-order-details-4
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| id | <code>string</code> | Yes | Order id |
+| symbol | <code>string</code> | Yes | Unified market symbol, *required for spot
+and margin* |
+| params | <code>object</code> | No | Parameters specified by the exchange api |
+
+ | params.trigger | <code>bool</code> | No | True if the order being fetched is a
+trigger order |
+| params.marginMode | <code>string</code> | No | 'cross' or 'isolated' -
+marginMode for margin trading if not provided this.options['defaultMarginMode']
+is used |
+| params.type | <code>string</code> | No | 'spot', 'swap', or 'future', if not
+provided this.options['defaultMarginMode'] is used |
+| params.settle | <code>string</code> | No | 'btc' or 'usdt' - settle currency
+for perpetual swap and future - market settle currency is used if symbol !==
+undefined, default="usdt" for swap and "btc" for future |
+| params.unifiedAccount | <code>bool</code> | No | set to true for fetching a
+unified account order |
+```javascript
+gate.fetchOrder (id, symbol[, params])
+```
+<a name="fetchOpenOrders" id="fetchopenorders"></a>
+### fetchOpenOrders{docsify-ignore}
+fetch all unfilled currently open orders
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;Order&gt;</code> - a list of [order structures]
+(https://docs.ccxt.com/?id=order-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#list-all-open-orders
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol |
+| since | <code>int</code> | No | the earliest time in ms to fetch open orders
+for |
+| limit | <code>int</code> | No | the maximum number of  open orders structures
+to retrieve |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.trigger | <code>bool</code> | No | true for fetching trigger orders |
+| params.type | <code>string</code> | No | spot, margin, swap or future, if not
+provided this.options['defaultType'] is used |
+| params.marginMode | <code>string</code> | No | 'cross' or 'isolated' -
+marginMode for type='margin', if not provided this.options['defaultMarginMode']
+is used |
+| params.unifiedAccount | <code>bool</code> | No | set to true for fetching
+unified account orders |
+```javascript
+gate.fetchOpenOrders (symbol[, since, limit, params])
+```
+<a name="fetchClosedOrders" id="fetchclosedorders"></a>
+### fetchClosedOrders{docsify-ignore}
+fetches information on multiple closed orders made by the user
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;Order&gt;</code> - a list of [order structures]
+(https://docs.ccxt.com/?id=order-structure)
+**See**
+
+ - https://www.gate.com/en-eu/docs/developers/apiv4/#list-orders
+- https://www.gate.com/en-eu/docs/developers/apiv4/#retrieve-running-auto-order-
+list
+- https://www.gate.com/docs/developers/apiv4/en/#query-futures-order-list
+- https://www.gate.com/docs/developers/apiv4/en/#query-auto-order-list
+- https://www.gate.com/docs/developers/apiv4/en/#query-futures-order-list-2
+- https://www.gate.com/docs/developers/apiv4/en/#query-auto-order-list-2
+- https://www.gate.com/docs/developers/apiv4/en/#list-options-orders
+- https://www.gate.com/docs/developers/apiv4/en/#query-futures-order-list-by-
+time-range
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol of the market orders
+were made in |
+| since | <code>int</code> | No | the earliest time in ms to fetch orders for |
+| limit | <code>int</code> | No | the maximum number of order structures to
+retrieve |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.trigger | <code>bool</code> | No | true for fetching trigger orders |
+| params.type | <code>string</code> | No | spot, swap or future, if not provided
+this.options['defaultType'] is used |
+| params.marginMode | <code>string</code> | No | 'cross' or 'isolated' -
+marginMode for margin trading if not provided this.options['defaultMarginMode']
+is used |
+| params.historical | <code>boolean</code> | No | *swap only* true for using
+historical endpoint |
+| params.unifiedAccount | <code>bool</code> | No | set to true for fetching
+unified account orders |
+```javascript
+gate.fetchClosedOrders (symbol[, since, limit, params])
+```
+<a name="cancelOrder" id="cancelorder"></a>
+### cancelOrder{docsify-ignore}
+Cancels an open order
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: An [order structure](https://docs.ccxt.com/?id=order-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#cancel-single-order
+- https://www.gate.com/docs/developers/apiv4/en/#cancel-single-auto-order
+- https://www.gate.com/docs/developers/apiv4/en/#cancel-single-order-2
+- https://www.gate.com/docs/developers/apiv4/en/#cancel-single-auto-order-2
+- https://www.gate.com/docs/developers/apiv4/en/#cancel-single-order-3
+- https://www.gate.com/docs/developers/apiv4/en/#cancel-single-auto-order-3
+- https://www.gate.com/docs/developers/apiv4/en/#cancel-single-order-4
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| id | <code>string</code> | Yes | Order id |
+| symbol | <code>string</code> | Yes | Unified market symbol |
+| params | <code>object</code> | No | Parameters specified by the exchange api |
+| params.trigger | <code>bool</code> | No | True if the order to be cancelled is
+
+ a trigger order |
+| params.unifiedAccount | <code>bool</code> | No | set to true for canceling
+unified account orders |
+```javascript
+gate.cancelOrder (id, symbol[, params])
+```
+<a name="cancelOrders" id="cancelorders"></a>
+### cancelOrders{docsify-ignore}
+cancel multiple orders
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - an list of [order structures]
+(https://docs.ccxt.com/?id=order-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#cancel-batch-orders-by-
+specified-id-list
+- https://www.gate.com/docs/developers/apiv4/en/#cancel-batch-orders-by-
+specified-id-list-2
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| ids | <code>Array&lt;string&gt;</code> | Yes | order ids |
+| symbol | <code>string</code> | Yes | unified symbol of the market the order was
+made in |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.unifiedAccount | <code>bool</code> | No | set to true for canceling
+unified account orders |
+```javascript
+gate.cancelOrders (ids, symbol[, params])
+```
+<a name="cancelOrdersForSymbols" id="cancelordersforsymbols"></a>
+### cancelOrdersForSymbols{docsify-ignore}
+cancel multiple orders for multiple symbols
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - an list of [order structures]
+(https://docs.ccxt.com/?id=order-structure)
+**See**: https://www.gate.com/en-eu/docs/developers/apiv4/#cancel-a-batch-of-
+orders-with-an-id-list
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| orders | <code>Array&lt;CancellationRequest&gt;</code> | Yes | list of order
+ids with symbol, example [{"id": "a", "symbol": "BTC/USDT"}, {"id": "b",
+"symbol": "ETH/USDT"}] |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.clientOrderIds | <code>Array&lt;string&gt;</code> | No | client order
+ids |
+
+ | params.unifiedAccount | <code>bool</code> | No | set to true for canceling
+unified account orders |
+```javascript
+gate.cancelOrdersForSymbols (orders[, params])
+```
+<a name="cancelAllOrders" id="cancelallorders"></a>
+### cancelAllOrders{docsify-ignore}
+cancel all open orders
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [order structures]
+(https://docs.ccxt.com/?id=order-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#cancel-all-open-orders-in-
+specified-currency-pair
+- https://www.gate.com/docs/developers/apiv4/en/#cancel-all-auto-orders
+- https://www.gate.com/docs/developers/apiv4/en/#cancel-all-orders-with-open-
+status
+- https://www.gate.com/docs/developers/apiv4/en/#cancel-all-auto-orders-2
+- https://www.gate.com/docs/developers/apiv4/en/#cancel-all-orders-with-open-
+status-2
+- https://www.gate.com/docs/developers/apiv4/en/#cancel-all-auto-orders-3
+- https://www.gate.com/docs/developers/apiv4/en/#cancel-all-orders-with-open-
+status-3
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol, only orders in the
+market of this symbol are cancelled when symbol is not undefined |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.unifiedAccount | <code>bool</code> | No | set to true for canceling
+unified account orders |
+```javascript
+gate.cancelAllOrders (symbol[, params])
+```
+<a name="transfer" id="transfer"></a>
+### transfer{docsify-ignore}
+transfer currency internally between wallets on the same account
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: A [transfer structure](https://docs.ccxt.com/?id=transfer-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#transfer-between-trading-
+accounts
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| code | <code>string</code> | Yes | unified currency code for currency being
+transferred |
+| amount | <code>float</code> | Yes | the amount of currency to transfer |
+
+ | fromAccount | <code>string</code> | Yes | the account to transfer currency from
+|
+| toAccount | <code>string</code> | Yes | the account to transfer currency to |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.symbol | <code>string</code> | No | Unified market symbol *required for
+type == margin* |
+```javascript
+gate.transfer (code, amount, fromAccount, toAccount[, params])
+```
+<a name="setLeverage" id="setleverage"></a>
+### setLeverage{docsify-ignore}
+set the level of leverage for a market
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - response from the exchange
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#update-position-leverage
+- https://www.gate.com/docs/developers/apiv4/en/#update-position-leverage-2
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| leverage | <code>float</code> | Yes | the rate of leverage |
+| symbol | <code>string</code> | Yes | unified market symbol |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.setLeverage (leverage, symbol[, params])
+```
+<a name="fetchPosition" id="fetchposition"></a>
+### fetchPosition{docsify-ignore}
+fetch data on an open contract position
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [position structure](https://docs.ccxt.com/?
+id=position-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#get-single-position-information
+- https://www.gate.com/docs/developers/apiv4/en/#get-single-position-information-
+2
+- https://www.gate.com/docs/developers/apiv4/en/#get-specified-contract-position
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol of the market the
+position is held in |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+
+ ```javascript
+gate.fetchPosition (symbol[, params])
+```
+<a name="fetchPositions" id="fetchpositions"></a>
+### fetchPositions{docsify-ignore}
+fetch all open positions
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [position structure]
+(https://docs.ccxt.com/?id=position-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#get-user-position-list
+- https://www.gate.com/docs/developers/apiv4/en/#get-user-position-list-2
+- https://www.gate.com/docs/developers/apiv4/en/#list-user-s-positions-of-
+specified-underlying
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbols | <code>Array&lt;string&gt;</code>, <code>undefined</code> | Yes | Not
+used by gate, but parsed internally by CCXT |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.settle | <code>string</code> | No | 'btc' or 'usdt' - settle currency
+for perpetual swap and future - default="usdt" for swap and "btc" for future |
+| params.type | <code>string</code> | No | swap, future or option, if not
+provided this.options['defaultType'] is used |
+```javascript
+gate.fetchPositions (symbols[, params])
+```
+<a name="fetchLeverageTiers" id="fetchleveragetiers"></a>
+### fetchLeverageTiers{docsify-ignore}
+retrieve information on the maximum leverage, and maintenance margin for trades
+of varying trade sizes
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a dictionary of [leverage tiers structures]
+(https://docs.ccxt.com/?id=leverage-tiers-structure), indexed by market symbols
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#query-all-futures-contracts
+- https://www.gate.com/docs/developers/apiv4/en/#query-all-futures-contracts-2
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbols | <code>Array&lt;string&gt;</code> | No | list of unified market
+symbols |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+
+ ```javascript
+gate.fetchLeverageTiers ([symbols, params])
+```
+<a name="fetchMarketLeverageTiers" id="fetchmarketleveragetiers"></a>
+### fetchMarketLeverageTiers{docsify-ignore}
+retrieve information on the maximum leverage, and maintenance margin for trades
+of varying trade sizes for a single market
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [leverage tiers structure]
+(https://docs.ccxt.com/?id=leverage-tiers-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#query-risk-limit-tiers
+- https://www.gate.com/docs/developers/apiv4/en/#query-risk-limit-tiers-2
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchMarketLeverageTiers (symbol[, params])
+```
+<a name="repayIsolatedMargin" id="repayisolatedmargin"></a>
+### repayIsolatedMargin{docsify-ignore}
+repay borrowed margin and interest
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [margin loan structure]
+(https://docs.ccxt.com/?id=margin-loan-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#borrow-or-repay-2
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol |
+| code | <code>string</code> | Yes | unified currency code of the currency to
+repay |
+| amount | <code>float</code> | Yes | the amount to repay |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.mode | <code>string</code> | No | 'all' or 'partial' payment mode, extra
+parameter required for isolated margin |
+| params.id | <code>string</code> | No | '34267567' loan id, extra parameter
+required for isolated margin |
+```javascript
+gate.repayIsolatedMargin (symbol, code, amount[, params])
+```
+
+ <a name="repayCrossMargin" id="repaycrossmargin"></a>
+### repayCrossMargin{docsify-ignore}
+repay cross margin borrowed margin and interest
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [margin loan structure]
+(https://docs.ccxt.com/?id=margin-loan-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#borrow-or-repay
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| code | <code>string</code> | Yes | unified currency code of the currency to
+repay |
+| amount | <code>float</code> | Yes | the amount to repay |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.mode | <code>string</code> | No | 'all' or 'partial' payment mode, extra
+parameter required for isolated margin |
+| params.id | <code>string</code> | No | '34267567' loan id, extra parameter
+required for isolated margin |
+| params.unifiedAccount | <code>boolean</code> | No | set to true for repaying in
+the unified account |
+```javascript
+gate.repayCrossMargin (code, amount[, params])
+```
+<a name="borrowIsolatedMargin" id="borrowisolatedmargin"></a>
+### borrowIsolatedMargin{docsify-ignore}
+create a loan to borrow margin
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [margin loan structure]
+(https://docs.ccxt.com/?id=margin-loan-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#borrow-or-repay-2
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol, required for
+isolated margin |
+| code | <code>string</code> | Yes | unified currency code of the currency to
+borrow |
+| amount | <code>float</code> | Yes | the amount to borrow |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.rate | <code>string</code> | No | '0.0002' or '0.002' extra parameter
+required for isolated margin |
+```javascript
+gate.borrowIsolatedMargin (symbol, code, amount[, params])
+```
+<a name="borrowCrossMargin" id="borrowcrossmargin"></a>
+### borrowCrossMargin{docsify-ignore}
+create a loan to borrow margin
+
+ **Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [margin loan structure]
+(https://docs.ccxt.com/?id=margin-loan-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#borrow-or-repay
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| code | <code>string</code> | Yes | unified currency code of the currency to
+borrow |
+| amount | <code>float</code> | Yes | the amount to borrow |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.rate | <code>string</code> | No | '0.0002' or '0.002' extra parameter
+required for isolated margin |
+| params.unifiedAccount | <code>boolean</code> | No | default true (set to false
+to use deprecated privateMarginPostCrossLoans method) |
+```javascript
+gate.borrowCrossMargin (code, amount[, params])
+```
+<a name="fetchBorrowInterest" id="fetchborrowinterest"></a>
+### fetchBorrowInterest{docsify-ignore}
+fetch the interest owed by the user for borrowing currency for margin trading
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [borrow interest
+structures](https://docs.ccxt.com/?id=borrow-interest-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#query-interest-deduction-records
+- https://www.gate.com/docs/developers/apiv4/en/#query-interest-deduction-
+records-2
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| code | <code>string</code> | No | unified currency code |
+| symbol | <code>string</code> | No | unified market symbol when fetching
+interest in isolated markets |
+| since | <code>int</code> | No | the earliest time in ms to fetch borrow
+interest for |
+| limit | <code>int</code> | No | the maximum number of structures to retrieve |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.unifiedAccount | <code>boolean</code> | No | set to true for fetching
+borrow interest in the unified account |
+```javascript
+gate.fetchBorrowInterest ([code, symbol, since, limit, params])
+```
+<a name="reduceMargin" id="reducemargin"></a>
+### reduceMargin{docsify-ignore}
+remove margin from a position
+
+ **Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [margin structure](https://docs.ccxt.com/?
+id=margin-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#update-position-margin
+- https://www.gate.com/docs/developers/apiv4/en/#update-position-margin-2
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol |
+| amount | <code>float</code> | Yes | the amount of margin to remove |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.reduceMargin (symbol, amount[, params])
+```
+<a name="addMargin" id="addmargin"></a>
+### addMargin{docsify-ignore}
+add margin
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [margin structure](https://docs.ccxt.com/?
+id=margin-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#update-position-margin
+- https://www.gate.com/docs/developers/apiv4/en/#update-position-margin-2
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol |
+| amount | <code>float</code> | Yes | amount of margin to add |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.addMargin (symbol, amount[, params])
+```
+<a name="fetchOpenInterest" id="fetchopeninterest"></a>
+### fetchOpenInterest{docsify-ignore}
+Retrieves the open interest of a currency
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - an open interest
+structure[https://docs.ccxt.com/?id=open-interest-structure]
+(https://docs.ccxt.com/?id=open-interest-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#futures-statistics
+
+ | Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | Unified CCXT market symbol |
+| timeframe | <code>string</code> | Yes | "5m", "15m", "30m", "1h", "4h", "1d" |
+| since | <code>int</code> | No | the time(ms) of the earliest record to retrieve
+as a unix timestamp |
+| limit | <code>int</code> | No | default 30 |
+| params | <code>object</code> | No | exchange specific parameters |
+| params.paginate | <code>boolean</code> | No | default false, when true will
+automatically paginate by calling this endpoint multiple times. See in the docs
+all the [availble parameters]
+(https://github.com/ccxt/ccxt/wiki/Manual#pagination-params) |
+```javascript
+gate.fetchOpenInterest (symbol, timeframe[, since, limit, params])
+```
+<a name="fetchSettlementHistory" id="fetchsettlementhistory"></a>
+### fetchSettlementHistory{docsify-ignore}
+fetches historical settlement records
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [settlement history
+objects](https://docs.ccxt.com/?id=settlement-history-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#list-settlement-history
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol of the settlement
+history, required on gate |
+| since | <code>int</code> | No | timestamp in ms |
+| limit | <code>int</code> | No | number of records |
+| params | <code>object</code> | No | exchange specific params |
+```javascript
+gate.fetchSettlementHistory (symbol[, since, limit, params])
+```
+<a name="fetchMySettlementHistory" id="fetchmysettlementhistory"></a>
+### fetchMySettlementHistory{docsify-ignore}
+fetches historical settlement records of the user
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [settlement history
+objects]
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#query-personal-settlement-
+records
+- https://www.gate.com/docs/developers/apiv4/en/#query-settlement-records
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol of the settlement
+history |
+
+ | since | <code>int</code> | No | timestamp in ms |
+| limit | <code>int</code> | No | number of records |
+| params | <code>object</code> | No | exchange specific params |
+```javascript
+gate.fetchMySettlementHistory (symbol[, since, limit, params])
+```
+<a name="fetchLedger" id="fetchledger"></a>
+### fetchLedger{docsify-ignore}
+fetch the history of changes, actions done by the user or operations that altered
+the balance of the user
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [ledger structure](https://docs.ccxt.com/?
+id=ledger-entry-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#query-spot-account-transaction-
+history
+- https://www.gate.com/docs/developers/apiv4/en/#query-margin-account-balance-
+change-history
+- https://www.gate.com/docs/developers/apiv4/en/#query-futures-account-change-
+history
+- https://www.gate.com/docs/developers/apiv4/en/#query-futures-account-change-
+history-2
+- https://www.gate.com/docs/developers/apiv4/en/#query-account-change-history
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| code | <code>string</code> | No | unified currency code |
+| since | <code>int</code> | No | timestamp in ms of the earliest ledger entry |
+| limit | <code>int</code> | No | max number of ledger entries to return |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.until | <code>int</code> | No | end time in ms |
+| params.paginate | <code>boolean</code> | No | default false, when true will
+automatically paginate by calling this endpoint multiple times. See in the docs
+all the [available parameters]
+(https://github.com/ccxt/ccxt/wiki/Manual#pagination-params) |
+```javascript
+gate.fetchLedger ([code, since, limit, params])
+```
+<a name="setPositionMode" id="setpositionmode"></a>
+### setPositionMode{docsify-ignore}
+set dual/hedged mode to true or false for a swap market, make sure all positions
+are closed and no orders are open before setting dual mode
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - response from the exchange
+**See**: https://www.gate.com/docs/developers/apiv4/en/#set-position-mode
+| Param | Type | Description |
+
+ | --- | --- | --- |
+| hedged | <code>bool</code> | set to true to enable dual mode |
+| symbol | <code>string</code>, <code>undefined</code> | if passed, dual mode is
+set for all markets with the same settle currency |
+| params | <code>object</code> | extra parameters specific to the exchange API
+endpoint |
+| params.settle | <code>string</code> | settle currency |
+```javascript
+gate.setPositionMode (hedged, symbol, params[])
+```
+<a name="fetchUnderlyingAssets" id="fetchunderlyingassets"></a>
+### fetchUnderlyingAssets{docsify-ignore}
+fetches the market ids of underlying assets for a specific contract market type
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [underlying assets]
+(https://docs.ccxt.com/?id=underlying-assets-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#list-all-underlying-
+assets
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| params | <code>object</code> | No | exchange specific params |
+| params.type | <code>string</code> | No | the contract market type, 'option',
+'swap' or 'future', the default is 'option' |
+```javascript
+gate.fetchUnderlyingAssets ([params])
+```
+<a name="fetchLiquidations" id="fetchliquidations"></a>
+### fetchLiquidations{docsify-ignore}
+retrieves the public liquidations of a trading pair
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - an array of [liquidation structures]
+(https://docs.ccxt.com/?id=liquidation-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#query-liquidation-order-
+history
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified CCXT market symbol |
+| since | <code>int</code> | No | the earliest time in ms to fetch liquidations
+for |
+| limit | <code>int</code> | No | the maximum number of liquidation structures to
+retrieve |
+| params | <code>object</code> | No | exchange specific parameters for the
+exchange API endpoint |
+| params.until | <code>int</code> | No | timestamp in ms of the latest
+liquidation |
+```javascript
+
+ gate.fetchLiquidations (symbol[, since, limit, params])
+```
+<a name="fetchMyLiquidations" id="fetchmyliquidations"></a>
+### fetchMyLiquidations{docsify-ignore}
+retrieves the users liquidated positions
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - an array of [liquidation structures]
+(https://docs.ccxt.com/?id=liquidation-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#query-liquidation-history
+- https://www.gate.com/docs/developers/apiv4/en/#query-liquidation-history-2
+- https://www.gate.com/docs/developers/apiv4/en/#list-user-s-liquidation-history-
+of-specified-underlying
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified CCXT market symbol |
+| since | <code>int</code> | No | the earliest time in ms to fetch liquidations
+for |
+| limit | <code>int</code> | No | the maximum number of liquidation structures to
+retrieve |
+| params | <code>object</code> | No | exchange specific parameters for the
+exchange API endpoint |
+```javascript
+gate.fetchMyLiquidations (symbol[, since, limit, params])
+```
+<a name="fetchGreeks" id="fetchgreeks"></a>
+### fetchGreeks{docsify-ignore}
+fetches an option contracts greeks, financial metrics used to measure the factors
+that affect the price of an options contract
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [greeks structure](https://docs.ccxt.com/?
+id=greeks-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#query-options-market-
+ticker-information
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified symbol of the market to fetch
+greeks for |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchGreeks (symbol[, params])
+```
+<a name="closePosition" id="closeposition"></a>
+
+ ### closePosition{docsify-ignore}
+closes open positions for a market
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - [A list of position structures]
+(https://docs.ccxt.com/?id=position-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#place-futures-order
+- https://www.gate.com/docs/developers/apiv4/en/#place-futures-order-2
+- https://www.gate.com/docs/developers/apiv4/en/#create-an-options-order
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | Unified CCXT market symbol |
+| side | <code>string</code> | Yes | 'buy' or 'sell' |
+| params | <code>object</code> | No | extra parameters specific to the okx api
+endpoint |
+```javascript
+gate.closePosition (symbol, side[, params])
+```
+<a name="fetchLeverage" id="fetchleverage"></a>
+### fetchLeverage{docsify-ignore}
+fetch the set leverage for a market
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [leverage structure](https://docs.ccxt.com/?
+id=leverage-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/en/#get-unified-account-information
+- https://www.gate.com/docs/developers/apiv4/en/#get-lending-market-details
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.unified | <code>boolean</code> | No | default false, set to true for
+fetching the unified accounts leverage |
+```javascript
+gate.fetchLeverage (symbol[, params])
+```
+<a name="fetchLeverages" id="fetchleverages"></a>
+### fetchLeverages{docsify-ignore}
+fetch the set leverage for all leverage markets, only spot margin is supported on
+gate
+**Kind**: instance method of [<code>gate</code>](#gate)
+
+ **Returns**: <code>object</code> - a list of [leverage structures]
+(https://docs.ccxt.com/?id=leverage-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#list-lending-markets
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbols | <code>Array&lt;string&gt;</code> | Yes | a list of unified market
+symbols |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.unified | <code>boolean</code> | No | default false, set to true for
+fetching unified account leverages |
+```javascript
+gate.fetchLeverages (symbols[, params])
+```
+<a name="fetchOption" id="fetchoption"></a>
+### fetchOption{docsify-ignore}
+fetches option data that is commonly found in an option chain
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - an [option chain structure]
+(https://docs.ccxt.com/?id=option-chain-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#query-specified-contract-
+details
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchOption (symbol[, params])
+```
+<a name="fetchOptionChain" id="fetchoptionchain"></a>
+### fetchOptionChain{docsify-ignore}
+fetches data for an underlying asset that is commonly found in an option chain
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a list of [option chain structures]
+(https://docs.ccxt.com/?id=option-chain-structure)
+**See**: https://www.gate.com/docs/developers/apiv4/en/#list-all-contracts-for-
+specified-underlying-and-expiration-date
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| code | <code>string</code> | Yes | base currency to fetch an option chain for |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.underlying | <code>string</code> | No | the underlying asset, can be
+obtained from fetchUnderlyingAssets () |
+| params.expiration | <code>int</code> | No | unix timestamp of the expiration
+
+ time |
+```javascript
+gate.fetchOptionChain (code[, params])
+```
+<a name="fetchPositionsHistory" id="fetchpositionshistory"></a>
+### fetchPositionsHistory{docsify-ignore}
+fetches historical positions
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [position structures]
+(https://docs.ccxt.com/?id=position-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/#query-position-close-history
+- https://www.gate.com/docs/developers/apiv4/#query-position-close-history-2
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbols | <code>Array&lt;string&gt;</code> | Yes | unified conract symbols,
+must all have the same settle currency and the same market type |
+| since | <code>int</code> | No | the earliest time in ms to fetch positions for
+|
+| limit | <code>int</code> | No | the maximum amount of records to fetch,
+default=1000 |
+| params | <code>object</code> | Yes | extra parameters specific to the exchange
+api endpoint |
+| params.until | <code>int</code> | No | the latest time in ms to fetch positions
+for EXCHANGE SPECIFIC PARAMETERS |
+| params.offset | <code>int</code> | No | list offset, starting from 0 |
+| params.side | <code>string</code> | No | long or short |
+| params.pnl | <code>string</code> | No | query profit or loss |
+```javascript
+gate.fetchPositionsHistory (symbols[, since, limit, params])
+```
+<a name="createOrderWs" id="createorderws"></a>
+### createOrderWs{docsify-ignore}
+Create an order on the exchange
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> \| <code>undefined</code> - [An order structure]
+(https://docs.ccxt.com/?id=order-structure)
+**See**
+- https://www.gate.io/docs/developers/apiv4/ws/en/#order-place
+- https://www.gate.io/docs/developers/futures/ws/en/#order-place
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | Unified CCXT market symbol |
+| type | <code>string</code> | Yes | 'limit' or 'market' *"market" is contract
+
+ only* |
+| side | <code>string</code> | Yes | 'buy' or 'sell' |
+| amount | <code>float</code> | Yes | the amount of currency to trade |
+| price | <code>float</code> | No | *ignored in "market" orders* the price at
+which the order is to be fulfilled at in units of the quote currency |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.stopPrice | <code>float</code> | No | The price at which a trigger order
+is triggered at |
+| params.timeInForce | <code>string</code> | No | "GTC", "IOC", or "PO" |
+| params.stopLossPrice | <code>float</code> | No | The price at which a stop loss
+order is triggered at |
+| params.takeProfitPrice | <code>float</code> | No | The price at which a take
+profit order is triggered at |
+| params.marginMode | <code>string</code> | No | 'cross' or 'isolated' -
+marginMode for margin trading if not provided this.options['defaultMarginMode']
+is used |
+| params.iceberg | <code>int</code> | No | Amount to display for the iceberg
+order, Null or 0 for normal orders, Set to -1 to hide the order completely |
+| params.text | <code>string</code> | No | User defined information |
+| params.account | <code>string</code> | No | *spot and margin only* "spot",
+"margin" or "cross_margin" |
+| params.auto_borrow | <code>bool</code> | No | *margin only* Used in margin or
+cross margin trading to allow automatic loan of insufficient amount if balance is
+not enough |
+| params.settle | <code>string</code> | No | *contract only* Unified Currency
+Code for settle currency |
+| params.reduceOnly | <code>bool</code> | No | *contract only* Indicates if this
+order is to reduce the size of a position |
+| params.close | <code>bool</code> | No | *contract only* Set as true to close
+the position, with size set to 0 |
+| params.auto_size | <code>bool</code> | No | *contract only* Set side to close
+dual-mode position, close_long closes the long side, while close_short the short
+one, size also needs to be set to 0 |
+| params.price_type | <code>int</code> | No | *contract only* 0 latest deal
+price, 1 mark price, 2 index price |
+| params.cost | <code>float</code> | No | *spot market buy only* the quote
+quantity that can be used as an alternative for the amount |
+```javascript
+gate.createOrderWs (symbol, type, side, amount[, price, params])
+```
+<a name="createOrdersWs" id="createordersws"></a>
+### createOrdersWs{docsify-ignore}
+create a list of trade orders
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - an [order structure](https://docs.ccxt.com/?
+id=order-structure)
+**See**: https://www.gate.io/docs/developers/futures/ws/en/#order-batch-place
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| orders | <code>Array</code> | Yes | list of orders to create, each object
+should contain the parameters required by createOrder, namely symbol, type, side,
+amount, price and params |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+
+ ```javascript
+gate.createOrdersWs (orders[, params])
+```
+<a name="cancelAllOrdersWs" id="cancelallordersws"></a>
+### cancelAllOrdersWs{docsify-ignore}
+cancel all open orders
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [order structures]
+(https://docs.ccxt.com/?id=order-structure)
+**See**
+- https://www.gate.com/docs/developers/futures/ws/en/#cancel-matched-open-orders
+- https://www.gate.io/docs/developers/apiv4/ws/en/#order-cancel-all-with-
+specified-currency-pair
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol, only orders in the
+market of this symbol are cancelled when symbol is not undefined |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.channel | <code>string</code> | No | the channel to use, defaults to
+spot.order_cancel_cp or futures.order_cancel_cp |
+```javascript
+gate.cancelAllOrdersWs (symbol[, params])
+```
+<a name="cancelOrderWs" id="cancelorderws"></a>
+### cancelOrderWs{docsify-ignore}
+Cancels an open order
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: An [order structure](https://docs.ccxt.com/?id=order-structure)
+**See**
+- https://www.gate.io/docs/developers/apiv4/ws/en/#order-cancel
+- https://www.gate.io/docs/developers/futures/ws/en/#order-cancel
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| id | <code>string</code> | Yes | Order id |
+| symbol | <code>string</code> | Yes | Unified market symbol |
+| params | <code>object</code> | No | Parameters specified by the exchange api |
+| params.trigger | <code>bool</code> | No | True if the order to be cancelled is
+a trigger order |
+```javascript
+gate.cancelOrderWs (id, symbol[, params])
+```
+
+ <a name="editOrderWs" id="editorderws"></a>
+### editOrderWs{docsify-ignore}
+edit a trade order, gate currently only supports the modification of the price or
+amount fields
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - an [order structure](https://docs.ccxt.com/?
+id=order-structure)
+**See**
+- https://www.gate.io/docs/developers/apiv4/ws/en/#order-amend
+- https://www.gate.io/docs/developers/futures/ws/en/#order-amend
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| id | <code>string</code> | Yes | order id |
+| symbol | <code>string</code> | Yes | unified symbol of the market to create an
+order in |
+| type | <code>string</code> | Yes | 'market' or 'limit' |
+| side | <code>string</code> | Yes | 'buy' or 'sell' |
+| amount | <code>float</code> | Yes | how much of the currency you want to trade
+in units of the base currency |
+| price | <code>float</code> | No | the price at which the order is to be
+fulfilled, in units of the quote currency, ignored in market orders |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.editOrderWs (id, symbol, type, side, amount[, price, params])
+```
+<a name="fetchOrderWs" id="fetchorderws"></a>
+### fetchOrderWs{docsify-ignore}
+Retrieves information on an order
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: An [order structure](https://docs.ccxt.com/?id=order-structure)
+**See**
+- https://www.gate.io/docs/developers/apiv4/ws/en/#order-status
+- https://www.gate.io/docs/developers/futures/ws/en/#order-status
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| id | <code>string</code> | Yes | Order id |
+| symbol | <code>string</code> | Yes | Unified market symbol, *required for spot
+and margin* |
+| params | <code>object</code> | No | Parameters specified by the exchange api |
+| params.trigger | <code>bool</code> | No | True if the order being fetched is a
+trigger order |
+| params.marginMode | <code>string</code> | No | 'cross' or 'isolated' -
+marginMode for margin trading if not provided this.options['defaultMarginMode']
+is used |
+| params.type | <code>string</code> | No | 'spot', 'swap', or 'future', if not
+provided this.options['defaultMarginMode'] is used |
+
+ | params.settle | <code>string</code> | No | 'btc' or 'usdt' - settle currency
+for perpetual swap and future - market settle currency is used if symbol !==
+undefined, default="usdt" for swap and "btc" for future |
+```javascript
+gate.fetchOrderWs (id, symbol[, params])
+```
+<a name="fetchOpenOrdersWs" id="fetchopenordersws"></a>
+### fetchOpenOrdersWs{docsify-ignore}
+fetch all unfilled currently open orders
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;Order&gt;</code> - a list of [order structures]
+(https://docs.ccxt.com/?id=order-structure)
+**See**: https://www.gate.io/docs/developers/futures/ws/en/#order-list
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol |
+| since | <code>int</code> | No | the earliest time in ms to fetch open orders
+for |
+| limit | <code>int</code> | No | the maximum number of  open orders structures
+to retrieve |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchOpenOrdersWs (symbol[, since, limit, params])
+```
+<a name="fetchClosedOrdersWs" id="fetchclosedordersws"></a>
+### fetchClosedOrdersWs{docsify-ignore}
+fetches information on multiple closed orders made by the user
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;Order&gt;</code> - a list of [order structures]
+(https://docs.ccxt.com/?id=order-structure)
+**See**: https://www.gate.io/docs/developers/futures/ws/en/#order-list
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol of the market orders
+were made in |
+| since | <code>int</code> | No | the earliest time in ms to fetch orders for |
+| limit | <code>int</code> | No | the maximum number of order structures to
+retrieve |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.fetchClosedOrdersWs (symbol[, since, limit, params])
+```
+
+ <a name="fetchOrdersWs" id="fetchordersws"></a>
+### fetchOrdersWs{docsify-ignore}
+fetches information on multiple orders made by the user by status
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [order structures]
+(https://docs.ccxt.com/?id=order-structure)
+**See**: https://www.gate.io/docs/developers/futures/ws/en/#order-list
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| status | <code>string</code> | Yes | requested order status |
+| symbol | <code>string</code> | Yes | unified market symbol of the market orders
+were made in |
+| since | <code>int</code>, <code>undefined</code> | No | the earliest time in ms
+to fetch orders for |
+| limit | <code>int</code>, <code>undefined</code> | No | the maximum number of
+order structures to retrieve |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+| params.orderId | <code>int</code> | No | order id to begin at |
+| params.limit | <code>int</code> | No | the maximum number of order structures
+to retrieve |
+```javascript
+gate.fetchOrdersWs (status, symbol[, since, limit, params])
+```
+<a name="watchOrderBook" id="watchorderbook"></a>
+### watchOrderBook{docsify-ignore}
+watches information on open orders with bid (buy) and ask (sell) prices, volumes
+and other data
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - A dictionary of [order book structures]
+(https://docs.ccxt.com/?id=order-book-structure) indexed by market symbols
+**See**
+- https://www.gate.com/docs/developers/apiv4/ws/en/#order-book-channel
+- https://www.gate.com/docs/developers/apiv4/ws/en/#order-book-v2-api
+- https://www.gate.com/docs/developers/futures/ws/en/#order-book-api
+- https://www.gate.com/docs/developers/futures/ws/en/#order-book-v2-api
+- https://www.gate.com/docs/developers/delivery/ws/en/#order-book-api
+- https://www.gate.com/docs/developers/options/ws/en/#order-book-channel
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified symbol of the market to fetch the
+order book for |
+| limit | <code>int</code> | No | the maximum amount of order book entries to
+return |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.watchOrderBook (symbol[, limit, params])
+
+ ```
+<a name="unWatchOrderBook" id="unwatchorderbook"></a>
+### unWatchOrderBook{docsify-ignore}
+unWatches information on open orders with bid (buy) and ask (sell) prices,
+volumes and other data
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - A dictionary of [order book structures]
+(https://docs.ccxt.com/?id=order-book-structure) indexed by market symbols
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified symbol of the market to fetch the
+order book for |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.unWatchOrderBook (symbol[, params])
+```
+<a name="watchTicker" id="watchticker"></a>
+### watchTicker{docsify-ignore}
+watches a price ticker, a statistical calculation with the information calculated
+over the past 24 hours for a specific market
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [ticker structure](https://docs.ccxt.com/?
+id=ticker-structure)
+**See**
+- https://www.gate.io/docs/developers/apiv4/ws/en/#tickers-channel
+- https://www.gate.com/docs/developers/futures/ws/en/#tickers-api
+- https://www.gate.com/docs/developers/delivery/ws/en/#tickers-api
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified symbol of the market to fetch the
+ticker for |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.watchTicker (symbol[, params])
+```
+<a name="watchTickers" id="watchtickers"></a>
+### watchTickers{docsify-ignore}
+watches a price ticker, a statistical calculation with the information calculated
+over the past 24 hours for all markets of a specific list
+**Kind**: instance method of [<code>gate</code>](#gate)
+
+ **Returns**: <code>object</code> - a [ticker structure](https://docs.ccxt.com/?
+id=ticker-structure)
+**See**
+- https://www.gate.io/docs/developers/apiv4/ws/en/#tickers-channel
+- https://www.gate.com/docs/developers/futures/ws/en/#tickers-api
+- https://www.gate.com/docs/developers/delivery/ws/en/#tickers-api
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbols | <code>Array&lt;string&gt;</code> | Yes | unified symbol of the market
+to fetch the ticker for |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.watchTickers (symbols[, params])
+```
+<a name="watchBidsAsks" id="watchbidsasks"></a>
+### watchBidsAsks{docsify-ignore}
+watches best bid & ask for symbols
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [ticker structure](https://docs.ccxt.com/?
+id=ticker-structure)
+**See**
+- https://www.gate.io/docs/developers/apiv4/ws/en/#best-bid-or-ask-price
+- https://www.gate.io/docs/developers/apiv4/ws/en/#order-book-channel
+- https://www.gate.com/docs/developers/options/ws/en/#best-bid-or-ask-price
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbols | <code>Array&lt;string&gt;</code> | Yes | unified symbol of the market
+to fetch the ticker for |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.watchBidsAsks (symbols[, params])
+```
+<a name="watchTrades" id="watchtrades"></a>
+### watchTrades{docsify-ignore}
+get the list of most recent trades for a particular symbol
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [trade structures]
+(https://docs.ccxt.com/?id=public-trades)
+**See**
+- https://www.gate.com/docs/developers/apiv4/ws/en/#public-trades-channel
+
+ - https://www.gate.com/docs/developers/futures/ws/en/#trades-api
+- https://www.gate.com/docs/developers/delivery/ws/en/#trades-api
+- https://www.gate.com/docs/developers/options/ws/en/#public-contract-trades-
+channel
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified symbol of the market to fetch
+trades for |
+| since | <code>int</code> | No | timestamp in ms of the earliest trade to fetch
+|
+| limit | <code>int</code> | No | the maximum amount of trades to fetch |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.watchTrades (symbol[, since, limit, params])
+```
+<a name="watchTradesForSymbols" id="watchtradesforsymbols"></a>
+### watchTradesForSymbols{docsify-ignore}
+get the list of most recent trades for a particular symbol
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [trade structures]
+(https://docs.ccxt.com/?id=public-trades)
+**See**
+- https://www.gate.com/docs/developers/apiv4/ws/en/#public-trades-channel
+- https://www.gate.com/docs/developers/futures/ws/en/#trades-api
+- https://www.gate.com/docs/developers/delivery/ws/en/#trades-api
+- https://www.gate.com/docs/developers/options/ws/en/#public-contract-trades-
+channel
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbols | <code>Array&lt;string&gt;</code> | Yes | unified symbol of the market
+to fetch trades for |
+| since | <code>int</code> | No | timestamp in ms of the earliest trade to fetch
+|
+| limit | <code>int</code> | No | the maximum amount of trades to fetch |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.watchTradesForSymbols (symbols[, since, limit, params])
+```
+<a name="unWatchTradesForSymbols" id="unwatchtradesforsymbols"></a>
+### unWatchTradesForSymbols{docsify-ignore}
+get the list of most recent trades for a particular symbol
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [trade structures]
+(https://docs.ccxt.com/?id=public-trades)
+
+ | Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbols | <code>Array&lt;string&gt;</code> | Yes | unified symbol of the market
+to fetch trades for |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.unWatchTradesForSymbols (symbols[, params])
+```
+<a name="unWatchTrades" id="unwatchtrades"></a>
+### unWatchTrades{docsify-ignore}
+get the list of most recent trades for a particular symbol
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [trade structures]
+(https://docs.ccxt.com/?id=public-trades)
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified symbol of the market to fetch
+trades for |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.unWatchTrades (symbol[, params])
+```
+<a name="watchOHLCV" id="watchohlcv"></a>
+### watchOHLCV{docsify-ignore}
+watches historical candlestick data containing the open, high, low, and close
+price, and the volume of a market
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;Array&lt;int&gt;&gt;</code> - A list of candles
+ordered as timestamp, open, high, low, close, volume
+**See**
+- https://www.gate.com/docs/developers/apiv4/ws/en/#candlesticks-channel
+- https://www.gate.com/docs/developers/futures/ws/en/#candlesticks-api
+- https://www.gate.com/docs/developers/delivery/ws/en/#candlesticks-api
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified symbol of the market to fetch
+OHLCV data for |
+| timeframe | <code>string</code> | Yes | the length of time each candle
+represents |
+| since | <code>int</code> | No | timestamp in ms of the earliest candle to fetch
+|
+| limit | <code>int</code> | No | the maximum amount of candles to fetch |
+
+ | params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.watchOHLCV (symbol, timeframe[, since, limit, params])
+```
+<a name="watchMyTrades" id="watchmytrades"></a>
+### watchMyTrades{docsify-ignore}
+watches information on multiple trades made by the user
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [trade structures]
+(https://docs.ccxt.com/?id=trade-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/ws/en/#user-trades-channel
+- https://www.gate.com/docs/developers/futures/ws/en/#user-trades-api
+- https://www.gate.com/docs/developers/delivery/ws/en/#user-trades-api
+- https://www.gate.com/docs/developers/options/ws/en/#user-trades-channel
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol of the market trades
+were made in |
+| since | <code>int</code> | No | the earliest time in ms to fetch trades for |
+| limit | <code>int</code> | No | the maximum number of trade structures to
+retrieve |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.watchMyTrades (symbol[, since, limit, params])
+```
+<a name="watchBalance" id="watchbalance"></a>
+### watchBalance{docsify-ignore}
+watch balance and get the amount of funds available for trading or funds locked
+in orders
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - a [balance structure](https://docs.ccxt.com/?
+id=balance-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/ws/en/#spot-balance-channel
+- https://www.gate.com/docs/developers/futures/ws/en/#balances-api
+- https://www.gate.com/docs/developers/delivery/ws/en/#balances-api
+- https://www.gate.com/docs/developers/options/ws/en/#balances-channel
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+API endpoint |
+
+ ```javascript
+gate.watchBalance ([params])
+```
+<a name="watchPositions" id="watchpositions"></a>
+### watchPositions{docsify-ignore}
+watch all open positions
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [position structure]
+(https://docs.ccxt.com/en/latest/manual.html#position-structure)
+**See**
+- https://www.gate.io/docs/developers/futures/ws/en/#positions-subscription
+- https://www.gate.io/docs/developers/delivery/ws/en/#positions-subscription
+- https://www.gate.io/docs/developers/options/ws/en/#positions-channel
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbols | <code>Array&lt;string&gt;</code> | No | list of unified market
+symbols to watch positions for |
+| since | <code>int</code> | No | the earliest time in ms to fetch positions for
+|
+| limit | <code>int</code> | No | the maximum number of positions to retrieve |
+| params | <code>object</code> | Yes | extra parameters specific to the exchange
+API endpoint |
+```javascript
+gate.watchPositions ([symbols, since, limit, params])
+```
+<a name="watchOrders" id="watchorders"></a>
+### watchOrders{docsify-ignore}
+watches information on multiple orders made by the user
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>Array&lt;object&gt;</code> - a list of [order structures]
+(https://docs.ccxt.com/?id=order-structure)
+**See**
+- https://www.gate.com/docs/developers/apiv4/ws/en/#orders-channel
+- https://www.gate.com/docs/developers/futures/ws/en/#orders-api
+- https://www.gate.com/docs/developers/delivery/ws/en/#orders-api
+- https://www.gate.com/docs/developers/options/ws/en/#orders-channel
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified market symbol of the market orders
+were made in |
+| since | <code>int</code> | No | the earliest time in ms to fetch orders for |
+| limit | <code>int</code> | No | the maximum number of order structures to
+retrieve |
+| params | <code>object</code> | No | extra parameters specific to the exchange
+
+ API endpoint |
+| params.type | <code>string</code> | No | spot, margin, swap, future, or option.
+Required if listening to all symbols. |
+| params.isInverse | <code>boolean</code> | No | if future, listen to inverse or
+linear contracts |
+```javascript
+gate.watchOrders (symbol[, since, limit, params])
+```
+<a name="watchMyLiquidations" id="watchmyliquidations"></a>
+### watchMyLiquidations{docsify-ignore}
+watch the public liquidations of a trading pair
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - an array of [liquidation structures]
+(https://github.com/ccxt/ccxt/wiki/Manual#liquidation-structure)
+**See**
+- https://www.gate.io/docs/developers/futures/ws/en/#liquidates-api
+- https://www.gate.io/docs/developers/delivery/ws/en/#liquidates-api
+- https://www.gate.io/docs/developers/options/ws/en/#liquidates-channel
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbol | <code>string</code> | Yes | unified CCXT market symbol |
+| since | <code>int</code> | No | the earliest time in ms to fetch liquidations
+for |
+| limit | <code>int</code> | No | the maximum number of liquidation structures to
+retrieve |
+| params | <code>object</code> | No | exchange specific parameters for the bitmex
+api endpoint |
+```javascript
+gate.watchMyLiquidations (symbol[, since, limit, params])
+```
+<a name="watchMyLiquidationsForSymbols" id="watchmyliquidationsforsymbols"></a>
+### watchMyLiquidationsForSymbols{docsify-ignore}
+watch the private liquidations of a trading pair
+**Kind**: instance method of [<code>gate</code>](#gate)
+**Returns**: <code>object</code> - an array of [liquidation structures]
+(https://github.com/ccxt/ccxt/wiki/Manual#liquidation-structure)
+**See**
+- https://www.gate.io/docs/developers/futures/ws/en/#liquidates-api
+- https://www.gate.io/docs/developers/delivery/ws/en/#liquidates-api
+- https://www.gate.io/docs/developers/options/ws/en/#liquidates-channel
+| Param | Type | Required | Description |
+| --- | --- | --- | --- |
+| symbols | <code>Array&lt;string&gt;</code> | Yes | unified CCXT market symbols
+|
+
+ | since | <code>int</code> | No | the earliest time in ms to fetch liquidations
+for |
+| limit | <code>int</code> | No | the maximum number of liquidation structures to
+retrieve |
+| params | <code>object</code> | No | exchange specific parameters for the gate
+api endpoint |
+```javascript
+gate.watchMyLiquidationsForSymbols (symbols[, since, limit, params])
+```
