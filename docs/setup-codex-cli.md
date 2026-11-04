@@ -4,15 +4,13 @@
 
 In the AI chat, type:
 
-> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
-
-![Codex CLI One-Click Installer](../images/codex-cli-one-click-installer.png)
+> Help me auto install Gate Skills and MCPs: https://github.com/gate/gate-skills
 
 ## Method 2: Manual Configuration
 
 ### Prerequisites
 
-- OpenAI API key with Codex access
+- ChatGPT sign-in with Codex access, or an OpenAI API key for API-billed use
 - Node.js >= 18
 
 ### Step 1: Install Codex CLI
@@ -29,19 +27,20 @@ Or use npx (no installation required):
 npx @openai/codex --version
 ```
 
-### Step 2: Configure OpenAI API Key
+### Step 2: Sign in to Codex
 
-Set your OpenAI API key:
+Codex supports ChatGPT sign-in and API-key sign-in; see [official OpenAI authentication](https://learn.chatgpt.com/docs/auth). This is separate from Gate OAuth2 authorization below.
 
 ```bash
-export OPENAI_API_KEY="your-api-key-here"
+# Complete Codex browser login with a ChatGPT account.
+codex login
 ```
 
-Or add it to your shell profile (`~/.bashrc`, `~/.zshrc`, etc.):
+For API-key sign-in, first set OPENAI_API_KEY privately on your machine, then pass it through stdin:
 
 ```bash
-echo 'export OPENAI_API_KEY="your-api-key-here"' >> ~/.zshrc
-source ~/.zshrc
+# Keep the key value out of command arguments and documentation.
+printenv OPENAI_API_KEY | codex login --with-api-key
 ```
 
 ### Step 3: Add Gate MCP
@@ -71,6 +70,15 @@ codex mcp add gate-news --url https://api.gatemcp.ai/mcp/news
 ```
 
 ![Codex CLI Add MCP](../images/codex-cli-add-mcp.png)
+
+Adding the server may prompt Gate OAuth. If authorization is incomplete or needs renewal, run:
+
+```bash
+# Authorize Gate MCP; this does not sign in to the Codex account.
+codex mcp login gate
+```
+
+Follow the installed client's prompts and [official MCP documentation](https://learn.chatgpt.com/docs/extend/mcp). A saved configuration alone does not establish complete business permissions.
 
 ### Step 4: Verify Installation
 
@@ -112,9 +120,9 @@ codex mcp add gate --url https://api.gatemcp.ai/mcp/exchange
 
 ## Troubleshooting
 
-### "OPENAI_API_KEY not set" Error
+### API-key sign-in errors
 
-Make sure you've set your OpenAI API key:
+Check the API key only when using API-key sign-in. ChatGPT sign-in does not require this environment variable:
 
 ```bash
 export OPENAI_API_KEY="your-api-key-here"
@@ -135,5 +143,5 @@ export OPENAI_API_KEY="your-api-key-here"
 ## Next Steps
 
 - Explore all [available tools](../README.md#available-tools)
-- Learn about [futures market tools](../README.md#public-mcp-mcp--no-auth)
+- Learn about [futures market tools](../README.md#cex-public)
 - Check the [API documentation](https://www.gate.com/docs/developers/apiv4/)

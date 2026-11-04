@@ -1,89 +1,28 @@
 # Claude Desktop Setup Guide
 
-Claude Desktop requires a local stdio proxy to connect to the Gate MCP server.
+## Option 1: Remote custom connector
 
-> **Note:** The stdio proxy connects to the public endpoint (`/mcp`) for market data only. For full trading access, use a client that supports HTTP transport directly (e.g., Cursor, Claude CLI).
+Claude Desktop supports remote MCP custom connectors; a local stdio proxy is not mandatory. Follow the [official Claude guide](https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp) to add a connector, subject to organization administrator permissions.
 
-## Step 1: Download the Python Proxy
+| Use | Remote URL | Authentication |
+|---|---|---|
+| CEX public data | `https://api.gatemcp.ai/mcp` | None |
+| Authorized CEX private tools | `https://api.gatemcp.ai/mcp/exchange` | Gate OAuth2 |
 
-Download the proxy file from the repository:
+For the private endpoint, complete the client-prompted Gate authorization, then check the actual tool list. Add public and private endpoints separately. Client/account eligibility can affect access; official support does not establish that every Gate account combination has passed integration testing.
+
+## Option 2: Local stdio compatibility proxy for public data
+
+The steps below use the maintained [Python proxy](../gate-mcp-proxy.py), which defaults to public `/mcp`. It does not implement OAuth or SSE parsing; changing its URL to the private endpoint does not grant trading permission.
+
+### Step 1: Download the Python proxy
 
 ```bash
+# Use the single maintained proxy file rather than a duplicated implementation.
 curl -O https://raw.githubusercontent.com/gate/gate-mcp/main/gate-mcp-proxy.py
 ```
 
-Or save the following as `gate-mcp-proxy.py`:
-
-```python
-#!/usr/bin/env python3
-"""
-MCP Proxy for Gate CEX MCP Server
-Converts stdio to HTTP for Claude Desktop compatibility
-"""
-
-import sys
-import json
-import urllib.request
-import urllib.error
-
-MCP_SERVER_URL = "https://api.gatemcp.ai/mcp"
-
-def send_request(method, params=None):
-    """Send request to MCP server"""
-    data = json.dumps({
-        "jsonrpc": "2.0",
-        "method": method,
-        "params": params or {},
-        "id": 1
-    }).encode('utf-8')
-
-    req = urllib.request.Request(
-        MCP_SERVER_URL,
-        data=data,
-        headers={
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    )
-
-    try:
-        with urllib.request.urlopen(req) as response:
-            return json.loads(response.read().decode('utf-8'))
-    except urllib.error.URLError as e:
-        return {"error": str(e)}
-
-def main():
-    """Main loop for stdio communication"""
-    while True:
-        try:
-            line = sys.stdin.readline()
-            if not line:
-                break
-
-            message = json.loads(line)
-            method = message.get('method')
-            params = message.get('params', {})
-
-            result = send_request(method, params)
-
-            response = {
-                "jsonrpc": "2.0",
-                "id": message.get('id'),
-                "result": result.get('result', {})
-            }
-
-            print(json.dumps(response), flush=True)
-
-        except json.JSONDecodeError:
-            continue
-        except KeyboardInterrupt:
-            break
-
-if __name__ == "__main__":
-    main()
-```
-
-## Step 2: Edit Claude Desktop Configuration
+### Step 2: Edit Claude Desktop Configuration
 
 Open the Claude Desktop configuration file:
 
@@ -105,7 +44,7 @@ Add the following configuration (replace `/path/to/gate-mcp-proxy.py` with the a
 }
 ```
 
-## Step 3: Restart and Verify
+### Step 3: Restart and Verify
 
 1. **Restart Claude Desktop** completely
 2. Open a new conversation
@@ -113,7 +52,7 @@ Add the following configuration (replace `/path/to/gate-mcp-proxy.py` with the a
 
 ![Claude Desktop Verify](../images/claude-desktop-verify.png)
 
-## Step 4: Start Using
+### Step 4: Start Using
 
 Example queries:
 
@@ -150,5 +89,5 @@ chmod +x /path/to/gate-mcp-proxy.py
 ## Next Steps
 
 - Explore all [available tools](../README.md#available-tools)
-- Learn about [futures market tools](../README.md#public-mcp-mcp--no-auth)
+- Learn about [futures market tools](../README.md#cex-public)
 - Check the [API documentation](https://www.gate.com/docs/developers/apiv4/)

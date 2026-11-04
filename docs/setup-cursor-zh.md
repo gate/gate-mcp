@@ -4,7 +4,7 @@
 
 在 AI 对话中输入：
 
-> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+> Help me auto install Gate Skills and MCPs: https://github.com/gate/gate-skills
 
 ![Cursor 一键安装](../images/cursor-one-click-installer.png)
 
@@ -121,5 +121,5 @@ Gate MCP 提供两个端点，按需选择：
 ## 下一步
 
 - 探索所有[可用工具](../README_zh.md#工具列表)
-- 了解[合约工具](../README_zh.md#public-mcpmcp--无需认证)
+- 了解[合约工具](../README_zh.md#cex-public)
 - 查看 [API 文档](https://www.gate.com/docs/developers/apiv4/)

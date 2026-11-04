@@ -4,7 +4,7 @@
 
 In the AI chat, type:
 
-> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+> Help me auto install Gate Skills and MCPs: https://github.com/gate/gate-skills
 
 ![Codex App One-Click Installer](../images/codex-app-one-click-installer.png)
 
@@ -13,7 +13,7 @@ In the AI chat, type:
 ### Prerequisites
 
 - OpenAI Codex App installed
-- OpenAI API key with Codex access
+- ChatGPT sign-in with Codex access, or an OpenAI API key for API-billed use
 
 ### Step 1: Open Codex Settings
 
@@ -32,12 +32,10 @@ Launch the Codex App and navigate to **Settings**
 
 Enter the following details:
 
-| Field | Value |
-|-------|-------|
 | Name | URL | Auth |
 |------|-----|------|
-| `Gate` | `https://api.gatemcp.ai/mcp` | None (market data) |
-| `Gate` | `https://api.gatemcp.ai/mcp/exchange` | OAuth2 (trading) |
+| `Gate-Public` | `https://api.gatemcp.ai/mcp` | None (market data) |
+| `Gate-Exchange` | `https://api.gatemcp.ai/mcp/exchange` | OAuth2 (trading) |
 | `Gate-Dex` | `https://api.gatemcp.ai/mcp/dex` | Headers: `x-api-key: MCP_AK_8W2N7Q`, `Authorization: Bearer ${GATE_MCP_TOKEN}` |
 | `Gate-Info` | `https://api.gatemcp.ai/mcp/info` | None |
 | `Gate-News` | `https://api.gatemcp.ai/mcp/news` | None |
@@ -45,6 +43,8 @@ Enter the following details:
 ![Codex App Config](../images/codex-app-config.png)
 
 Click **Save** to add the server.
+
+Codex account sign-in is separate from Gate OAuth2. Complete Gate authorization for the private endpoint before checking visible tools. Use distinct names when adding both endpoints. See [official OpenAI sign-in guidance](https://learn.chatgpt.com/docs/auth).
 
 ### Step 4: Verify and Use
 
@@ -71,5 +71,5 @@ Click **Save** to add the server.
 ## Next Steps
 
 - Explore all [available tools](../README.md#available-tools)
-- Learn about [futures market tools](../README.md#public-mcp-mcp--no-auth)
+- Learn about [futures market tools](../README.md#cex-public)
 - Check the [API documentation](https://www.gate.com/docs/developers/apiv4/)

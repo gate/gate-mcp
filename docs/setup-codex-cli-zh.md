@@ -4,15 +4,13 @@
 
 在 AI 对话中输入：
 
-> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
-
-![Codex CLI 一键安装](../images/codex-cli-one-click-installer.png)
+> Help me auto install Gate Skills and MCPs: https://github.com/gate/gate-skills
 
 ## 方式二：手动配置
 
 ### 前置条件
 
-- 拥有 Codex 访问权限的 OpenAI API 密钥
+- 可使用 Codex 的 ChatGPT 登录，或用于 API 计费的 OpenAI API Key
 - Node.js >= 18
 
 ### 第 1 步：安装 Codex CLI
@@ -29,19 +27,20 @@ npm install -g @openai/codex
 npx @openai/codex --version
 ```
 
-### 第 2 步：配置 OpenAI API 密钥
+### 第 2 步：登录 Codex
 
-设置你的 OpenAI API 密钥：
+Codex 支持 ChatGPT 登录和 API Key 登录，见 [OpenAI 官方认证说明](https://learn.chatgpt.com/docs/auth)。这与稍后使用的 Gate OAuth2 是两次独立授权。
 
 ```bash
-export OPENAI_API_KEY="your-api-key-here"
+# 使用 ChatGPT 账号完成 Codex 浏览器登录。
+codex login
 ```
 
-或将其添加到 shell 配置文件（`~/.bashrc`、`~/.zshrc` 等）：
+若选择 API Key 方式，先在本机私密环境中设置 OPENAI_API_KEY，再通过 stdin 登录：
 
 ```bash
-echo 'export OPENAI_API_KEY="your-api-key-here"' >> ~/.zshrc
-source ~/.zshrc
+# 不将密钥值写入命令行参数或文档。
+printenv OPENAI_API_KEY | codex login --with-api-key
 ```
 
 ### 第 3 步：添加 Gate MCP
@@ -71,6 +70,15 @@ codex mcp add gate-news --url https://api.gatemcp.ai/mcp/news
 ```
 
 ![Codex CLI 添加 MCP](../images/codex-cli-add-mcp.png)
+
+添加时可能提示 Gate OAuth。若尚未完成授权或需要重新登录，可执行：
+
+```bash
+# 此命令授权 Gate MCP，不是登录 Codex 账号。
+codex mcp login gate
+```
+
+以当前客户端实际提示和 [OpenAI MCP 说明](https://learn.chatgpt.com/docs/extend/mcp) 为准；不要仅凭配置出现在列表中就判定业务权限齐全。
 
 ### 第 4 步：验证安装
 
@@ -112,9 +120,9 @@ codex mcp add gate --url https://api.gatemcp.ai/mcp/exchange
 
 ## 故障排除
 
-### "OPENAI_API_KEY not set" 错误
+### API Key 登录错误
 
-确保你已设置 OpenAI API 密钥：
+仅在选择 API Key 登录方式时检查 OpenAI API 密钥；ChatGPT 登录不要求该环境变量：
 
 ```bash
 export OPENAI_API_KEY="your-api-key-here"
@@ -135,5 +143,5 @@ export OPENAI_API_KEY="your-api-key-here"
 ## 下一步
 
 - 探索所有[可用工具](../README_zh.md#工具列表)
-- 了解[合约工具](../README_zh.md#public-mcpmcp--无需认证)
+- 了解[合约工具](../README_zh.md#cex-public)
 - 查看 [API 文档](https://www.gate.com/docs/developers/apiv4/)

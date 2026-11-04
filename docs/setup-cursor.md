@@ -4,7 +4,7 @@
 
 In the AI chat, type:
 
-> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+> Help me auto install Gate Skills and MCPs: https://github.com/gate/gate-skills
 
 ![Cursor One-Click Installer](../images/cursor-one-click-installer.png)
 
@@ -121,5 +121,5 @@ Open Cursor AI chat and try:
 ## Next Steps
 
 - Explore all [available tools](../README.md#available-tools)
-- Learn about [futures market tools](../README.md#public-mcp-mcp--no-auth)
+- Learn about [futures market tools](../README.md#cex-public)
 - Check the [API documentation](https://www.gate.com/docs/developers/apiv4/)

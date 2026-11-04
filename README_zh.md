@@ -9,12 +9,11 @@
 
 ## 功能特性
 
-- **公开市场数据** — 现货、合约、杠杆、期权、交割、理财、Alpha 行情、深度、K 线、资金费率、强平历史（**无需认证**）
-- **交易** — 现货/合约/期权/交割下单、撤单、改单；计划委托；追踪委托
-- **账户与钱包** — 余额、划转、充值提现、子账户、统一账户
-- **杠杆与理财** — 杠杆借贷、理财产品、闪兑（含多币种）
-- **活动中心、卡券、新币挖矿、广场、新手福利** — 活动类型、用户卡券、LaunchPool、AI 搜索、新手任务
-- **TradFi、跨所、OTC、P2P** — 传统金融、跨所交易、场外、P2P
+- **公开数据** — 现货/合约普通与 RPI 深度、期权、交割、杠杆、理财、Alpha、CFD、股票、抵押借贷参数、统一账户试算、广场（无需 OAuth）
+- **交易与策略** — 现货/合约/期权/交割交易、POV、Chase、条件单、Trail、量化机器人
+- **账户与钱包** — 余额、账户间划转、充值提现记录、充值地址、统一账户及钱包中的子账户余额/划转
+- **理财与配置** — 定投、普通/股票双币、定期和余币宝、多币种抵押借贷、闪兑及资产配置优化
+- **CFD 与股票** — 分别提供市场信息和经授权的账户、订单、仓位、资金操作
 - **DEX** — 链上钱包、兑换（单链及跨链）、代币信息、市场数据，支持 20+ 条链
 - **Info** — 币种发现、行情快照、技术/平台指标、链上与宏观数据
 - **News** — 加密资讯、社交洞察、市场事件、预测市场
@@ -27,8 +26,8 @@
 
 | 端点 | 认证 | 工具 |
 |------|------|------|
-| `https://api.gatemcp.ai/mcp` | 无 | 公开市场数据（58 个工具：现货、合约、杠杆、期权、交割、理财、Alpha、活动中心、新币挖矿、广场、闪兑） |
-| `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | CEX 交易与账户（400+ 工具：现货/合约/期权/交割/杠杆交易、钱包、统一账户、子账户、理财、闪兑、返佣、TradFi、跨所、P2P、Alpha、活动中心、卡券、新币挖矿、广场、新手福利） |
+| `https://api.gatemcp.ai/mcp` | 无 | CEX 公开数据及试算（83 个工具；范围见下方业务表） |
+| `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | CEX 私有交易与账户工具（源码注册上限 310，实际按授权及运行策略过滤） |
 | `https://api.gatemcp.ai/mcp/dex` | Google / Gate OAuth | DEX 钱包与兑换（33 个工具：链上钱包、Swap、代币信息、市场数据、Agentic、RPC，支持 20+ 条链） |
 | `https://api.gatemcp.ai/mcp/info` | 无 | 币种信息与分析（32 个工具：币种、快照、趋势、链上、平台指标、宏观、盘口细节） |
 | `https://api.gatemcp.ai/mcp/open/info` | 无 | Gate Info 送审面（恰好 7 个工具：币种资料、市场概览/快照、K 线、盘口、近期成交） |
@@ -63,13 +62,9 @@ mcporter auth gate-mcp
 
 ### scope 说明（用于 `/mcp/exchange`）
 
-| scope | 用途 |
-|-------|------|
-| `market` | 公开市场数据（行情、深度、K 线等） |
-| `profile` | 账户、订单、仓位（只读） |
-| `trade` | 下单、撤单、改单 |
-| `wallet` | 划转、充值提现 |
-| `account` | 统一账户、子账户 |
+`base`、`spot_trade`、`futures_trade`、`earn`、`cfd`、`stock` 的要求按工具和账户类型区分；`base` 在普通匹配中包含 `read` 和 `asset`，不是纯只读。普通 Token 保留历史 scope 的逐工具 OR 兼容，Agentic 的查询、交易和禁止调用规则另有覆盖。`mcp:tools` 不能替代业务 scope。
+
+逐工具权限见 [完整工具表](gate-exchange/gateapi-mcp-service-tools_zh.md)，接入与 PKCE resource 约定见 [授权说明](gate-exchange/gate-exchange-mcp_zh.md#authorization)。当前连接的 `tools/list` 决定可见工具；服务默认 scope 不代表所有环境授权页的实际申请范围。
 
 ### MCP Resources（静态参考数据）
 
@@ -324,23 +319,9 @@ claude mcp list
 
 ### Claude Desktop
 
-Claude Desktop 需要使用本地 stdio 代理。
+Claude Desktop 可使用远程 custom connector；不要求所有用户使用本地代理。连接 `https://api.gatemcp.ai/mcp` 查询公开数据，连接 `https://api.gatemcp.ai/mcp/exchange` 并完成 Gate OAuth2 使用授权范围内的私有工具。
 
-1. 下载 [Python 代理文件](gate-mcp-proxy.py)
-2. 编辑 `~/Library/Application Support/Claude/claude_desktop_config.json`：
-
-```json
-{
-  "mcpServers": {
-    "Gate": {
-      "command": "python3",
-      "args": ["/path/to/gate-mcp-proxy.py"]
-    }
-  }
-}
-```
-
-详细配置说明请参考 [Claude Desktop 配置指南](docs/setup-claude-desktop-zh.md)。
+本仓 Python stdio 代理仅作为公开行情兼容选项，不实现 OAuth 或 SSE 解析。步骤见 [Claude Desktop 配置指南](docs/setup-claude-desktop-zh.md)。
 
 ### 替代方案：gate-local-mcp（本地 stdio + API Key）
 
@@ -413,51 +394,39 @@ Claude Desktop 需要使用本地 stdio 代理。
 
 所有工具均使用 `cex_` 前缀。工具分为 Public MCP（无认证）与 Private MCP（OAuth2）。
 
-### Public MCP（`/mcp` — 无需认证，58 个工具）
+<a id="cex-public"></a>
+### Public MCP（`/mcp` — 无需 OAuth，83 个工具）
 
-| 业务线 | 数量 | 说明 |
-|--------|------|------|
-| **现货** | 8 | `cex_spot_list_currencies`、`cex_spot_get_currency`、`cex_spot_list_currency_pairs`、`cex_spot_get_currency_pair`、`cex_spot_get_spot_tickers`、`cex_spot_get_spot_order_book`、`cex_spot_get_spot_trades`、`cex_spot_get_spot_candlesticks` |
-| **合约** | 14 | 合约列表、深度、成交、K 线、行情、资金费率、溢价指数、强平、合约统计、保险账本、指数成分、批量资金费率、`cex_fx_get_fx_risk_limit_table` |
-| **杠杆** | 3 | `cex_margin_list_uni_currency_pairs`、`cex_margin_get_uni_currency_pair`、`cex_margin_get_market_margin_tier` |
-| **期权** | 12 | 标的、到期日、合约、结算、深度、行情、K 线、成交 |
-| **交割** | 8 | 合约、深度、成交、K 线、行情、保险账本、风险限额档位 |
-| **理财** | 5 | `cex_earn_list_dual_investment_plans`、`cex_earn_list_structured_products`、`cex_earn_list_uni_currencies`、`cex_earn_list_earn_fixed_term_products`、`cex_earn_list_earn_fixed_term_products_by_asset` |
-| **Alpha** | 3 | `cex_alpha_list_alpha_currencies`、`cex_alpha_list_alpha_tickers`、`cex_alpha_list_alpha_tokens` |
-| **活动中心** | 1 | `cex_activity_list_activity_types` |
-| **新币挖矿** | 1 | `cex_launch_list_launch_pool_projects` |
-| **广场** | 2 | `cex_square_list_square_ai_search`、`cex_square_list_live_replay` |
-| **闪兑** | 1 | `cex_fc_list_fc_currency_pairs` |
+工具清单参考服务版本 `v1.16.7`，核对日期 2026-11-04；公开名称集合已与该日期线上目录核对。以下按两端点分别统计，私有端点不包含公开工具。
 
-### Private MCP（`/mcp/exchange` — OAuth2，400+ 工具）
+| 业务域 | 公开 `/mcp` | 私有 `/mcp/exchange` |
+|---|---:|---:|
+| 现货 | 10 | 27 |
+| 永续合约 | 18 | 54 |
+| 杠杆 | 3 | 17 |
+| 期权 | 12 | 17 |
+| 交割合约 | 8 | 21 |
+| 钱包 | 1 | 22 |
+| 统一账户 | 5 | 22 |
+| 账户管理 | 0 | 10 |
+| 返佣 | 0 | 10 |
+| 闪兑 | 1 | 8 |
+| 理财 | 7 | 42 |
+| Alpha | 3 | 6 |
+| CFD／传统金融 | 4 | 16 |
+| 股票 | 5 | 11 |
+| 多币种抵押借贷 | 4 | 8 |
+| 量化机器人／AIHub | 0 | 12 |
+| 资产配置优化／AssetSwap | 0 | 7 |
+| 广场 | 2 | 0 |
+| **合计** | **83** | **310** |
 
-> **注意**：私有端点不包含公开市场数据工具。如需查询行情，请使用 `/mcp`。
+<a id="cex-private"></a>
+### Private MCP（`/mcp/exchange` — OAuth2，源码注册上限 310 个工具）
 
-| 业务线 | Scope | 主要工具 |
-|--------|-------|----------|
-| **现货** | profile / trade | 账户、订单、成交、批量订单、计划委托、倒计时撤单、交叉强平 |
-| **合约** | profile / trade | 账户、仓位、订单、成交、双向持仓、追踪委托、计划委托、BBO 订单 |
-| **杠杆** | profile / trade | 杠杆账户、借贷、自动还款、统一杠杆借贷 |
-| **期权** | profile / trade | 账户、仓位、订单、MMP 设置 |
-| **交割** | profile / trade | 账户、仓位、订单、计划委托 |
-| **钱包** | wallet | 总资产、划转、充值、提现、充值地址、子账户余额、零头兑换 |
-| **统一账户** | account | 统一账户、模式、借贷、风险单元、可借额度、抵押品、杠杆配置 |
-| **子账户** | account | 创建/列表/锁定/解锁 SA、API Key |
-| **账户管理** | account | 账户详情、主 Key、限频、借币费率、STP 组 |
-| **返佣** | profile | 代理/合作伙伴/经纪商返佣历史、用户信息 |
-| **闪兑** | profile / trade | `cex_fc_list_fc_currency_pairs`、`cex_fc_list_fc_orders`、`cex_fc_create_fc_order_v1`、多币种闪兑 等 |
-| **理财** | profile / trade | 双币/结构化/余币宝产品、订单、ETH2 兑换、出借记录 |
-| **Alpha** | profile / trade | Alpha 账户、订单、报价/下单 |
-| **TradFi** | profile / trade | 品类、交易对、MT5 账户、资产、订单、仓位 |
-| **跨所** | profile / trade | 规则交易对、账户、仓位、订单、划转、兑换 |
-| **P2P** | profile / trade | 用户信息、广告、聊天、订单、确认付款/收款 |
-| **活动中心** | profile | 活动类型、推荐活动、用户参与状态 |
-| **卡券** | profile | 用户卡券列表、卡券详情 |
-| **新币挖矿** | profile / trade | LaunchPool 项目列表、质押/赎回、奖励记录 |
-| **广场** | market | AI 搜索、直播回放 |
-| **新手福利** | profile | 新手资格检查、任务列表和奖励 |
+实际可见集合受 Token 权限、账户类型与运行策略影响，不是任意用户均可看到 310 个工具。远程服务已撤下子账户/API Key 管理、CrossEx、P2P、活动、卡券、福利及 Launch 系列；钱包子账户余额与划转不随管理工具一起删除。
 
-按 scope 分组详见 [授权说明](#授权说明oauth2)。完整参数见 [gate-exchange 详情](gate-exchange/gate-exchange-mcp_zh.md)。
+完整名称与逐工具权限见 [远程工具表](gate-exchange/gateapi-mcp-service-tools_zh.md)，参数、请求示例、Trail 响应及错误处理见 [CEX 详情](gate-exchange/gate-exchange-mcp_zh.md)。
 
 ### DEX — 登录认证
 
@@ -564,7 +533,7 @@ A: **仅在使用 CEX 交易和 DEX 钱包时需要**。`/mcp`、`/mcp/info`、`
 
 ### Q: 支持交易吗？
 
-A: 支持。连接 `https://api.gatemcp.ai/mcp/exchange` 并完成 OAuth2 授权即可。提供现货、合约交易，账户管理，钱包划转，子账户等。各工具需对应 scope。
+A: 支持。连接 `/mcp/exchange` 并完成 Gate OAuth2；按工具及账户类型授权现货、合约、CFD、股票、理财或策略操作。公开数据另连 `/mcp`；子账户管理已撤下，钱包中的子账户余额和划转另按权限提供。
 
 ### Q: 数据更新频率？
 
@@ -590,7 +559,7 @@ A: 实时查询 Gate API。
 
 ## 参与贡献
 
-欢迎贡献！请阅读我们的 [贡献指南](CONTRIBUTING.md) 了解更多信息。
+可通过本仓库的 [Issues](https://github.com/gate/gate-mcp/issues) 反馈文档问题。
 
 ## 许可证
 

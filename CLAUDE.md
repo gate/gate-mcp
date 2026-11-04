@@ -1,8 +1,9 @@
 # CLAUDE.md
 
-本仓库是 Gate MCP 的**用户侧使用文档**，MCP 实现位于 **gateapi-mcp-service** 项目。
+本仓库是 Gate MCP 的**用户侧使用文档**。项目规则见 [AGENTS.md](AGENTS.md)。
 
 ## 文档一致性要求
 
-- 工具列表、scope、端点必须与 gateapi-mcp-service 实现保持一致
-- 修改时对照 `gateapi-mcp-service/internal/middleware/scope.go` 的 toolScopeMap 和 `internal/server/server.go` 的注册逻辑
+- 工具列表、scope、端点和参数须与对应版本的工具 Schema 及已确认的服务行为一致。
+- 中英文文档同步维护；区分远程服务与独立本地实现，并如实说明授权范围和验证限制。
+- 仅保留对外使用所需的信息，遵守 AGENTS.md 的公开内容与验证要求。

@@ -4,9 +4,7 @@
 
 In the AI chat, type:
 
-> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
-
-![Claude CLI One-Click Installer](../images/claude-cli-one-click-installer.png)
+> Help me auto install Gate Skills and MCPs: https://github.com/gate/gate-skills
 
 ## Method 2: Manual Configuration
 
@@ -108,5 +106,5 @@ claude mcp add --transport http Gate https://api.gatemcp.ai/mcp/exchange
 ## Next Steps
 
 - Explore all [available tools](../README.md#available-tools)
-- Learn about [futures market tools](../README.md#public-mcp-mcp--no-auth)
+- Learn about [futures market tools](../README.md#cex-public)
 - Check the [API documentation](https://www.gate.com/docs/developers/apiv4/)

@@ -4,7 +4,7 @@
 
 在 AI 对话中输入：
 
-> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+> Help me auto install Gate Skills and MCPs: https://github.com/gate/gate-skills
 
 ![OpenClaw 一键安装](../images/openclaw-one-click-isntaller.png)
 

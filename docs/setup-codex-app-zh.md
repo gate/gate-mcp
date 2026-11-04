@@ -4,7 +4,7 @@
 
 在 AI 对话中输入：
 
-> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+> Help me auto install Gate Skills and MCPs: https://github.com/gate/gate-skills
 
 ![Codex App 一键安装](../images/codex-app-one-click-installer.png)
 
@@ -13,7 +13,7 @@
 ### 前置条件
 
 - 已安装 OpenAI Codex App
-- 拥有 Codex 访问权限的 OpenAI API 密钥
+- 可使用 Codex 的 ChatGPT 登录，或用于 API 计费的 OpenAI API Key
 
 ### 第 1 步：打开 Codex 设置
 
@@ -32,12 +32,10 @@
 
 输入以下详细信息：
 
-| 字段 | 值 |
-|------|-----|
 | 名称 | URL | 认证 |
 |------|-----|------|
-| `Gate` | `https://api.gatemcp.ai/mcp` | 无（行情数据） |
-| `Gate` | `https://api.gatemcp.ai/mcp/exchange` | OAuth2（交易） |
+| `Gate-Public` | `https://api.gatemcp.ai/mcp` | 无（行情数据） |
+| `Gate-Exchange` | `https://api.gatemcp.ai/mcp/exchange` | OAuth2（交易） |
 | `Gate-Dex` | `https://api.gatemcp.ai/mcp/dex` | Headers: `x-api-key: MCP_AK_8W2N7Q`, `Authorization: Bearer ${GATE_MCP_TOKEN}` |
 | `Gate-Info` | `https://api.gatemcp.ai/mcp/info` | 无 |
 | `Gate-News` | `https://api.gatemcp.ai/mcp/news` | 无 |
@@ -45,6 +43,8 @@
 ![Codex App 配置](../images/codex-app-config.png)
 
 点击 **保存** 添加服务器。
+
+Codex 账号登录与 Gate OAuth2 分开处理；私有端点需完成 Gate 授权后再检查可见工具。两端点同时添加时使用不同名称。登录方式见 [OpenAI 官方说明](https://learn.chatgpt.com/docs/auth)。
 
 ### 第 4 步：验证并使用
 
@@ -71,5 +71,5 @@
 ## 下一步
 
 - 探索所有[可用工具](../README_zh.md#工具列表)
-- 了解[合约工具](../README_zh.md#public-mcpmcp--无需认证)
+- 了解[合约工具](../README_zh.md#cex-public)
 - 查看 [API 文档](https://www.gate.com/docs/developers/apiv4/)

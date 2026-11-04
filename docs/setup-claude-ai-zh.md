@@ -58,5 +58,5 @@
 ## 下一步
 
 - 探索所有[可用工具](../README_zh.md#工具列表)
-- 了解[合约工具](../README_zh.md#public-mcpmcp--无需认证)
+- 了解[合约工具](../README_zh.md#cex-public)
 - 查看 [API 文档](https://www.gate.com/docs/developers/apiv4/)

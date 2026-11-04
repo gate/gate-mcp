@@ -11,12 +11,11 @@ A Gate MCP (Model Context Protocol) server that enables AI agents to interact wi
 
 ## Features
 
-- 🔍 **Public Market Data** - Spot, futures, margin, options, delivery, earn, alpha tickers, order books, K-line, funding rate, liquidation history (**no auth required**)
-- 💹 **Trading** - Create/cancel/amend spot, futures, options, delivery orders; price-triggered orders; trail orders
-- 💼 **Account & Wallet** - Balances, transfers, deposits, withdrawals, sub-accounts, unified account
-- 📊 **Margin & Earn** - Margin loans, earn products, multi-currency flash swap
-- 🎯 **Activity & Welfare** - Activity center, coupons, launch pool, square, welfare
-- 🌍 **TradFi, CrossEx, P2P** - Traditional finance, cross-exchange, P2P trading
+- **Public data** — Spot/futures standard and RPI depth, options, delivery, margin, Earn, Alpha, CFD, stocks, collateral-loan parameters, unified-account simulation and Square (no OAuth)
+- **Trading and strategies** — Spot/futures/options/delivery orders, POV, Chase, trigger orders, Trail and strategy bots
+- **Account and wallet** — Balances, account transfers, deposit/withdrawal history, deposit addresses, unified accounts and wallet-level sub-account balances/transfers
+- **Earn and allocation** — Auto investment, ordinary/stock dual investment, fixed-term and flexible lending, multi-collateral loans, flash swap and portfolio optimization
+- **CFD and stocks** — Market information and authorized account, order, position and fund operations as separate domains
 - 🌐 **DEX** - On-chain wallet, swap (single-chain & cross-chain), token info, market data across 20+ chains
 - 📰 **Info** - Coin discovery, market snapshots, technical/platform metrics, on-chain and macro data
 - 📢 **News** - Crypto news, social insights, market events, prediction markets
@@ -29,8 +28,8 @@ The service exposes the following MCP endpoints:
 
 | Endpoint | Auth | Tools |
 |----------|------|-------|
-| `https://api.gatemcp.ai/mcp` | None | Public market data (58 tools: spot, futures, margin, options, delivery, earn, alpha, activity, launch pool, square, flash swap) |
-| `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | CEX trading & account (400+ tools: spot/futures/options/delivery/margin trading, wallet, unified account, sub-accounts, earn, flash swap, rebate, TradFi, CrossEx, P2P, Alpha, activity center, coupon, launch pool, square, welfare) |
+| `https://api.gatemcp.ai/mcp` | None | CEX public data and simulation (83 tools; see business table below) |
+| `https://api.gatemcp.ai/mcp/exchange` | OAuth2 | CEX private trading/account tools (source registration ceiling 310; filtered by authorization and operational policies) |
 | `https://api.gatemcp.ai/mcp/dex` | Google / Gate OAuth | DEX wallet & swap (33 tools: auth, wallet, chain config, transfer, swap, market data, token info, agentic, RPC across 20+ chains) |
 | `https://api.gatemcp.ai/mcp/info` | None | Coin info & analysis (32 tools: coins, snapshots, trends, on-chain, platform metrics, macro, market detail) |
 | `https://api.gatemcp.ai/mcp/open/info` | None | Gate Info submission surface (exactly 7 tools: coin profile, market overview/snapshots, kline, order book, recent trades) |
@@ -53,7 +52,7 @@ Transport: Streamable HTTP (with SSE fallback).
 
 ### Using mcporter
 
-> **Prerequisites**: Node.js >= 18, npm. See [Quick Start - mcporter](#mcporter--openclaw-recommended) for full installation steps.
+> **Prerequisites**: Node.js >= 18, npm. See [Quick Start - mcporter](#mcporter--openclaw) for full installation steps.
 
 ```bash
 # Add Private MCP (trading, requires OAuth)
@@ -65,13 +64,9 @@ mcporter auth gate-mcp
 
 ### Scopes (for `/mcp/exchange`)
 
-| Scope | Use |
-|-------|-----|
-| `market` | Public market data (tickers, order books, K-line, etc.) |
-| `profile` | Account info, orders, positions (read-only) |
-| `trade` | Create/cancel/amend orders |
-| `wallet` | Transfers, deposits, withdrawals |
-| `account` | Unified account, sub-accounts |
+Requirements for `base`, `spot_trade`, `futures_trade`, `earn`, `cfd`, `stock` depend on the tool and account type. In ordinary matching, `base` includes `read` and `asset` and is not read-only. Ordinary tokens retain per-tool OR compatibility with legacy scopes; Agentic accounts have separate read/write overrides and denied operations. `mcp:tools` does not replace a business scope.
+
+See the [per-tool permissions](gate-exchange/gateapi-mcp-service-tools.md) and [authorization/PKCE resource reference](gate-exchange/gate-exchange-mcp.md#authorization). The connected endpoint's `tools/list` determines visibility; default scope advertisement does not establish application choices in every environment.
 
 ## Quick Start
 
@@ -313,23 +308,9 @@ Edit Qoder MCP settings (e.g. `~/.qoder/mcp.json` or in Qoder settings):
 
 ### Claude Desktop
 
-Claude Desktop requires a local stdio proxy.
+Claude Desktop supports remote custom connectors; a local proxy is not mandatory. Connect to `https://api.gatemcp.ai/mcp` for public data or use `https://api.gatemcp.ai/mcp/exchange` with Gate OAuth2 for authorized private tools.
 
-1. Download the [Python proxy file](gate-mcp-proxy.py)
-2. Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
-
-```json
-{
-  "mcpServers": {
-    "Gate": {
-      "command": "python3",
-      "args": ["/path/to/gate-mcp-proxy.py"]
-    }
-  }
-}
-```
-
-See [Claude Desktop setup](docs/setup-claude-desktop.md) for detailed instructions.
+The repository's Python stdio proxy is an optional public-data compatibility path, without OAuth or SSE parsing. See [Claude Desktop setup](docs/setup-claude-desktop.md).
 
 ### Alternative: gate-local-mcp (local stdio with API keys)
 
@@ -407,51 +388,39 @@ You can add `GATE_MODULES`, `GATE_READONLY`, or `GATE_BASE_URL` inside `env` as 
 
 All tools use the `cex_` prefix. Tools are split between Public MCP (no auth) and Private MCP (OAuth2).
 
-### Public MCP (`/mcp` — no auth, 58 tools)
+<a id="cex-public"></a>
+### Public MCP (`/mcp` — no OAuth, 83 tools)
 
-| Business | Tools | Description |
-|----------|-------|-------------|
-| **Spot** | 8 | `cex_spot_list_currencies`, `cex_spot_get_currency`, `cex_spot_list_currency_pairs`, `cex_spot_get_currency_pair`, `cex_spot_get_spot_tickers`, `cex_spot_get_spot_order_book`, `cex_spot_get_spot_trades`, `cex_spot_get_spot_candlesticks` |
-| **Futures** | 14 | Contracts, order book, trades, candlesticks, tickers, funding rate, premium index, liquidation, contract stats, insurance ledger, index constituents, batch funding rates, risk limit tiers |
-| **Margin** | 3 | `cex_margin_list_uni_currency_pairs`, `cex_margin_get_uni_currency_pair`, `cex_margin_get_market_margin_tier` |
-| **Options** | 12 | Underlyings, expirations, contracts, settlements, order book, tickers, candlesticks, trades |
-| **Delivery** | 8 | Contracts, order book, trades, candlesticks, tickers, insurance ledger, risk limit tiers |
-| **Earn** | 5 | `cex_earn_list_dual_investment_plans`, `cex_earn_list_structured_products`, `cex_earn_list_uni_currencies`, `cex_earn_list_earn_fixed_term_products`, `cex_earn_list_earn_fixed_term_products_by_asset` |
-| **Alpha** | 3 | `cex_alpha_list_alpha_currencies`, `cex_alpha_list_alpha_tickers`, `cex_alpha_list_alpha_tokens` |
-| **Activity** | 1 | `cex_activity_list_activity_types` |
-| **Launch** | 1 | `cex_launch_list_launch_pool_projects` |
-| **Square** | 2 | `cex_square_list_square_ai_search`, `cex_square_list_live_replay` |
-| **Flash Swap** | 1 | `cex_fc_list_fc_currency_pairs` |
+Inventory reference: service version `v1.16.7`, checked on 2026-11-04. The public name set was checked against the live directory on that date. Counts below separate the two endpoints; private does not include public tools.
 
-### Private MCP (`/mcp/exchange` — OAuth2, 400+ tools)
+| Business | Public `/mcp` | Private `/mcp/exchange` |
+|---|---:|---:|
+| Spot | 10 | 27 |
+| Futures | 18 | 54 |
+| Margin | 3 | 17 |
+| Options | 12 | 17 |
+| Delivery | 8 | 21 |
+| Wallet | 1 | 22 |
+| Unified account | 5 | 22 |
+| Account management | 0 | 10 |
+| Rebate | 0 | 10 |
+| Flash swap | 1 | 8 |
+| Earn | 7 | 42 |
+| Alpha | 3 | 6 |
+| CFD / TradFi | 4 | 16 |
+| Stock | 5 | 11 |
+| Multi-collateral loan | 4 | 8 |
+| Strategy bots / AIHub | 0 | 12 |
+| Portfolio optimization / AssetSwap | 0 | 7 |
+| Square | 2 | 0 |
+| **Total** | **83** | **310** |
 
-> **Note**: The private endpoint does not include public market data tools. Use `/mcp` for market data queries.
+<a id="cex-private"></a>
+### Private MCP (`/mcp/exchange` — OAuth2, source ceiling 310 tools)
 
-| Business | Scope | Key Tools |
-|----------|-------|-----------|
-| **Spot** | profile / trade | Accounts, orders, trades, batch orders, price-triggered orders, countdown cancel, cross liquidate |
-| **Futures** | profile / trade | Accounts, positions, orders, trades, dual positions, trail orders, price-triggered, BBO orders |
-| **Margin** | profile / trade | Margin accounts, loans, auto-repay, uni loans |
-| **Options** | profile / trade | Account, positions, orders, MMP settings |
-| **Delivery** | profile / trade | Accounts, positions, orders, price-triggered orders |
-| **Wallet** | wallet | Total balance, transfers, deposits, withdrawals, deposit address, SA balances, small balance convert |
-| **Unified** | account | Unified accounts, mode, loans, risk units, borrowable, collateral, leverage config |
-| **Sub-account** | account | Create/list/lock/unlock SA, API keys |
-| **Account** | account | Account detail, main keys, rate limit, debit fee, STP groups |
-| **Rebate** | profile | Agency/partner/broker commission history, user info |
-| **Flash Swap** | profile / trade | `cex_fc_list_fc_currency_pairs`, `cex_fc_list_fc_orders`, `cex_fc_create_fc_order_v1`, multi-currency flash swap |
-| **Earn** | profile / trade | Dual/structured/uni products, orders, ETH2 swap, lend records |
-| **Alpha** | profile / trade | Alpha accounts, orders, quote/place |
-| **TradFi** | profile / trade | Categories, symbols, MT5 account, assets, orders, positions |
-| **CrossEx** | profile / trade | Rule symbols, account, positions, orders, transfers, convert |
-| **P2P** | profile / trade | User info, ads, chats, transactions, confirm payment/receipt |
-| **Activity** | profile | Activity types, recommended activities, user participation |
-| **Coupon** | profile | User coupons, coupon details |
-| **Launch Pool** | profile / trade | LaunchPool projects, pledge/redeem, reward records |
-| **Square** | market | AI search, live replay |
-| **Welfare** | profile | Beginner eligibility, task list and rewards |
+Token permissions, account type and operational policies determine visibility; not every user sees 310 tools. Remote sub-account/API-key administration, CrossEx, P2P, activity, coupon, welfare and Launch products are retired. Wallet-level sub-account balances/transfers remain separate from retired administration.
 
-For full tool parameters, see [Gate API Docs](https://www.gate.com/docs/developers/apiv4) or [gate-exchange-mcp](gate-exchange/gate-exchange-mcp.md).
+See the [remote tool catalogue](gate-exchange/gateapi-mcp-service-tools.md) for names/permissions and [CEX reference](gate-exchange/gate-exchange-mcp.md) for inputs, examples, Trail responses and errors.
 
 ### DEX — Authentication
 
@@ -570,7 +539,7 @@ A: **Only for CEX trading and DEX wallet.** `/mcp`, `/mcp/info`, `/mcp/open/info
 
 ### Q: Does it support trading?
 
-A: Yes. Connect to `https://api.gatemcp.ai/mcp/exchange` with OAuth2. The server supports spot and futures trading, account management, wallet transfers, and sub-accounts. Each tool requires the appropriate scope (e.g. `trade`, `wallet`).
+A: Yes. Connect to `/mcp/exchange` with Gate OAuth2 for authorized spot, futures, CFD, stock, Earn and strategy operations. Connect separately to `/mcp` for public data. Sub-account administration is retired; wallet-level sub-account balances/transfers have their own permissions.
 
 ### Q: How often is the data updated?
 
@@ -597,7 +566,7 @@ A: Data is queried in real-time from Gate's API.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md).
+Report documentation issues through this repository's [Issues](https://github.com/gate/gate-mcp/issues).
 
 ## License
 

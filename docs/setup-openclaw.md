@@ -4,7 +4,7 @@
 
 In the AI chat, type:
 
-> Help me auto install Gate Skills and MCPs: https://github.com/gateio/gate-skills
+> Help me auto install Gate Skills and MCPs: https://github.com/gate/gate-skills
 
 ![OpenClaw One-Click Installer](../images/openclaw-one-click-isntaller.png)
 
